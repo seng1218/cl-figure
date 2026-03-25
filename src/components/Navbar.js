@@ -48,10 +48,6 @@ export default function Navbar() {
           </Link>
 
           <div className="flex items-center gap-6">
-            <Link href="/shop" className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 hover:text-white transition-colors duration-500 hidden sm:block">
-              [ Archive ]
-            </Link>
-
             {itemCount > 0 && (
               <Link 
                 href="/checkout" 

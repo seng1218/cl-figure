@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { Plus } from 'lucide-react';
 import Link from 'next/link';
 
-export default function ProductCard({ item, index, onAdd }) {
+export default function ProductCard({ item, index, onAdd, alwaysColor = false }) {
   // Asymmetrical heights for Masonry variety
   const heights = ['aspect-[3/4]', 'aspect-[4/5]', 'aspect-square', 'aspect-[2/3]'];
   const aspectClass = heights[index % heights.length];
@@ -19,7 +19,11 @@ export default function ProductCard({ item, index, onAdd }) {
         {/* Provocative Grayscale default, color on hover + glitch effect handled by wrapper */}
         <img 
           src={item.image} 
-          className="w-full h-full object-cover grayscale brightness-75 contrast-125 group-hover:grayscale-0 group-hover:brightness-100 group-hover:scale-110 transition-all duration-[1.5s] ease-out" 
+          className={`w-full h-full object-cover transition-all duration-[1.5s] ease-out group-hover:scale-110 ${
+            alwaysColor 
+              ? 'brightness-90 contrast-110' 
+              : 'grayscale brightness-75 contrast-125 group-hover:grayscale-0 group-hover:brightness-100'
+          }`}
           alt={item.name} 
         />
         

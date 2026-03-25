@@ -84,7 +84,8 @@ export default function ShopArchive() {
               key={item.id} 
               item={item} 
               index={index} 
-              onAdd={() => handleAddToVault(item)} 
+              onAdd={() => handleAddToVault(item)}
+              alwaysColor={true}
             />
           ))}
           {filteredProducts.length === 0 && (

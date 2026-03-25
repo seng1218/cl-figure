@@ -89,11 +89,9 @@ export default function Home() {
               </div>
               
               <Link href={`/product/${grailProduct.id}`} className="order-1 lg:order-2 relative aspect-[4/5] md:aspect-square rounded-[3rem] overflow-hidden bg-[#111] border border-gray-800 group cursor-pointer block">
-                {/* Aberration Glitch Hover effect + Grayscale */}
-                <div className="absolute inset-0 bg-blue-600/10 mix-blend-overlay group-hover:bg-transparent transition-all duration-1000 z-10" />
                 <img 
                   src={grailProduct.image} 
-                  className="w-full h-full object-cover grayscale brightness-75 contrast-125 group-hover:grayscale-0 group-hover:scale-105 group-hover:brightness-100 transition-all duration-[2s] ease-out glitch-hover relative z-0" 
+                  className="w-full h-full object-cover brightness-90 contrast-110 group-hover:scale-105 group-hover:brightness-100 transition-all duration-[2s] ease-out glitch-hover" 
                   alt={grailProduct.name} 
                 />
               </Link>
@@ -120,7 +118,8 @@ export default function Home() {
                 key={item.id} 
                 item={item} 
                 index={index} 
-                onAdd={() => handleAddToVault(item)} 
+                onAdd={() => handleAddToVault(item)}
+                alwaysColor={true}
               />
             ))}
           </div>
