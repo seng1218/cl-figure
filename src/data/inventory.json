@@ -1,0 +1,46 @@
+[
+  {
+    "id": "5",
+    "name": "Kurumi Tokisaki",
+    "series": "Date A Live (Glitter & Glamours)",
+    "price": 85,
+    "stock": 1,
+    "scale": "1/7",
+    "image": "/uploads/1774418204643-photo_6062178087715147248_y.jpg",
+    "category": "Ready Stock",
+    "description": "✨ Item Highlights:\r\n\r\nCharacter: Kurumi Tokisaki\r\n\r\nSeries: Date A Live V\r\n\r\nBrand: Banpresto (Bandai Namco)\r\n\r\nCondition: 10/10 MISB (Mint in Sealed Box)\r\n\r\nAuthenticity: 100% Original Banpresto (Bandai Namco)\r\n\r\nSize: Approximately 22cm"
+  },
+  {
+    "id": "1",
+    "name": "Kurumi Tokisaki - BiCute Bunnies",
+    "series": "Date A Live V",
+    "price": 110,
+    "stock": 1,
+    "scale": "30cm",
+    "image": "/kurumi.jpg",
+    "category": "Ready Stock",
+    "description": "Authentic BiCute Bunnies figure featuring Kurumi Tokisaki in a stunning red bunny outfit with real fabric tights."
+  },
+  {
+    "id": "2",
+    "name": "Super Sonico - Bicute Bunnies",
+    "series": "Super Sonico",
+    "price": 95,
+    "stock": 1,
+    "scale": "28cm",
+    "image": "/super sonico waiters.jpg",
+    "category": "Ready Stock",
+    "description": "The iconic Super Sonico joins the BiCute Bunnies line with her signature pink hair and headphones."
+  },
+  {
+    "id": "3",
+    "name": "Rem - Original Ver.",
+    "series": "Re:Zero",
+    "price": 85,
+    "stock": 0,
+    "scale": "1/8",
+    "image": "/rem.jpg",
+    "category": "Ready Stock",
+    "description": "A beautiful prize figure of Rem from Re:Zero, perfect for any starter collection."
+  }
+]
