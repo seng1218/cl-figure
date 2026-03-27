@@ -102,13 +102,13 @@ export default function Home() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
               <div className="order-2 lg:order-1 space-y-8">
                 <span className="text-blue-600 font-black text-[10px] uppercase tracking-[0.5em] flex items-center gap-4">
-                  <Activity size={14} className="animate-pulse" /> Asset 001 / The Grail
+                  <Activity size={14} className="animate-pulse" /> The Grail
                 </span>
                 <h2 className="text-5xl md:text-7xl font-black text-white italic tracking-tighter leading-none">
                   {grailProduct.name}
                 </h2>
                 <p className="text-gray-500 font-medium text-lg max-w-md leading-relaxed">
-                  The absolute apex of the current collection. Forged in limited quantities, authenticated upon arrival. A centerpiece that commands the room.
+
                 </p>
                 <div className="flex items-center gap-6 pt-6">
                   <Link href={`/product/${grailProduct.id}`} className="bg-white text-black px-10 py-5 font-black text-[10px] uppercase tracking-[0.4em] hover:bg-blue-600 hover:text-white transition-all flex items-center gap-3 group border border-transparent hover:shadow-[0_0_30px_rgba(37,99,235,0.5)]">

@@ -5,15 +5,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 export default function CommsPortal() {
   const [isOpen, setIsOpen] = useState(false);
-  const whatsappNumber = "+60123456789"; // Placeholder, can be updated later
+  const whatsappNumber = "+60103581396"; // Placeholder, can be updated later
 
   return (
     <>
       <div className="fixed bottom-6 right-6 z-[90] flex flex-col items-end gap-4 pointer-events-none">
-        
+
         <AnimatePresence>
           {isOpen && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20, scale: 0.9 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 20, scale: 0.9 }}
@@ -31,7 +31,7 @@ export default function CommsPortal() {
               <p className="text-gray-400 text-sm leading-relaxed mb-6">
                 System operatives are standing by. For inquiries regarding Vault inventory, shipping protocols, or asset authentication, initiate comms.
               </p>
-              <a 
+              <a
                 href={`https://wa.me/${whatsappNumber}`}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -44,7 +44,7 @@ export default function CommsPortal() {
           )}
         </AnimatePresence>
 
-        <button 
+        <button
           onClick={() => setIsOpen(!isOpen)}
           className="group relative bg-[#050505] text-white p-4 rounded-full border border-gray-800 shadow-2xl hover:border-blue-500 hover:text-blue-500 transition-all pointer-events-auto flex items-center justify-center overflow-hidden"
         >
