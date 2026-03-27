@@ -4,25 +4,25 @@ import { ArrowRight } from 'lucide-react';
 
 export default function HeroSection({ onExplore }) {
   const { scrollY } = useScroll();
-  
+
   // Parallax for marquee
   const sliderX = useTransform(scrollY, [0, 1000], [0, -1000]);
 
   return (
     <section className="relative h-[90vh] w-full overflow-hidden bg-[#050505] flex items-center justify-center pt-20">
-      
+
       {/* BACKGROUND VIDEO WITH PARALLAX */}
       <div className="absolute inset-0 z-0">
-        <video 
-          autoPlay 
-          muted 
-          loop 
+        <video
+          autoPlay
+          muted
+          loop
           playsInline
           className="w-full h-full object-cover opacity-30 scale-110 mix-blend-luminosity"
         >
-          <source 
-            src="https://assets.mixkit.co/videos/preview/mixkit-futuristic-robot-arm-moving-fast-43750-large.mp4" 
-            type="video/mp4" 
+          <source
+            src="https://assets.mixkit.co/videos/preview/mixkit-futuristic-robot-arm-moving-fast-43750-large.mp4"
+            type="video/mp4"
           />
         </video>
         {/* Provocative harsh dark fade */}
@@ -44,15 +44,15 @@ export default function HeroSection({ onExplore }) {
 
       {/* HERO CONTENT */}
       <div className="relative z-10 text-center px-6 mix-blend-exclusion">
-        <motion.span 
+        <motion.span
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-white font-black text-[10px] md:text-xs tracking-[1em] uppercase mb-8 block opacity-80"
         >
-          Established 2026
+          Established 2023
         </motion.span>
-        
-        <motion.h1 
+
+        <motion.h1
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.2, duration: 0.8, ease: "easeOut" }}
@@ -61,20 +61,20 @@ export default function HeroSection({ onExplore }) {
           CL FIGURE<span className="text-blue-600 animate-pulse">.</span>
         </motion.h1>
 
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
           className="flex flex-col md:flex-row items-center justify-center gap-6 mt-12"
         >
-          <motion.button 
+          <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={onExplore}
             className="group relative bg-white text-black px-12 py-6 font-black text-xs uppercase tracking-[0.4em] flex items-center gap-4 hover:bg-blue-600 hover:text-white transition-all overflow-hidden"
           >
             <div className="absolute inset-0 bg-blue-600 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out z-0" />
-            <span className="relative z-10">Access Archive</span> 
+            <span className="relative z-10">Enter Vault</span>
             <ArrowRight size={18} className="relative z-10 group-hover:translate-x-2 transition-transform" />
           </motion.button>
         </motion.div>

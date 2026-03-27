@@ -211,20 +211,39 @@ export default function ProductDetail() {
               </div>
             </div>
 
-            {/* Technical Specs Bento */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-[#111] p-6 rounded-3xl border border-gray-800 flex items-center gap-4 hover:border-blue-900 transition-colors duration-500">
-                <div className="p-3 bg-blue-900/20 text-blue-500 rounded-2xl"><ShieldCheck size={20} /></div>
-                <div>
-                  <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Warranty</p>
-                  <p className="text-sm font-bold text-white">CL Lifetime</p>
-                </div>
+            {/* Authenticity Registry */}
+            <div className="bg-[#111] rounded-3xl border border-gray-800 p-6 md:p-8 relative overflow-hidden group">
+              <div className="absolute -top-6 -right-6 p-4 text-blue-600/5 group-hover:text-blue-600/10 transition-colors duration-500 pointer-events-none">
+                <ShieldCheck size={180} />
               </div>
-              <div className="bg-[#111] p-6 rounded-3xl border border-gray-800 flex items-center gap-4 hover:border-blue-900 transition-colors duration-500">
-                <div className="p-3 bg-gray-900 text-gray-400 rounded-2xl"><Zap size={20} /></div>
-                <div>
-                  <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Grade</p>
-                  <p className="text-sm font-bold text-white">S-Tier Mint</p>
+              
+              <div className="flex items-center gap-3 mb-6 relative z-10">
+                <div className="h-2 w-2 rounded-full bg-blue-500 animate-pulse shadow-[0_0_10px_rgba(37,99,235,0.8)]" />
+                <h3 className="text-[10px] md:text-xs font-black text-white uppercase tracking-[0.3em]">Asset Authentication Registry</h3>
+              </div>
+
+              <div className="space-y-4 relative z-10">
+                <div className="flex justify-between items-center border-b border-gray-800/80 pb-3">
+                  <span className="text-[9px] md:text-[10px] uppercase font-black tracking-widest text-gray-500">Origin Status</span>
+                  <span className="text-[10px] md:text-xs font-black text-green-500 bg-green-900/20 px-3 py-1 rounded-full border border-green-900/30 shadow-[0_0_15px_rgba(34,197,94,0.1)]">
+                    Verified Authentic
+                  </span>
+                </div>
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center border-b border-gray-800/80 pb-3 gap-2">
+                  <span className="text-[9px] md:text-[10px] uppercase font-black tracking-widest text-gray-500">Manufacturer</span>
+                  <span className="text-[10px] md:text-xs font-bold text-white uppercase tracking-widest truncate">
+                    {product.manufacturer || 'Authorized Maker'}
+                  </span>
+                </div>
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center border-b border-gray-800/80 pb-3 gap-2">
+                  <span className="text-[9px] md:text-[10px] uppercase font-black tracking-widest text-gray-500">Dispatch Condition</span>
+                  <span className="text-[10px] md:text-xs font-bold text-white uppercase tracking-widest">10/10 MISB (Mint in Sealed Box)</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-[9px] md:text-[10px] uppercase font-black tracking-widest text-gray-500">Seal Integrity</span>
+                  <span className="text-[10px] md:text-xs font-bold text-blue-400 uppercase tracking-widest flex items-center gap-2">
+                    <Lock size={12} /> Intact / Untampered
+                  </span>
                 </div>
               </div>
             </div>

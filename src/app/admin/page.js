@@ -16,6 +16,7 @@ export default function AdminDashboard() {
   // Form State
   const [formData, setFormData] = useState({
     name: "",
+    manufacturer: "",
     series: "",
     price: "",
     stock: "1",
@@ -42,11 +43,12 @@ export default function AdminDashboard() {
 
   const fetchInventory = async () => {
     try {
-      const res = await fetch('/api/products');
+      const res = await fetch('/api/products/');
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      setInventory(data);
+      setInventory(Array.isArray(data) ? data : []);
     } catch (err) {
-      console.error("Failed to load inventory.");
+      console.error("Failed to load inventory:", err);
     }
   };
 
@@ -77,7 +79,7 @@ export default function AdminDashboard() {
         data.append('id', editingId);
       }
       
-      const res = await fetch('/api/products', {
+      const res = await fetch('/api/products/', {
         method: editingId ? 'PUT' : 'POST',
         body: data
       });
@@ -88,7 +90,7 @@ export default function AdminDashboard() {
         setSuccessStatus(true);
         // Reset form completely
         setFormData({
-          name: "", series: "", price: "", stock: "1", scale: "1/7", category: "Ready Stock", description: ""
+          name: "", manufacturer: "", series: "", price: "", stock: "1", scale: "1/7", category: "Ready Stock", description: ""
         });
         setImageFile(null);
         setEditingId(null);
@@ -113,6 +115,7 @@ export default function AdminDashboard() {
     setEditingId(item.id);
     setFormData({
       name: item.name,
+      manufacturer: item.manufacturer || "",
       series: item.series,
       price: item.price,
       stock: item.stock,
@@ -125,7 +128,7 @@ export default function AdminDashboard() {
   const cancelEdit = () => {
     setEditingId(null);
     setFormData({
-      name: "", series: "", price: "", stock: "1", scale: "1/7", category: "Ready Stock", description: ""
+      name: "", manufacturer: "", series: "", price: "", stock: "1", scale: "1/7", category: "Ready Stock", description: ""
     });
     setImageFile(null);
   };
@@ -133,7 +136,7 @@ export default function AdminDashboard() {
   const handleDelete = async (id) => {
     if (!confirm("INCINERATION PROTOCOL: Are you sure you want to permanently delete this artifact?")) return;
     try {
-      const res = await fetch('/api/products', {
+      const res = await fetch('/api/products/', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id })
@@ -198,33 +201,42 @@ export default function AdminDashboard() {
         </div>
 
         <form onSubmit={handleSubmit} className="bg-[#111] border border-gray-800 rounded-[2rem] p-8 md:p-12 shadow-2xl space-y-8">
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Input Groups */}
+            {/* Artifact Name */}
             <div className="space-y-2">
               <label className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Artifact Name</label>
               <input type="text" name="name" value={formData.name} onChange={handleInputChange} required className="w-full bg-[#0a0a0a] border border-gray-800 text-white p-4 font-bold focus:outline-none focus:border-blue-600 transition-colors" placeholder="e.g. Asuka Langley - Plugsuit Ver." />
             </div>
 
+            {/* Manufacturer */}
             <div className="space-y-2">
-              <label className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Series/Franchise</label>
-              <input type="text" name="series" value={formData.series} onChange={handleInputChange} required className="w-full bg-[#0a0a0a] border border-gray-800 text-white p-4 font-bold focus:outline-none focus:border-blue-600 transition-colors" placeholder="e.g. Evangelion" />
+              <label className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Manufacturer</label>
+              <input type="text" name="manufacturer" value={formData.manufacturer} onChange={handleInputChange} required className="w-full bg-[#0a0a0a] border border-gray-800 text-white p-4 font-bold focus:outline-none focus:border-blue-600 transition-colors" placeholder="e.g. FuRyu, Banpresto, Taito" />
             </div>
-            
+
+            {/* Series */}
+            <div className="space-y-2">
+              <label className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Series / Franchise</label>
+              <input type="text" name="series" value={formData.series} onChange={handleInputChange} required className="w-full bg-[#0a0a0a] border border-gray-800 text-white p-4 font-bold focus:outline-none focus:border-blue-600 transition-colors" placeholder="e.g. Date A Live V" />
+            </div>
+
+            {/* Price */}
             <div className="space-y-2">
               <label className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Retail Value (RM)</label>
               <input type="number" step="0.01" name="price" value={formData.price} onChange={handleInputChange} required className="w-full bg-[#0a0a0a] border border-gray-800 text-white p-4 font-bold focus:outline-none focus:border-blue-600 transition-colors" placeholder="e.g. 150.00" />
             </div>
 
-            <div className="space-y-2">
+            {/* Image Upload — spans full width */}
+            <div className="space-y-2 md:col-span-2">
               <label className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Artifact Image (Local File)</label>
-              <input 
+              <input
                 id="image-upload"
-                type="file" 
-                accept="image/*" 
-                onChange={handleFileChange} 
-                required 
-                className="w-full bg-[#0a0a0a] border border-gray-800 text-white p-3 font-bold focus:outline-none focus:border-blue-600 transition-colors file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-[10px] file:font-black file:uppercase file:tracking-widest file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer" 
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                required
+                className="w-full bg-[#0a0a0a] border border-gray-800 text-white p-3 font-bold focus:outline-none focus:border-blue-600 transition-colors file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-[10px] file:font-black file:uppercase file:tracking-widest file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer"
               />
             </div>
           </div>
