@@ -1,5 +1,21 @@
 [
   {
+    "id": "8",
+    "name": "Megurine Luka",
+    "manufacturer": "FuRyu",
+    "series": "Vocaloid CV03",
+    "price": 98,
+    "stock": 1,
+    "scale": "1/7",
+    "image": "/uploads/1774598594907-Gemini_Generated_Image_8pufew8pufew8puf.png",
+    "category": "Ready Stock",
+    "dispatchCondition": "9/10 MIB (Mint in Box - Opened but mint inside)",
+    "sealIntegrity": "Tampered for Inspection Only",
+    "productSpecs": "ABS, PVC",
+    "authenticity": "Verified Authentic",
+    "description": "Authentic BiCute Bunnies figure featuring Megurine Luka in a seductive black bunny outfit with real fabric tights."
+  },
+  {
     "id": "7",
     "name": "Shalltear Bloodfallen",
     "manufacturer": "FuRyu",
