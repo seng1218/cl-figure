@@ -53,7 +53,7 @@ export default function HeroSection({ onExplore }) {
           transition={{ delay: 0.2, duration: 0.8, ease: "easeOut" }}
           className="text-7xl md:text-[12rem] font-black text-white tracking-tighter mb-8 italic leading-none drop-shadow-2xl"
         >
-          CL FIGURE<span className="text-blue-600 animate-pulse">.</span>
+          Vault 6 Studios<span className="text-blue-600 animate-pulse">.</span>
         </motion.h1>
 
         <motion.div

@@ -18,6 +18,12 @@ export default function ShopArchive() {
   const spotlightRef = useRef(null);
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const q = params.get("q");
+      if (q) setSearchTerm(q);
+    }
+
     const handleMouseMove = (e) => {
       if (spotlightRef.current) {
         spotlightRef.current.style.transform = `translate(${e.clientX - 400}px, ${e.clientY - 400}px)`;

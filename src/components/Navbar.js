@@ -38,23 +38,23 @@ export default function Navbar() {
         animate={{ y: 0 }}
         className="fixed top-0 left-0 right-0 z-[100] px-6 py-6 pointer-events-none"
       >
-        <div 
+        <div
           className={`mx-auto flex justify-between items-center transition-all duration-700 rounded-full px-8 pointer-events-auto
-            ${isScrolled 
-              ? 'max-w-4xl h-16 bg-[#0a0a0a]/80 backdrop-blur-2xl border border-gray-800 shadow-[0_20px_50px_rgba(0,0,0,0.8)]' 
+            ${isScrolled
+              ? 'max-w-4xl h-16 bg-[#0a0a0a]/80 backdrop-blur-2xl border border-gray-800 shadow-[0_20px_50px_rgba(0,0,0,0.8)]'
               : 'max-w-7xl h-20 bg-transparent border-transparent'
             }`}
         >
           {/* LOGO WITH CONTRAST FIX */}
-          <Link 
-            href="/" 
+          <Link
+            href="/"
             className={`text-2xl font-black tracking-tighter transition-all duration-500
-              ${isScrolled 
-                ? 'text-white' 
+              ${isScrolled
+                ? 'text-white'
                 : 'text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]'
               }`}
           >
-            CL FIGURE<span className="text-blue-500">.</span>
+            Vault 6 Studios<span className="text-blue-500">.</span>
           </Link>
 
           {/* Desktop Nav Links */}
@@ -71,14 +71,20 @@ export default function Navbar() {
           </div>
 
           <div className="flex items-center gap-4 md:gap-6">
-            {/* Search Icon (Desktop only for now) */}
-            <Link href="/shop" className={`hidden md:block hover:text-white transition-colors ${isScrolled ? 'text-gray-500' : 'text-white/80 drop-shadow-md'}`}>
-              <Search size={18} />
-            </Link>
+            {/* Search Input */}
+            <form action="/shop" method="GET" className={`hidden md:flex items-center rounded-full px-3 py-1.5 transition-all duration-300 ${isScrolled ? 'bg-[#111] border border-gray-800' : 'bg-white/10 border border-white/20 backdrop-blur-sm'}`}>
+              <Search size={14} className={isScrolled ? 'text-gray-500' : 'text-white/80'} />
+              <input 
+                name="q"
+                type="text"
+                placeholder="SEARCH VAULT..."
+                className="bg-transparent border-none outline-none text-[10px] text-white uppercase font-black tracking-widest pl-3 w-28 focus:w-48 transition-all placeholder:text-gray-500"
+              />
+            </form>
 
             {itemCount > 0 && (
-              <Link 
-                href="/checkout" 
+              <Link
+                href="/checkout"
                 className={`hidden md:flex items-center gap-2 text-[10px] uppercase font-black tracking-widest transition-colors duration-500
                   ${isScrolled ? 'text-gray-500 hover:text-blue-500' : 'text-white/90 hover:text-white drop-shadow-md'}
                 `}
@@ -88,11 +94,11 @@ export default function Navbar() {
             )}
 
             {/* Cart Button with contrast border */}
-            <button 
-              onClick={() => setIsSidebarOpen(true)} 
+            <button
+              onClick={() => setIsSidebarOpen(true)}
               className={`relative p-3 rounded-full transition-all duration-500 shadow-xl
-                ${isScrolled 
-                  ? 'bg-[#111] text-white hover:bg-blue-600 border border-gray-800' 
+                ${isScrolled
+                  ? 'bg-[#111] text-white hover:bg-blue-600 border border-gray-800'
                   : 'bg-white/10 text-white border border-white/20 hover:scale-110 backdrop-blur-sm'
                 }`}
             >
@@ -112,11 +118,11 @@ export default function Navbar() {
             </button>
 
             {/* Mobile Menu Toggle */}
-            <button 
+            <button
               onClick={() => setIsMobileMenuOpen(true)}
               className={`md:hidden relative p-3 rounded-full transition-all duration-500 shadow-xl
-                ${isScrolled 
-                  ? 'bg-[#111] text-white hover:bg-blue-600 border border-gray-800' 
+                ${isScrolled
+                  ? 'bg-[#111] text-white hover:bg-blue-600 border border-gray-800'
                   : 'bg-white/10 text-white border border-white/20 hover:scale-110 backdrop-blur-sm'
                 }`}
             >
@@ -135,7 +141,7 @@ export default function Navbar() {
             exit={{ opacity: 0, y: -20 }}
             className="fixed inset-0 z-[110] bg-[#050505]/95 backdrop-blur-md flex flex-col items-center justify-center pointer-events-auto"
           >
-            <button 
+            <button
               onClick={() => setIsMobileMenuOpen(false)}
               className="absolute top-8 right-8 p-3 bg-[#111] text-white rounded-full hover:bg-blue-600 border border-gray-800 transition-all"
             >
@@ -143,30 +149,30 @@ export default function Navbar() {
             </button>
 
             <div className="flex flex-col items-center gap-10 text-center">
-              <Link 
-                href="/shop" 
+              <Link
+                href="/shop"
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="text-4xl font-black text-white uppercase italic tracking-tighter hover:text-blue-500 transition-colors"
               >
                 Archives
               </Link>
-              <Link 
-                href="/#ethos" 
+              <Link
+                href="/#ethos"
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="text-4xl font-black text-white uppercase italic tracking-tighter hover:text-blue-500 transition-colors"
               >
                 Ethos
               </Link>
-              <Link 
-                href="/#syndicate" 
+              <Link
+                href="/#syndicate"
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="text-4xl font-black text-white uppercase italic tracking-tighter hover:text-blue-500 transition-colors"
               >
                 Syndicate
               </Link>
               <div className="w-16 h-px bg-gray-800 my-4" />
-              <Link 
-                href="/checkout" 
+              <Link
+                href="/checkout"
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="text-2xl font-black text-gray-500 uppercase italic tracking-tighter flex items-center gap-2 hover:text-white transition-colors"
               >

@@ -118,7 +118,7 @@ export default function CheckoutPage() {
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
     pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-    pdf.save(`CL-Acquisition-Certificate.pdf`);
+    pdf.save(`Vault6-Acquisition-Certificate.pdf`);
   };
 
   // --- 6. RENDER SUCCESS SCREEN ---
@@ -140,7 +140,7 @@ export default function CheckoutPage() {
               </div>
 
               <div className="grid grid-cols-2 gap-8 py-8 border-y border-dashed border-gray-200 font-mono">
-                <div><p className="text-[9px] uppercase font-bold text-gray-400 mb-1">Asset ID</p><p className="text-xs font-black text-gray-900">#CL-PROTO-{Math.random().toString(36).toUpperCase().substring(2, 6)}</p></div>
+                <div><p className="text-[9px] uppercase font-bold text-gray-400 mb-1">Asset ID</p><p className="text-xs font-black text-gray-900">#V6-PROTO-{Math.random().toString(36).toUpperCase().substring(2, 6)}</p></div>
                 <div><p className="text-[9px] uppercase font-bold text-gray-400 mb-1">Clearance Date</p><p className="text-xs font-black text-gray-900">{new Date().toLocaleDateString('en-GB')}</p></div>
                 <div><p className="text-[9px] uppercase font-bold text-gray-400 mb-1">Vault Status</p><p className="text-xs font-black text-green-600 uppercase">Secured</p></div>
                 <div><p className="text-[9px] uppercase font-bold text-gray-400 mb-1">Total Value</p><p className="text-xs font-black text-gray-900">RM {grandTotal.toFixed(2)}</p></div>
@@ -174,7 +174,7 @@ export default function CheckoutPage() {
 
               <div className="pt-6 flex justify-between items-end">
                 <div className="space-y-1"><div className="w-32 h-[1px] bg-gray-300" /><p className="text-[8px] uppercase font-black text-gray-400 tracking-widest">Collector Signature</p></div>
-                <h1 className="text-4xl font-black italic tracking-tighter text-gray-900 opacity-10">CL FIGURE</h1>
+                <h1 className="text-4xl font-black italic tracking-tighter text-gray-900 opacity-10">Vault 6 Studios</h1>
               </div>
             </div>
           </div>
@@ -211,7 +211,7 @@ export default function CheckoutPage() {
           <Link href="/" className="flex items-center gap-2 text-gray-400 font-bold text-[10px] uppercase tracking-widest hover:text-gray-900">
             <ArrowLeft size={14} /> Back to Gallery
           </Link>
-          <h1 className="text-5xl font-black text-gray-900 tracking-tighter italic">CL FIGURE<span className="text-blue-600">.</span>SUMMARY</h1>
+          <h1 className="text-5xl font-black text-gray-900 tracking-tighter italic">Vault 6 Studios<span className="text-blue-600">.</span>SUMMARY</h1>
           
           <div className="bg-white rounded-[3rem] p-8 shadow-sm border border-gray-100 space-y-6">
             

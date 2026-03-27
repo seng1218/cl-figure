@@ -5,7 +5,7 @@ import { CartProvider } from "@/context/CartContext";
 import "./globals.css";
 
 export const metadata = {
-  title: "CL Figure. | The Vault",
+  title: "Vault 6 Studios. | The Vault",
   description: "Exclusive S-Tier figurines. Highly curated. Zero filler.",
 };
 
