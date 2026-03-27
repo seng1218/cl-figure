@@ -15,7 +15,7 @@ export default function HeroSection({ onExplore }) {
       <div className="absolute inset-0 z-0 bg-[#050505]">
         <motion.img
           style={{ y: useTransform(scrollY, [0, 1000], [0, 300]) }}
-          src="/kurumi.jpg"
+          src="/banner.png"
           alt="Vault Artifact"
           className="w-full h-full object-cover object-top opacity-20 scale-110 mix-blend-luminosity grayscale contrast-125"
         />
