@@ -22,13 +22,17 @@ export default function AdminDashboard() {
     stock: "1",
     scale: "1/7",
     category: "Ready Stock",
+    dispatchCondition: "10/10 MISB (Mint in Sealed Box)",
+    sealIntegrity: "Intact / Untampered",
+    productSpecs: "ABS, PVC",
+    authenticity: "Verified Authentic",
     description: ""
   });
   const [imageFile, setImageFile] = useState(null);
 
   const handleAuth = (e) => {
     e.preventDefault();
-    if (passcode === "VAULT_ADMIN") {
+    if (passcode === "CL00") {
       setIsAuthenticated(true);
       setErrorMSG("");
     } else {
@@ -67,37 +71,37 @@ export default function AdminDashboard() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     try {
       const data = new FormData();
       Object.keys(formData).forEach(key => data.append(key, formData[key]));
       if (imageFile) {
         data.append('image', imageFile);
       }
-      
+
       if (editingId) {
         data.append('id', editingId);
       }
-      
+
       const res = await fetch('/api/products/', {
         method: editingId ? 'PUT' : 'POST',
         body: data
       });
-      
+
       const resData = await res.json();
-      
+
       if (resData.success) {
         setSuccessStatus(true);
         // Reset form completely
         setFormData({
-          name: "", manufacturer: "", series: "", price: "", stock: "1", scale: "1/7", category: "Ready Stock", description: ""
+          name: "", manufacturer: "", series: "", price: "", stock: "1", scale: "1/7", category: "Ready Stock", dispatchCondition: "10/10 MISB (Mint in Sealed Box)", sealIntegrity: "Intact / Untampered", productSpecs: "ABS, PVC", authenticity: "Verified Authentic", description: ""
         });
         setImageFile(null);
         setEditingId(null);
         // Reset file input value manually
         const fileInput = document.getElementById('image-upload');
-        if(fileInput) fileInput.value = '';
-        
+        if (fileInput) fileInput.value = '';
+
         fetchInventory(); // Refresh the list
         setTimeout(() => setSuccessStatus(false), 3000);
       } else {
@@ -121,6 +125,10 @@ export default function AdminDashboard() {
       stock: item.stock,
       scale: item.scale,
       category: item.category,
+      dispatchCondition: item.dispatchCondition || "10/10 MISB (Mint in Sealed Box)",
+      sealIntegrity: item.sealIntegrity || "Intact / Untampered",
+      productSpecs: item.productSpecs || "ABS, PVC",
+      authenticity: item.authenticity || "Verified Authentic",
       description: item.description
     });
   };
@@ -128,7 +136,7 @@ export default function AdminDashboard() {
   const cancelEdit = () => {
     setEditingId(null);
     setFormData({
-      name: "", manufacturer: "", series: "", price: "", stock: "1", scale: "1/7", category: "Ready Stock", description: ""
+      name: "", manufacturer: "", series: "", price: "", stock: "1", scale: "1/7", category: "Ready Stock", dispatchCondition: "10/10 MISB (Mint in Sealed Box)", sealIntegrity: "Intact / Untampered", productSpecs: "ABS, PVC", authenticity: "Verified Authentic", description: ""
     });
     setImageFile(null);
   };
@@ -155,26 +163,26 @@ export default function AdminDashboard() {
       <main className="min-h-screen bg-[#050505] flex items-center justify-center p-6 relative overflow-hidden">
         {/* Provocative Hacker/Terminal background logic */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,0,0,0.05)_0%,rgba(0,0,0,1)_70%)] pointer-events-none" />
-        
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.9 }} 
-          animate={{ opacity: 1, scale: 1 }} 
+
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
           className="bg-[#111] border border-red-900/40 p-12 rounded-[2rem] max-w-md w-full relative z-10 shadow-[0_0_50px_rgba(255,0,0,0.1)] text-center"
         >
           <Lock size={64} className="text-red-600 mx-auto mb-6 opacity-80" strokeWidth={1} />
           <h1 className="text-3xl font-black text-white italic tracking-tighter mb-2">RESTRICTED TERMINAL</h1>
           <p className="text-red-500/80 text-[10px] uppercase tracking-widest font-black mb-8">Unauthorized access will be logged.</p>
-          
+
           <form onSubmit={handleAuth} className="space-y-4">
-            <input 
-              type="password" 
-              placeholder="Enter Access Code..." 
+            <input
+              type="password"
+              placeholder="Enter Access Code..."
               value={passcode}
               onChange={(e) => setPasscode(e.target.value)}
               className="w-full bg-[#0a0a0a] border border-gray-800 text-center text-white p-4 font-black tracking-widest text-xs uppercase focus:outline-none focus:border-red-600 focus:ring-1 focus:ring-red-600 transition-colors"
             />
             {errorMSG && <p className="text-red-500 text-[10px] font-bold uppercase animate-pulse">{errorMSG}</p>}
-            
+
             <button type="submit" className="w-full bg-red-600/20 text-red-500 hover:bg-red-600 hover:text-white border border-red-900/50 hover:border-red-500 transition-all p-4 font-black text-[10px] uppercase tracking-[0.3em] flex items-center justify-center gap-2">
               <Unlock size={14} /> Bypass Firewall
             </button>
@@ -227,15 +235,81 @@ export default function AdminDashboard() {
               <input type="number" step="0.01" name="price" value={formData.price} onChange={handleInputChange} required className="w-full bg-[#0a0a0a] border border-gray-800 text-white p-4 font-bold focus:outline-none focus:border-blue-600 transition-colors" placeholder="e.g. 150.00" />
             </div>
 
+            {/* Stock / Units Available */}
+            <div className="space-y-2">
+              <label className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Vault Units (Stock)</label>
+              <input type="number" step="1" name="stock" value={formData.stock} onChange={handleInputChange} required className="w-full bg-[#0a0a0a] border border-gray-800 text-white p-4 font-bold focus:outline-none focus:border-blue-600 transition-colors" placeholder="e.g. 1" />
+            </div>
+
+            {/* Scale / Dimensions */}
+            <div className="space-y-2">
+              <label className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Scale / Dimensions</label>
+              <input type="text" name="scale" value={formData.scale} onChange={handleInputChange} required className="w-full bg-[#0a0a0a] border border-gray-800 text-white p-4 font-bold focus:outline-none focus:border-blue-600 transition-colors" placeholder="e.g. 1/7, 30cm" />
+            </div>
+
+            {/* Category */}
+            <div className="space-y-2">
+              <label className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Category</label>
+              <select name="category" value={formData.category} onChange={handleInputChange} className="w-full bg-[#0a0a0a] border border-gray-800 text-white p-4 font-bold focus:outline-none focus:border-blue-600 transition-colors appearance-none">
+                <option value="Ready Stock">Ready Stock</option>
+                <option value="Pre-order">Pre-order</option>
+              </select>
+            </div>
+
+            {/* Dispatch Condition */}
+            <div className="space-y-2">
+              <label className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Dispatch Condition</label>
+              <select name="dispatchCondition" value={formData.dispatchCondition} onChange={handleInputChange} className="w-full bg-[#0a0a0a] border border-gray-800 text-white p-4 font-bold focus:outline-none focus:border-blue-600 transition-colors appearance-none">
+                <option value="10/10 MISB (Mint in Sealed Box)">10/10 MISB (Mint in Sealed Box)</option>
+                <option value="9/10 MIB (Mint in Box - Opened but mint inside)">9/10 MIB (Mint in Box - Opened but mint inside)</option>
+                <option value="8/10 Displayed Mint (Displayed, mint condition)">8/10 BIB (Displayed, mint condition, Back in Box)</option>
+                <option value="7/10 Minor Wear (Minor box wear or light surface dust)">7/10 Minor Wear (Minor box wear or light surface dust)</option>
+                <option value="6/10 Moderate Wear (Noticeable box damage or minor scuffs)">6/10 Moderate Wear (Noticeable box damage or minor scuffs)</option>
+                <option value="5/10 Loose Mint (No box, but figure is mint)">5/10 Loose Mint (No box, but figure is mint)</option>
+                <option value="4/10 Displayed Imperfect (Missing minor accessories or small marks)">4/10 Displayed Imperfect (Missing minor accessories or small marks)</option>
+                <option value="3/10 Damaged (Broken parts or heavy scuffs)">3/10 Damaged (Broken parts or heavy scuffs)</option>
+                <option value="2/10 Heavy Damage (Major broken pieces, missing core parts)">2/10 Heavy Damage (Major broken pieces, missing core parts)</option>
+                <option value="1/10 Battle Scars (Salvaged parts / severe damage)">1/10 Battle Scars (Salvaged parts / severe damage)</option>
+              </select>
+            </div>
+
+            {/* Seal Integrity */}
+            <div className="space-y-2">
+              <label className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Seal Integrity</label>
+              <select name="sealIntegrity" value={formData.sealIntegrity} onChange={handleInputChange} className="w-full bg-[#0a0a0a] border border-gray-800 text-white p-4 font-bold focus:outline-none focus:border-blue-600 transition-colors appearance-none">
+                <option value="Intact / Untampered">Intact / Untampered</option>
+                <option value="Tampered for Inspection Only">Tampered for Inspection Only</option>
+                <option value="Tampered for Display">Tampered for Display</option>
+              </select>
+            </div>
+
+            {/* Product Specs */}
+            <div className="space-y-2">
+              <label className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Product Specs</label>
+              <input type="text" name="productSpecs" value={formData.productSpecs} onChange={handleInputChange} className="w-full bg-[#0a0a0a] border border-gray-800 text-white p-4 font-bold focus:outline-none focus:border-blue-600 transition-colors" placeholder="e.g. ABS, PVC" />
+            </div>
+
+            {/* Authenticity */}
+            <div className="space-y-2">
+              <label className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Authenticity</label>
+              <select name="authenticity" value={formData.authenticity} onChange={handleInputChange} className="w-full bg-[#0a0a0a] border border-gray-800 text-white p-4 font-bold focus:outline-none focus:border-blue-600 transition-colors appearance-none">
+                <option value="Verified Authentic">Verified Authentic</option>
+                <option value="Authentic but Unverified">Authentic but Unverified</option>
+                <option value="Bootleg">Bootleg</option>
+              </select>
+            </div>
+
             {/* Image Upload — spans full width */}
             <div className="space-y-2 md:col-span-2">
-              <label className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Artifact Image (Local File)</label>
+              <label className="text-[10px] text-gray-400 font-black uppercase tracking-widest">
+                Artifact Image (Local File) {editingId && <span className="text-gray-600 normal-case ml-2">(Optional when editing)</span>}
+              </label>
               <input
                 id="image-upload"
                 type="file"
                 accept="image/*"
                 onChange={handleFileChange}
-                required
+                required={!editingId}
                 className="w-full bg-[#0a0a0a] border border-gray-800 text-white p-3 font-bold focus:outline-none focus:border-blue-600 transition-colors file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-[10px] file:font-black file:uppercase file:tracking-widest file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer"
               />
             </div>
@@ -247,25 +321,25 @@ export default function AdminDashboard() {
           </div>
 
           <div className="pt-4 flex flex-col md:flex-row gap-4 items-center border-t border-gray-800 mt-8 justify-center">
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               disabled={isSubmitting || successStatus}
               className={`w-full md:w-auto px-16 py-6 font-black text-[10px] md:text-xs uppercase tracking-[0.3em] flex justify-center items-center gap-3 transition-all duration-500
                 ${successStatus ? 'bg-green-600 text-white shadow-[0_0_30px_rgba(34,197,94,0.4)]' : 'bg-gray-100 text-black hover:bg-blue-600 hover:text-white hover:shadow-[0_0_40px_rgba(37,99,235,0.4)]'}
               `}
             >
               {isSubmitting ? (
-                 <span className="animate-pulse">{editingId ? 'Patching...' : 'Writing to Database...'}</span>
+                <span className="animate-pulse">{editingId ? 'Patching...' : 'Writing to Database...'}</span>
               ) : successStatus ? (
                 <><CheckCircle2 size={16} /> Artifact {editingId ? 'Updated' : 'Archived'}</>
               ) : (
                 <><PlusCircle size={16} /> {editingId ? 'Update Artifact' : 'Deploy to Vault'}</>
               )}
             </button>
-            
+
             {editingId && (
-              <button 
-                type="button" 
+              <button
+                type="button"
                 onClick={cancelEdit}
                 className="w-full md:w-auto px-10 py-6 border border-gray-700 text-gray-400 hover:text-white hover:border-gray-500 font-black text-[10px] md:text-xs uppercase tracking-[0.3em] flex justify-center items-center gap-3 transition-all"
               >
@@ -274,8 +348,8 @@ export default function AdminDashboard() {
             )}
           </div>
           <p className="text-gray-600 text-[10px] uppercase font-bold tracking-[0.2em] mt-4 text-center w-full block">
-              Item will instantly deploy to public views via HMR protocol.
-            </p>
+            Item will instantly deploy to public views via HMR protocol.
+          </p>
         </form>
 
         {/* INVENTORY ROSTER */}
@@ -292,16 +366,16 @@ export default function AdminDashboard() {
                     <p className="text-gray-500 text-[10px] font-bold">RM {item.price.toFixed(2)} // ID: {item.id}</p>
                   </div>
                 </div>
-                
+
                 <div className="flex gap-4 w-full md:w-auto shrink-0">
-                  <button 
-                    onClick={() => handleEdit(item)} 
+                  <button
+                    onClick={() => handleEdit(item)}
                     className="flex-1 md:flex-none border border-gray-700 text-white px-6 py-3 font-black text-[10px] uppercase tracking-widest hover:bg-blue-600 hover:border-blue-600 transition-all flex justify-center items-center gap-2"
                   >
                     <Edit3 size={14} /> Edit
                   </button>
-                  <button 
-                    onClick={() => handleDelete(item.id)} 
+                  <button
+                    onClick={() => handleDelete(item.id)}
                     className="flex-1 md:flex-none border border-red-900/50 text-red-500 px-6 py-3 font-black text-[10px] uppercase tracking-widest hover:bg-red-600 hover:text-white hover:border-red-600 transition-all flex justify-center items-center gap-2"
                   >
                     <Trash2 size={14} /> Delete

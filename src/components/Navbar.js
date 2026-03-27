@@ -72,9 +72,9 @@ export default function Navbar() {
 
           <div className="flex items-center gap-4 md:gap-6">
             {/* Search Icon (Desktop only for now) */}
-            <button className={`hidden md:block hover:text-white transition-colors ${isScrolled ? 'text-gray-500' : 'text-white/80 drop-shadow-md'}`}>
+            <Link href="/shop" className={`hidden md:block hover:text-white transition-colors ${isScrolled ? 'text-gray-500' : 'text-white/80 drop-shadow-md'}`}>
               <Search size={18} />
-            </button>
+            </Link>
 
             {itemCount > 0 && (
               <Link 

@@ -5,11 +5,15 @@
     "manufacturer": "Banpresto",
     "series": "Date A Live (Glitter & Glamours)",
     "price": 85,
-    "stock": 1,
+    "stock": 0,
     "scale": "1/7",
-    "image": "/uploads/kurumi_gng_bunny.png",
+    "image": "/uploads/1774585971297-GG_kurumi.png",
     "category": "Ready Stock",
-    "description": "✨ Item Highlights:\r\n\r\nCharacter: Kurumi Tokisaki\r\n\r\nSeries: Date A Live V\r\n\r\nBrand: Banpresto (Bandai Namco)\r\n\r\nCondition: 10/10 MISB (Mint in Sealed Box)\r\n\r\nAuthenticity: 100% Original Banpresto (Bandai Namco)\r\n\r\nSize: Approximately 22cm"
+    "description": "The alluring Kurumi Tokisaki graces the Glitter & Glamours line, perfectly captured with her signature heterochromia and charming bunny-inspired outfit.",
+    "dispatchCondition": "10/10 MISB (Mint in Sealed Box)",
+    "sealIntegrity": "Intact / Untampered",
+    "productSpecs": "ABS, PVC",
+    "authenticity": "Verified Authentic"
   },
   {
     "id": "1",
@@ -38,13 +42,17 @@
   {
     "id": "3",
     "name": "Rem - Original Ver.",
-    "manufacturer": "Taito",
+    "manufacturer": "FuRyu",
     "series": "Re:Zero",
     "price": 85,
     "stock": 0,
     "scale": "1/8",
-    "image": "/rem.jpg",
+    "image": "/uploads/1774592946275-rem.png",
     "category": "Ready Stock",
-    "description": "A beautiful prize figure of Rem from Re:Zero, perfect for any starter collection."
+    "description": "A beautiful prize figure of Rem from Re:Zero, perfect for any starter collection.",
+    "dispatchCondition": "9/10 MIB (Mint in Box - Opened but mint inside)",
+    "sealIntegrity": "Tampered for Inspection Only",
+    "productSpecs": "ABS, PVC",
+    "authenticity": "Verified Authentic"
   }
 ]

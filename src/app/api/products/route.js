@@ -45,6 +45,10 @@ export async function POST(req) {
       scale: formData.get('scale') || "1/7",
       image: imageUrl,
       category: formData.get('category') || "Ready Stock",
+      dispatchCondition: formData.get('dispatchCondition') || "10/10 MISB (Mint in Sealed Box)",
+      sealIntegrity: formData.get('sealIntegrity') || "Intact / Untampered",
+      productSpecs: formData.get('productSpecs') || "ABS, PVC",
+      authenticity: formData.get('authenticity') || "Verified Authentic",
       description: formData.get('description') || "Acquisition data unverified."
     };
 
@@ -69,7 +73,8 @@ export async function GET() {
     const fileContents = fs.readFileSync(filePath, 'utf8');
     return NextResponse.json(JSON.parse(fileContents));
   } catch (error) {
-    return NextResponse.json({ success: false, error: "Failed to read vault." }, { status: 500 });
+    console.error("GET Error:", error);
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
 
@@ -106,11 +111,15 @@ export async function PUT(req) {
       name: formData.get('name') || inventory[index].name,
       manufacturer: formData.get('manufacturer') || inventory[index].manufacturer || "Unknown Manufacturer",
       series: formData.get('series') || inventory[index].series,
-      price: parseFloat(formData.get('price')) || inventory[index].price,
-      stock: parseInt(formData.get('stock')) || inventory[index].stock,
+      price: formData.has('price') && formData.get('price') !== "" ? parseFloat(formData.get('price')) : inventory[index].price,
+      stock: formData.has('stock') && formData.get('stock') !== "" ? parseInt(formData.get('stock'), 10) : inventory[index].stock,
       scale: formData.get('scale') || inventory[index].scale,
       image: imageUrl,
       category: formData.get('category') || inventory[index].category,
+      dispatchCondition: formData.get('dispatchCondition') || inventory[index].dispatchCondition || "10/10 MISB (Mint in Sealed Box)",
+      sealIntegrity: formData.get('sealIntegrity') || inventory[index].sealIntegrity || "Intact / Untampered",
+      productSpecs: formData.get('productSpecs') || inventory[index].productSpecs || "ABS, PVC",
+      authenticity: formData.get('authenticity') || inventory[index].authenticity || "Verified Authentic",
       description: formData.get('description') || inventory[index].description
     };
 

@@ -171,7 +171,7 @@ export default function Home() {
             <div className="space-y-6 flex flex-col items-center md:items-start">
               <Lock size={48} className="text-white mb-2" strokeWidth={1} />
               <h3 className="text-2xl font-black text-white uppercase tracking-widest">Secure Transport</h3>
-              <p className="text-gray-500 text-sm leading-relaxed max-w-[250px]">Artifacts are armored in impact-resistant casing before dispatch. While we cannot command external courier fleets, our comms remain open 24/7 if an asset is compromised in transit.</p>
+              <p className="text-gray-500 text-sm leading-relaxed max-w-[250px]">Artifacts are armored in impact-resistant casing before dispatch. While we cannot command external courier fleets, our comms remain open if an asset is compromised in transit.</p>
             </div>
             <div className="space-y-6 flex flex-col items-center md:items-start">
               <Cpu size={48} className="text-blue-600 mb-2" strokeWidth={1} />

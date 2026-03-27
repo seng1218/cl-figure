@@ -11,22 +11,17 @@ export default function HeroSection({ onExplore }) {
   return (
     <section className="relative h-[90vh] w-full overflow-hidden bg-[#050505] flex items-center justify-center pt-20">
 
-      {/* BACKGROUND VIDEO WITH PARALLAX */}
-      <div className="absolute inset-0 z-0">
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          className="w-full h-full object-cover opacity-30 scale-110 mix-blend-luminosity"
-        >
-          <source
-            src="https://assets.mixkit.co/videos/preview/mixkit-futuristic-robot-arm-moving-fast-43750-large.mp4"
-            type="video/mp4"
-          />
-        </video>
+      {/* BACKGROUND VISUAL WITH PARALLAX */}
+      <div className="absolute inset-0 z-0 bg-[#050505]">
+        <motion.img
+          style={{ y: useTransform(scrollY, [0, 1000], [0, 300]) }}
+          src="/kurumi.jpg"
+          alt="Vault Artifact"
+          className="w-full h-full object-cover object-top opacity-20 scale-110 mix-blend-luminosity grayscale contrast-125"
+        />
         {/* Provocative harsh dark fade */}
         <div className="absolute inset-0 bg-gradient-to-b from-[#050505] via-transparent to-[#050505]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#050505_100%)]" />
       </div>
 
       {/* Infinite Scrolling Provocative Marquee */}

@@ -51,7 +51,7 @@ try {
 
 } catch (err) {
   console.error('\n❌ Build failed:', err.message);
-  process.exit(1);
+  process.exitCode = 1;
 } finally {
   // Always restore the API route file
   if (apiHidden && fs.existsSync(routeFileHidden)) {

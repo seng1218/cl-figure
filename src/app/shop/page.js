@@ -35,7 +35,9 @@ export default function ShopArchive() {
   };
 
   const filteredProducts = allProducts.filter(item => {
-    const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const term = searchTerm.toLowerCase();
+    const searchFields = [item.name, item.manufacturer, item.series].filter(Boolean);
+    const matchesSearch = searchFields.some(field => field.toLowerCase().includes(term));
     const matchesCategory = selectedCategory === "All" || item.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });

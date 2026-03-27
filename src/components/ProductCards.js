@@ -29,16 +29,22 @@ export default function ProductCard({ item, index, onAdd, alwaysColor = false })
         
         {/* Dark brutalist overlay */}
         <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center backdrop-blur-[2px] pointer-events-none">
-          <button 
-            onClick={(e) => {
-              e.preventDefault();
-              onAdd();
-            }}
-            className="w-24 h-24 bg-white rounded-full flex flex-col items-center justify-center text-black hover:bg-black hover:text-white border-2 border-transparent hover:border-white transition-all transform scale-50 group-hover:scale-100 duration-500 pointer-events-auto"
-          >
-            <Plus size={32} />
-            <span className="text-[9px] font-black uppercase mt-1 tracking-widest">Acquire</span>
-          </button>
+          {item.stock > 0 ? (
+            <button 
+              onClick={(e) => {
+                e.preventDefault();
+                onAdd();
+              }}
+              className="w-24 h-24 bg-white rounded-full flex flex-col items-center justify-center text-black hover:bg-black hover:text-white border-2 border-transparent hover:border-white transition-all transform scale-50 group-hover:scale-100 duration-500 pointer-events-auto"
+            >
+              <Plus size={32} />
+              <span className="text-[9px] font-black uppercase mt-1 tracking-widest">Acquire</span>
+            </button>
+          ) : (
+            <div className="w-24 h-24 bg-red-900/80 rounded-full flex flex-col items-center justify-center text-white border-2 border-red-500 transition-all transform scale-50 group-hover:scale-100 duration-500">
+              <span className="text-[10px] font-black uppercase tracking-widest text-center leading-tight">Sold Out</span>
+            </div>
+          )}
         </div>
       </Link>
 
