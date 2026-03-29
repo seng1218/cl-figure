@@ -32,7 +32,7 @@ export default function AdminDashboard() {
 
   const handleAuth = (e) => {
     e.preventDefault();
-    if (passcode === "CL00") {
+    if (passcode === process.env.NEXT_PUBLIC_ADMIN_PASSCODE) {
       setIsAuthenticated(true);
       setErrorMSG("");
     } else {
@@ -85,6 +85,7 @@ export default function AdminDashboard() {
 
       const res = await fetch('/api/products/', {
         method: editingId ? 'PUT' : 'POST',
+        headers: { 'X-Admin-Key': process.env.NEXT_PUBLIC_ADMIN_PASSCODE },
         body: data
       });
 
@@ -146,7 +147,7 @@ export default function AdminDashboard() {
     try {
       const res = await fetch('/api/products/', {
         method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'X-Admin-Key': process.env.NEXT_PUBLIC_ADMIN_PASSCODE },
         body: JSON.stringify({ id })
       });
       const data = await res.json();

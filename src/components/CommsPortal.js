@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 export default function CommsPortal() {
   const [isOpen, setIsOpen] = useState(false);
-  const whatsappNumber = "+60103581396"; // Placeholder, can be updated later
+  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP;
 
   return (
     <>

@@ -2,7 +2,14 @@ import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 
+function isAuthorized(req) {
+  return req.headers.get('x-admin-key') === process.env.ADMIN_SECRET;
+}
+
 export async function POST(req) {
+  if (!isAuthorized(req)) {
+    return NextResponse.json({ success: false, error: "Unauthorized." }, { status: 401 });
+  }
   try {
     const formData = await req.formData();
     const filePath = path.join(process.cwd(), 'src/data/inventory.json');
@@ -79,6 +86,9 @@ export async function GET() {
 }
 
 export async function PUT(req) {
+  if (!isAuthorized(req)) {
+    return NextResponse.json({ success: false, error: "Unauthorized." }, { status: 401 });
+  }
   try {
     const formData = await req.formData();
     const idToEdit = formData.get('id');
@@ -134,6 +144,9 @@ export async function PUT(req) {
 }
 
 export async function DELETE(req) {
+  if (!isAuthorized(req)) {
+    return NextResponse.json({ success: false, error: "Unauthorized." }, { status: 401 });
+  }
   try {
     const body = await req.json();
     const idToDelete = body.id;
