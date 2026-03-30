@@ -1,0 +1,22 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "cl-figure",
+  "compatibility_date": "2025-09-27",
+  "observability": {
+    "enabled": true
+  },
+  "compatibility_flags": ["nodejs_compat"],
+  "kv_namespaces": [
+    {
+      "binding": "INVENTORY_KV",
+      "id": "20070842a5ff4f25b22dccc08b3631f8",
+      "preview_id": "20070842a5ff4f25b22dccc08b3631f8"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "UPLOADS_BUCKET",
+      "bucket_name": "cl-figure-uploads"
+    }
+  ]
+}

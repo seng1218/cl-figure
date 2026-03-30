@@ -7,6 +7,8 @@
     "build": "next build",
     "start": "next start -H 0.0.0.0 -p 3000",
     "lint": "next lint",
+    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "build:mobile": "node scripts/build-mobile.mjs",
     "cap:sync": "npx cap sync android",
     "cap:open": "npx cap open android"
@@ -15,6 +17,7 @@
     "@capacitor/android": "^8.2.0",
     "@capacitor/cli": "^8.2.0",
     "@capacitor/core": "^8.2.0",
+    "@opennextjs/cloudflare": "^1.18.0",
     "autoprefixer": "^10.4.27",
     "canvas-confetti": "^1.9.4",
     "framer-motion": "^12.0.0",
