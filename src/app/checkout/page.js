@@ -36,6 +36,7 @@ export default function CheckoutPage() {
   const [cardNumber, setCardNumber] = useState("");
   const [expiry, setExpiry] = useState("");
   const [timeLeft, setTimeLeft] = useState(300); // 5 Minutes
+  const [paymentMethod, setPaymentMethod] = useState('card'); // 'card' | 'fpx' | 'tng' | 'grabpay'
   
   const certificateRef = useRef(null);
 
@@ -91,6 +92,15 @@ export default function CheckoutPage() {
     if (firstDigit === '4') return 'Visa';
     if (firstDigit === '5') return 'Mastercard';
     return 'Unknown';
+  };
+
+  const handleRedirectPayment = () => {
+    setIsProcessing(true);
+    setTimeout(() => {
+      setIsSuccess(true);
+      setIsProcessing(false);
+      clearCart();
+    }, 2000);
   };
 
   const handlePayment = (e) => {
@@ -251,10 +261,10 @@ export default function CheckoutPage() {
             </AnimatePresence>
 
             <div className="pt-6 mt-4 border-t border-gray-100 space-y-3">
-              <div className="flex justify-between text-[10px] font-black uppercase text-gray-400"><span>Vault Subtotal</span><span>RM {cartTotal.toFixed(2)}</span></div>
+              <div className="flex justify-between text-[10px] font-black uppercase text-gray-400"><span>Subtotal</span><span>RM {cartTotal.toFixed(2)}</span></div>
               <div className="flex justify-between text-[10px] font-black uppercase text-gray-400"><span>Shipping</span><span>{shippingFee === 0 ? "FREE" : `RM ${shippingFee.toFixed(2)}`}</span></div>
               <div className="flex justify-between items-center pt-4">
-                <span className="text-gray-900 font-black uppercase text-[10px]">Total Acquisition</span>
+                <span className="text-gray-900 font-black uppercase text-[10px]">Order Total</span>
                 <span className="text-4xl font-black text-gray-900 italic tracking-tighter">RM {grandTotal.toFixed(2)}</span>
               </div>
             </div>
@@ -263,59 +273,102 @@ export default function CheckoutPage() {
 
         {/* RIGHT SIDE: PAYMENT */}
         <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-gray-900 rounded-[3.5rem] p-10 text-white shadow-2xl h-fit">
-          <div className="flex items-center gap-4 mb-10">
-            <div className="p-4 bg-blue-600 rounded-3xl shadow-lg shadow-blue-500/20"><CreditCard size={24} /></div>
-            <div><h2 className="text-2xl font-black tracking-tight">Vault Payment</h2><p className="text-gray-500 text-[10px] font-bold uppercase tracking-[0.2em]">Encrypted Session</p></div>
+          <div className="mb-8">
+            <div className="flex items-center gap-4 mb-6">
+              <div className="p-4 bg-blue-600 rounded-3xl shadow-lg shadow-blue-500/20"><CreditCard size={24} /></div>
+              <div><h2 className="text-2xl font-black tracking-tight">Payment</h2><p className="text-gray-500 text-[10px] font-bold uppercase tracking-[0.2em]">Secure Checkout</p></div>
+            </div>
+            <div className="grid grid-cols-4 gap-2">
+              {[
+                { id: 'card', label: 'Card' },
+                { id: 'fpx', label: 'FPX' },
+                { id: 'tng', label: "TnG" },
+                { id: 'grabpay', label: 'Grab' },
+              ].map(method => (
+                <button
+                  key={method.id}
+                  onClick={() => setPaymentMethod(method.id)}
+                  className={`py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all ${paymentMethod === method.id ? 'bg-blue-600 text-white' : 'bg-white/5 text-gray-400 hover:text-white'}`}
+                >
+                  {method.label}
+                </button>
+              ))}
+            </div>
           </div>
 
-          <motion.form 
-            className="space-y-6" 
-            onSubmit={handlePayment}
-            animate={isShaking ? { x: [-10, 10, -10, 10, 0] } : { x: 0 }}
-            transition={{ duration: 0.4 }}
-          >
-            {/* RESTORED NAME INPUT */}
-            <div className="space-y-2">
-              <label className="text-[9px] uppercase font-black text-gray-500 ml-4">Name on Card</label>
-              <input 
-                required 
-                type="text" 
-                placeholder="JOHN DOE" 
-                value={cardName} 
-                onChange={(e) => setCardName(e.target.value.toUpperCase())}
-                className="w-full bg-white/5 border border-white/10 p-5 rounded-[1.5rem] outline-none font-mono uppercase transition-all focus:border-blue-500" 
-              />
-            </div>
-
-            <div className="space-y-2 relative">
-              <div className="flex justify-between items-center ml-4 mr-4">
-                <label className="text-[9px] uppercase font-black text-gray-500">Card Number</label>
-                {getCardType() !== 'Unknown' && (
-                  <span className="text-[10px] font-black uppercase tracking-widest text-blue-400">{getCardType()}</span>
-                )}
-              </div>
-              <input 
-                required type="text" 
-                placeholder="0000 0000 0000 0000" 
-                value={cardNumber} 
-                onChange={handleCardChange}
-                className={`w-full bg-white/5 border p-5 rounded-[1.5rem] outline-none transition-all font-mono ${isCardValid ? "border-blue-500" : "border-white/10"}`} 
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-6">
-              <input required type="text" placeholder="MM/YY" value={expiry} onChange={handleExpiryChange} className="bg-white/5 border border-white/10 p-5 rounded-[1.5rem] outline-none font-mono" />
-              <input required type="password" placeholder="CVV" maxLength="3" className="bg-white/5 border border-white/10 p-5 rounded-[1.5rem] outline-none font-mono" />
-            </div>
-
-            <motion.button 
-              type="submit"
-              disabled={isProcessing} 
-              className={`w-full py-6 rounded-[2rem] font-black text-xs uppercase tracking-[0.3em] mt-6 flex items-center justify-center gap-3 transition-all ${isCardValid && cardName.trim() !== "" ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30" : "bg-white/5 text-white/20"}`}
+          {paymentMethod === 'card' ? (
+            <motion.form
+              className="space-y-6"
+              onSubmit={handlePayment}
+              animate={isShaking ? { x: [-10, 10, -10, 10, 0] } : { x: 0 }}
+              transition={{ duration: 0.4 }}
             >
-              {isProcessing ? "Authorizing..." : <><Lock size={16} /> Pay RM {grandTotal.toFixed(2)}</>}
-            </motion.button>
-          </motion.form>
+              <div className="space-y-2">
+                <label className="text-[9px] uppercase font-black text-gray-500 ml-4">Name on Card</label>
+                <input
+                  required
+                  type="text"
+                  placeholder="JOHN DOE"
+                  value={cardName}
+                  onChange={(e) => setCardName(e.target.value.toUpperCase())}
+                  className="w-full bg-white/5 border border-white/10 p-5 rounded-[1.5rem] outline-none font-mono uppercase transition-all focus:border-blue-500"
+                />
+              </div>
+
+              <div className="space-y-2 relative">
+                <div className="flex justify-between items-center ml-4 mr-4">
+                  <label className="text-[9px] uppercase font-black text-gray-500">Card Number</label>
+                  {getCardType() !== 'Unknown' && (
+                    <span className="text-[10px] font-black uppercase tracking-widest text-blue-400">{getCardType()}</span>
+                  )}
+                </div>
+                <input
+                  required type="text"
+                  placeholder="0000 0000 0000 0000"
+                  value={cardNumber}
+                  onChange={handleCardChange}
+                  className={`w-full bg-white/5 border p-5 rounded-[1.5rem] outline-none transition-all font-mono ${isCardValid ? "border-blue-500" : "border-white/10"}`}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-6">
+                <input required type="text" placeholder="MM/YY" value={expiry} onChange={handleExpiryChange} className="bg-white/5 border border-white/10 p-5 rounded-[1.5rem] outline-none font-mono" />
+                <input required type="password" placeholder="CVV" maxLength="3" className="bg-white/5 border border-white/10 p-5 rounded-[1.5rem] outline-none font-mono" />
+              </div>
+
+              <motion.button
+                type="submit"
+                disabled={isProcessing}
+                className={`w-full py-6 rounded-[2rem] font-black text-xs uppercase tracking-[0.3em] mt-6 flex items-center justify-center gap-3 transition-all ${isCardValid && cardName.trim() !== "" ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30" : "bg-white/5 text-white/20"}`}
+              >
+                {isProcessing ? "Authorizing..." : <><Lock size={16} /> Pay RM {grandTotal.toFixed(2)}</>}
+              </motion.button>
+            </motion.form>
+          ) : (
+            <div className="space-y-8 text-center py-6">
+              <div className="space-y-3">
+                <p className="text-4xl font-black text-white">
+                  {paymentMethod === 'fpx' && 'FPX Online Banking'}
+                  {paymentMethod === 'tng' && "Touch 'n Go eWallet"}
+                  {paymentMethod === 'grabpay' && 'GrabPay'}
+                </p>
+                <p className="text-gray-400 text-sm leading-relaxed max-w-xs mx-auto">
+                  You will be redirected to{' '}
+                  {paymentMethod === 'fpx' && 'your bank\'s secure portal'}
+                  {paymentMethod === 'tng' && 'Touch \'n Go eWallet'}
+                  {paymentMethod === 'grabpay' && 'GrabPay'}
+                  {' '}to complete your payment of <span className="text-white font-black">RM {grandTotal.toFixed(2)}</span> securely.
+                </p>
+              </div>
+              <button
+                onClick={handleRedirectPayment}
+                disabled={isProcessing}
+                className="w-full py-6 rounded-[2rem] bg-blue-600 text-white font-black text-xs uppercase tracking-[0.3em] flex items-center justify-center gap-3 hover:bg-blue-500 transition-all shadow-lg shadow-blue-500/30"
+              >
+                {isProcessing ? 'Redirecting...' : <><Lock size={16} /> Confirm &amp; Pay RM {grandTotal.toFixed(2)}</>}
+              </button>
+            </div>
+          )}
         </motion.section>
 
       </div>

@@ -29,6 +29,7 @@ export default function AdminDashboard() {
     description: ""
   });
   const [imageFile, setImageFile] = useState(null);
+  const [additionalImages, setAdditionalImages] = useState([]);
 
   const handleAuth = (e) => {
     e.preventDefault();
@@ -78,6 +79,7 @@ export default function AdminDashboard() {
       if (imageFile) {
         data.append('image', imageFile);
       }
+      additionalImages.forEach(f => data.append('additionalImages', f));
 
       if (editingId) {
         data.append('id', editingId);
@@ -98,10 +100,13 @@ export default function AdminDashboard() {
           name: "", manufacturer: "", series: "", price: "", stock: "1", scale: "1/7", category: "Ready Stock", dispatchCondition: "10/10 MISB (Mint in Sealed Box)", sealIntegrity: "Intact / Untampered", productSpecs: "ABS, PVC", authenticity: "Verified Authentic", description: ""
         });
         setImageFile(null);
+        setAdditionalImages([]);
         setEditingId(null);
-        // Reset file input value manually
+        // Reset file input values
         const fileInput = document.getElementById('image-upload');
         if (fileInput) fileInput.value = '';
+        const extraInput = document.getElementById('extra-images-upload');
+        if (extraInput) extraInput.value = '';
 
         fetchInventory(); // Refresh the list
         setTimeout(() => setSuccessStatus(false), 3000);
@@ -313,6 +318,24 @@ export default function AdminDashboard() {
                 required={!editingId}
                 className="w-full bg-[#0a0a0a] border border-gray-800 text-white p-3 font-bold focus:outline-none focus:border-blue-600 transition-colors file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-[10px] file:font-black file:uppercase file:tracking-widest file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer"
               />
+            </div>
+
+            {/* Additional Images */}
+            <div className="space-y-2 md:col-span-2">
+              <label className="text-[10px] text-gray-400 font-black uppercase tracking-widest">
+                Additional Images <span className="text-gray-600 normal-case ml-2">(Optional — front, back, side, detail)</span>
+              </label>
+              <input
+                id="extra-images-upload"
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={(e) => setAdditionalImages(Array.from(e.target.files))}
+                className="w-full bg-[#0a0a0a] border border-gray-800 text-white p-3 font-bold focus:outline-none focus:border-blue-600 transition-colors file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-[10px] file:font-black file:uppercase file:tracking-widest file:bg-gray-700 file:text-white hover:file:bg-gray-600 cursor-pointer"
+              />
+              {additionalImages.length > 0 && (
+                <p className="text-gray-500 text-[10px] font-bold">{additionalImages.length} additional image{additionalImages.length > 1 ? 's' : ''} selected</p>
+              )}
             </div>
           </div>
 

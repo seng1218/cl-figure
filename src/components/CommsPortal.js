@@ -29,7 +29,7 @@ export default function CommsPortal() {
                 </button>
               </div>
               <p className="text-gray-400 text-sm leading-relaxed mb-6">
-                System operatives are standing by. For inquiries regarding Vault inventory, shipping protocols, or asset authentication, initiate comms.
+                Our team is standing by. For inquiries regarding our catalog, shipping, or product authenticity — reach out anytime.
               </p>
               <a
                 href={`https://wa.me/${whatsappNumber}`}

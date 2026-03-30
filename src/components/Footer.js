@@ -10,7 +10,7 @@ export default function Footer() {
           <Network size={14} />
         </Link>
         <p className="text-gray-600 font-black text-[10px] uppercase tracking-[0.3em]">
-          &copy; {new Date().getFullYear()} Vault 6 Studios. ALL ASSETS SECURED.
+          &copy; {new Date().getFullYear()} Vault 6 Studios. ALL RIGHTS RESERVED.
         </p>
       </div>
     </footer>

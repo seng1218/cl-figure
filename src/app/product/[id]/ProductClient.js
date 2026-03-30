@@ -27,6 +27,7 @@ export default function ProductDetail() {
   const [showToast, setShowToast] = useState(false);
   const [buttonState, setButtonState] = useState('idle'); // idle, loading, secured
   const [activeTab, setActiveTab] = useState('overview'); // overview, specs
+  const [selectedIdx, setSelectedIdx] = useState(0);
 
   const product = allProducts.find((p) => p.id.toString() === id);
 
@@ -121,32 +122,53 @@ export default function ProductDetail() {
             {/* Dynamic Ambient Aura */}
             <div className="absolute inset-0 bg-blue-500/10 blur-[100px] rounded-full scale-110 -z-10 animate-pulse" />
 
-            <motion.div
-              ref={imageRef}
-              onMouseMove={handleMouseMove}
-              onMouseLeave={handleMouseLeave}
-              style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-              animate={{ y: [0, -10, 0] }}
-              transition={{ y: { repeat: Infinity, duration: 4, ease: "easeInOut" } }}
-              className="aspect-[4/5] rounded-[3rem] bg-[#111] border border-gray-800 shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative cursor-pointer"
-            >
-              {/* Inner container to crop image correctly with 3D transform */}
-              <motion.div className="w-full h-full rounded-[3rem] overflow-hidden absolute inset-0">
-                <motion.img
-                  src={product.image}
-                  style={{ transform: "translateZ(30px) scale(1.05)" }}
-                  className="w-full h-full object-cover origin-center"
-                  alt={product.name}
-                />
-              </motion.div>
+            {(() => {
+              const images = product.images?.length ? product.images : [product.image];
+              return (
+                <>
+                  <motion.div
+                    ref={imageRef}
+                    onMouseMove={handleMouseMove}
+                    onMouseLeave={handleMouseLeave}
+                    style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
+                    animate={{ y: [0, -10, 0] }}
+                    transition={{ y: { repeat: Infinity, duration: 4, ease: "easeInOut" } }}
+                    className="aspect-[4/5] rounded-[3rem] bg-[#111] border border-gray-800 shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative cursor-pointer"
+                  >
+                    <motion.div className="w-full h-full rounded-[3rem] overflow-hidden absolute inset-0">
+                      <motion.img
+                        key={selectedIdx}
+                        src={images[selectedIdx]}
+                        style={{ transform: "translateZ(30px) scale(1.05)" }}
+                        className="w-full h-full object-cover origin-center"
+                        alt={product.name}
+                      />
+                    </motion.div>
 
-              <div
-                style={{ transform: "translateZ(80px)" }}
-                className="absolute top-8 left-8 bg-black/80 backdrop-blur-md text-white px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest shadow-2xl pointer-events-none"
-              >
-                Limited Edition
-              </div>
-            </motion.div>
+                    <div
+                      style={{ transform: "translateZ(80px)" }}
+                      className="absolute top-8 left-8 bg-black/80 backdrop-blur-md text-white px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest shadow-2xl pointer-events-none"
+                    >
+                      Curated
+                    </div>
+                  </motion.div>
+
+                  {images.length > 1 && (
+                    <div className="flex gap-3 mt-4 overflow-x-auto pb-1">
+                      {images.map((src, i) => (
+                        <button
+                          key={i}
+                          onClick={() => setSelectedIdx(i)}
+                          className={`shrink-0 w-16 h-16 rounded-2xl overflow-hidden border-2 transition-all ${i === selectedIdx ? 'border-blue-500 opacity-100' : 'border-gray-800 opacity-50 hover:opacity-80'}`}
+                        >
+                          <img src={src} alt={`${product.name} view ${i + 1}`} className="w-full h-full object-cover" />
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </>
+              );
+            })()}
           </motion.div>
 
           {/* RIGHT: Product Intel */}
@@ -167,7 +189,7 @@ export default function ProductDetail() {
                   {product.stock <= 0 ? 'Out of Stock' : product.category}
                 </span>
                 <span className={`px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.2em] border ${product.stock > 0 ? 'text-gray-400 border-gray-800 bg-gray-900/50' : 'text-red-500 border-red-900/50 bg-red-900/10'}`}>
-                  {product.stock > 0 ? `${product.stock} IN VAULT` : 'NO STOCK'}
+                  {product.stock > 0 ? `${product.stock} IN STOCK` : 'NO STOCK'}
                 </span>
               </div>
             </section>
@@ -215,7 +237,7 @@ export default function ProductDetail() {
 
               <div className="flex items-center gap-3 mb-6 relative z-10">
                 <div className="h-2 w-2 rounded-full bg-blue-500 animate-pulse shadow-[0_0_10px_rgba(37,99,235,0.8)]" />
-                <h3 className="text-[10px] md:text-xs font-black text-white uppercase tracking-[0.3em]">Asset Authentication Registry</h3>
+                <h3 className="text-[10px] md:text-xs font-black text-white uppercase tracking-[0.3em]">Authentication Details</h3>
               </div>
 
               <div className="space-y-4 relative z-10">

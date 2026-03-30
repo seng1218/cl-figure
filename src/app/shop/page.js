@@ -48,6 +48,12 @@ export default function ShopArchive() {
     return matchesSearch && matchesCategory;
   });
 
+  const sortedProducts = [...filteredProducts].sort((a, b) => {
+    const aOut = a.stock <= 0 ? 1 : 0;
+    const bOut = b.stock <= 0 ? 1 : 0;
+    return aOut - bOut;
+  });
+
   return (
     <main className="min-h-screen bg-[#050505] pt-32 pb-24 relative overflow-x-hidden">
       
@@ -67,7 +73,7 @@ export default function ShopArchive() {
             animate={{ opacity: 1, y: 0 }}
             className="text-5xl md:text-8xl font-black text-white italic tracking-tighter"
           >
-            THE ARCHIVE.
+            THE COLLECTION.
           </motion.h1>
           <motion.p 
             initial={{ opacity: 0 }}
@@ -75,7 +81,7 @@ export default function ShopArchive() {
             transition={{ delay: 0.2 }}
             className="text-gray-500 text-[10px] md:text-xs font-black uppercase tracking-[0.5em] mt-6"
           >
-            Full Vault Inventory // S-Tier Database
+            Full Catalog // Curated Collectibles
           </motion.p>
         </div>
 
@@ -87,18 +93,18 @@ export default function ShopArchive() {
 
         {/* The Grid */}
         <section className="columns-1 sm:columns-2 lg:columns-3 gap-8 space-y-8 mt-12">
-          {filteredProducts.map((item, index) => (
-            <ProductCards 
-              key={item.id} 
-              item={item} 
-              index={index} 
+          {sortedProducts.map((item, index) => (
+            <ProductCards
+              key={item.id}
+              item={item}
+              index={index}
               onAdd={() => handleAddToVault(item)}
               alwaysColor={true}
             />
           ))}
-          {filteredProducts.length === 0 && (
+          {sortedProducts.length === 0 && (
             <div className="col-span-full py-20 text-center">
-              <p className="text-gray-600 font-black uppercase tracking-widest">No artifacts match your query.</p>
+              <p className="text-gray-600 font-black uppercase tracking-widest">No figures match your search.</p>
             </div>
           )}
         </section>

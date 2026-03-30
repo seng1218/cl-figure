@@ -91,7 +91,7 @@ export default function Home() {
           </div>
           <div className="text-center mt-4">
             <span className="text-[9px] uppercase font-black tracking-[0.3em] text-blue-600/60">
-              Sourcing Authentic Artifacts · Globally Verified
+              Curated Collectibles · Verified Authentic
             </span>
           </div>
         </section>
@@ -112,7 +112,7 @@ export default function Home() {
                 </p>
                 <div className="flex items-center gap-6 pt-6">
                   <Link href={`/product/${grailProduct.id}`} className="bg-white text-black px-10 py-5 font-black text-[10px] uppercase tracking-[0.4em] hover:bg-blue-600 hover:text-white transition-all flex items-center gap-3 group border border-transparent hover:shadow-[0_0_30px_rgba(37,99,235,0.5)]">
-                    Inspect Artifact <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                    View Details <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
                   </Link>
                   <span className="text-white font-black italic text-2xl">RM {grailProduct.price.toFixed(2)}</span>
                 </div>
@@ -138,7 +138,7 @@ export default function Home() {
             </div>
             {/* We fake a link to "/shop" since they KIV'd the dedicated page */}
             <Link href="/shop" className="text-blue-500 hover:text-white text-[10px] font-black uppercase tracking-[0.3em] transition-colors border-b border-blue-500/30 hover:border-white pb-1 flex items-center gap-2">
-              View All Archives <ArrowRight size={12} />
+              Browse Collection <ArrowRight size={12} />
             </Link>
           </div>
 
@@ -166,17 +166,17 @@ export default function Home() {
             <div className="space-y-6 flex flex-col items-center md:items-start">
               <ShieldCheck size={48} className="text-blue-600 mb-2" strokeWidth={1} />
               <h3 className="text-2xl font-black text-white uppercase tracking-widest">100% Verified</h3>
-              <p className="text-gray-500 text-sm leading-relaxed max-w-[250px]">No bootlegs. No recasts. Every item is cross-referenced with manufacturer cryptography before entering the Vault.</p>
+              <p className="text-gray-500 text-sm leading-relaxed max-w-[250px]">No bootlegs. No recasts. Every item is verified against manufacturer records before entering our catalog.</p>
             </div>
             <div className="space-y-6 flex flex-col items-center md:items-start">
               <Lock size={48} className="text-white mb-2" strokeWidth={1} />
               <h3 className="text-2xl font-black text-white uppercase tracking-widest">Secure Transport</h3>
-              <p className="text-gray-500 text-sm leading-relaxed max-w-[250px]">Artifacts are armored in impact-resistant casing before dispatch. While we cannot command external courier fleets, our comms remain open if an asset is compromised in transit.</p>
+              <p className="text-gray-500 text-sm leading-relaxed max-w-[250px]">Figures are packed in impact-resistant casing before dispatch. While we cannot control external couriers, we remain reachable if an item is damaged in transit.</p>
             </div>
             <div className="space-y-6 flex flex-col items-center md:items-start">
               <Cpu size={48} className="text-blue-600 mb-2" strokeWidth={1} />
-              <h3 className="text-2xl font-black text-white uppercase tracking-widest">Asset Tracking</h3>
-              <p className="text-gray-500 text-sm leading-relaxed max-w-[250px]">Your collection portfolio is digitized. Track provenance and estimated market value seamlessly within your dashboard.</p>
+              <h3 className="text-2xl font-black text-white uppercase tracking-widest">Order Tracking</h3>
+              <p className="text-gray-500 text-sm leading-relaxed max-w-[250px]">Your order history is digitized. Track your purchases and collection seamlessly within your dashboard.</p>
             </div>
           </div>
         </section>
@@ -187,10 +187,10 @@ export default function Home() {
           <div className="relative z-10">
             <h2 className="text-4xl md:text-6xl font-black text-white italic tracking-tighter mb-6 relative inline-block">
               JOIN THE SYNDICATE.
-              <span className="absolute -top-6 -right-10 text-[10px] bg-blue-600 text-white px-3 py-1 rounded-full font-black uppercase tracking-widest not-italic">Encrypted</span>
+              <span className="absolute -top-6 -right-10 text-[10px] bg-blue-600 text-white px-3 py-1 rounded-full font-black uppercase tracking-widest not-italic">Secured</span>
             </h2>
             <p className="text-gray-500 text-sm md:text-base mb-12 max-w-lg mx-auto leading-relaxed">
-              The highest-tier drops never make it to the public floor. Submit your biometric tag (e-mail) to gain exclusive early access to restricted archives.
+              The highest-tier drops go fast. Submit your email to get early access to new drops before they go public.
             </p>
 
             {isSyndicateJoined ? (
@@ -205,7 +205,7 @@ export default function Home() {
               <form className="flex flex-col md:flex-row gap-4 max-w-2xl mx-auto" onSubmit={handleSyndicateSubmit}>
                 <input
                   type="email"
-                  placeholder="Enter encrypted comms..."
+                  placeholder="Enter your email address..."
                   className="flex-grow bg-[#050505] border border-gray-700 text-white px-8 py-5 text-[10px] md:text-xs uppercase font-black tracking-widest focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-all placeholder:text-gray-700"
                   required
                 />

@@ -60,7 +60,7 @@ export default function Navbar() {
           {/* Desktop Nav Links */}
           <div className={`hidden md:flex items-center gap-8 ${isScrolled ? 'text-gray-400' : 'text-gray-200 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]'}`}>
             <Link href="/shop" className="text-[10px] uppercase font-black tracking-[0.2em] hover:text-white transition-colors">
-              Archives
+              Collection
             </Link>
             <Link href="/#ethos" className="text-[10px] uppercase font-black tracking-[0.2em] hover:text-white transition-colors">
               Ethos
@@ -154,7 +154,7 @@ export default function Navbar() {
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="text-4xl font-black text-white uppercase italic tracking-tighter hover:text-blue-500 transition-colors"
               >
-                Archives
+                Collection
               </Link>
               <Link
                 href="/#ethos"
