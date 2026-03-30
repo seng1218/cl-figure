@@ -11,7 +11,8 @@ async function saveFile(file, uploadDir) {
   const buffer = Buffer.from(bytes);
   if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
   const safeFilename = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
-  const filename = `${Date.now()}-${safeFilename}`;
+  const uid = Math.random().toString(36).substring(2, 8);
+  const filename = `${Date.now()}-${uid}-${safeFilename}`;
   fs.writeFileSync(path.join(uploadDir, filename), buffer);
   return `/uploads/${filename}`;
 }
