@@ -31,14 +31,22 @@ export default function AdminDashboard() {
   const [imageFile, setImageFile] = useState(null);
   const [additionalImages, setAdditionalImages] = useState([]);
 
-  const handleAuth = (e) => {
+  const handleAuth = async (e) => {
     e.preventDefault();
-    if (passcode === process.env.NEXT_PUBLIC_ADMIN_PASSCODE) {
-      setIsAuthenticated(true);
-      setErrorMSG("");
-    } else {
-      setErrorMSG("Invalid biometrics. Access denied.");
-      setPasscode("");
+    try {
+      const res = await fetch('/api/auth/', {
+        method: 'POST',
+        headers: { 'x-admin-key': passcode }
+      });
+      if (res.ok) {
+        setIsAuthenticated(true);
+        setErrorMSG("");
+      } else {
+        setErrorMSG("Invalid biometrics. Access denied.");
+        setPasscode("");
+      }
+    } catch {
+      setErrorMSG("Connection error. Try again.");
     }
   };
 
@@ -87,7 +95,7 @@ export default function AdminDashboard() {
 
       const res = await fetch('/api/products/', {
         method: editingId ? 'PUT' : 'POST',
-        headers: { 'X-Admin-Key': process.env.NEXT_PUBLIC_ADMIN_PASSCODE },
+        headers: { 'x-admin-key': passcode },
         body: data
       });
 
@@ -151,7 +159,7 @@ export default function AdminDashboard() {
     try {
       const res = await fetch('/api/products/', {
         method: 'DELETE',
-        headers: { 'Content-Type': 'application/json', 'X-Admin-Key': process.env.NEXT_PUBLIC_ADMIN_PASSCODE },
+        headers: { 'Content-Type': 'application/json', 'x-admin-key': passcode },
         body: JSON.stringify({ id })
       });
       const data = await res.json();
