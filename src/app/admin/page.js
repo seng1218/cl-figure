@@ -102,7 +102,6 @@ export default function AdminDashboard() {
         setImageFile(null);
         setAdditionalImages([]);
         setEditingId(null);
-        // Reset file input values
         const fileInput = document.getElementById('image-upload');
         if (fileInput) fileInput.value = '';
         const extraInput = document.getElementById('extra-images-upload');

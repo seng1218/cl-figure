@@ -8,7 +8,9 @@
     "stock": 1,
     "scale": "1/7",
     "image": "/uploads/1774605147469-kurumi_tux.png",
-    "images": ["/uploads/1774605147469-kurumi_tux.png"],
+    "images": [
+      "/uploads/1774605147469-kurumi_tux.png"
+    ],
     "category": "Ready Stock",
     "dispatchCondition": "8/10 Displayed Mint (Displayed, mint condition)",
     "sealIntegrity": "Tampered for Display",
@@ -25,7 +27,9 @@
     "stock": 1,
     "scale": "1/7",
     "image": "/uploads/1774604298269-kurumi_1.png",
-    "images": ["/uploads/1774604298269-kurumi_1.png"],
+    "images": [
+      "/uploads/1774604298269-kurumi_1.png"
+    ],
     "category": "Ready Stock",
     "dispatchCondition": "8/10 Displayed Mint (Displayed, mint condition)",
     "sealIntegrity": "Tampered for Display",
@@ -42,7 +46,9 @@
     "stock": 2,
     "scale": "1/4",
     "image": "/uploads/1774604326590-biya-yuna.png",
-    "images": ["/uploads/1774604326590-biya-yuna.png"],
+    "images": [
+      "/uploads/1774604326590-biya-yuna.png"
+    ],
     "category": "Ready Stock",
     "dispatchCondition": "10/10 MISB (Mint in Sealed Box)",
     "sealIntegrity": "Intact / Untampered",
@@ -59,7 +65,9 @@
     "stock": 1,
     "scale": "1/7",
     "image": "/uploads/1774604382857-super-sonico-waiter.png",
-    "images": ["/uploads/1774604382857-super-sonico-waiter.png"],
+    "images": [
+      "/uploads/1774604382857-super-sonico-waiter.png"
+    ],
     "category": "Ready Stock",
     "dispatchCondition": "9/10 MIB (Mint in Box - Opened but mint inside)",
     "sealIntegrity": "Tampered for Inspection Only",
@@ -76,7 +84,9 @@
     "stock": 1,
     "scale": "1/7",
     "image": "/uploads/1774604407729-megumi.png",
-    "images": ["/uploads/1774604407729-megumi.png"],
+    "images": [
+      "/uploads/1774604407729-megumi.png"
+    ],
     "category": "Ready Stock",
     "dispatchCondition": "9/10 MIB (Mint in Box - Opened but mint inside)",
     "sealIntegrity": "Tampered for Inspection Only",
@@ -93,7 +103,9 @@
     "stock": 1,
     "scale": "1/7",
     "image": "/uploads/1774596346971-bloodfallen.png",
-    "images": ["/uploads/1774596346971-bloodfallen.png"],
+    "images": [
+      "/uploads/1774596346971-bloodfallen.png"
+    ],
     "category": "Ready Stock",
     "dispatchCondition": "10/10 MISB (Mint in Sealed Box)",
     "sealIntegrity": "Intact / Untampered",
@@ -110,7 +122,9 @@
     "stock": 1,
     "scale": "1/7",
     "image": "/uploads/1774595963136-haruhi_suzumiya.png",
-    "images": ["/uploads/1774595963136-haruhi_suzumiya.png"],
+    "images": [
+      "/uploads/1774595963136-haruhi_suzumiya.png"
+    ],
     "category": "Ready Stock",
     "dispatchCondition": "9/10 MIB (Mint in Box - Opened but mint inside)",
     "sealIntegrity": "Tampered for Inspection Only",
@@ -126,8 +140,10 @@
     "price": 85,
     "stock": 2,
     "scale": "1/7",
-    "image": "/uploads/1774585971297-GG_kurumi.png",
-    "images": ["/uploads/1774585971297-GG_kurumi.png"],
+    "image": "/uploads/1774840825185-GG_kurumi.png",
+    "images": [
+      "/uploads/1774840825185-GG_kurumi.png"
+    ],
     "category": "Ready Stock",
     "description": "The alluring Kurumi Tokisaki graces the Glitter & Glamours line, perfectly captured with her signature heterochromia and charming bunny-inspired outfit.",
     "dispatchCondition": "10/10 MISB (Mint in Sealed Box)",
@@ -144,7 +160,9 @@
     "stock": 2,
     "scale": "30cm",
     "image": "/uploads/1774604461442-kurumi.png",
-    "images": ["/uploads/1774604461442-kurumi.png"],
+    "images": [
+      "/uploads/1774604461442-kurumi.png"
+    ],
     "category": "Ready Stock",
     "description": "Authentic BiCute Bunnies figure featuring Kurumi Tokisaki in a stunning red bunny outfit with real fabric tights.",
     "dispatchCondition": "10/10 MISB (Mint in Sealed Box)",
@@ -161,7 +179,9 @@
     "stock": 1,
     "scale": "28cm",
     "image": "/super sonico waiters.jpg",
-    "images": ["/super sonico waiters.jpg"],
+    "images": [
+      "/super sonico waiters.jpg"
+    ],
     "category": "Ready Stock",
     "description": "The iconic Super Sonico joins the BiCute Bunnies line with her signature pink hair and headphones.",
     "dispatchCondition": "10/10 MISB (Mint in Sealed Box)",
@@ -178,7 +198,9 @@
     "stock": 1,
     "scale": "1/8",
     "image": "/uploads/1774592946275-rem.png",
-    "images": ["/uploads/1774592946275-rem.png"],
+    "images": [
+      "/uploads/1774592946275-rem.png"
+    ],
     "category": "Ready Stock",
     "description": "A beautiful prize figure of Rem from Re:Zero, perfect for any starter collection.",
     "dispatchCondition": "9/10 MIB (Mint in Box - Opened but mint inside)",
