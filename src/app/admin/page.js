@@ -192,6 +192,7 @@ export default function AdminDashboard() {
               placeholder="Enter Access Code..."
               value={passcode}
               onChange={(e) => setPasscode(e.target.value)}
+              autoComplete="current-password"
               className="w-full bg-[#0a0a0a] border border-gray-800 text-center text-white p-4 font-black tracking-widest text-xs uppercase focus:outline-none focus:border-red-600 focus:ring-1 focus:ring-red-600 transition-colors"
             />
             {errorMSG && <p className="text-red-500 text-[10px] font-bold uppercase animate-pulse">{errorMSG}</p>}

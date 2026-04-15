@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { Search } from 'lucide-react';
 
-export default function SearchBar({ setSearchTerm, setSelectedCategory }) {
+export default function SearchBar({ searchTerm = '', setSearchTerm, setSelectedCategory }) {
   return (
     <section className="sticky top-28 z-40 px-6 -mt-10 mb-20">
       <motion.div 
@@ -14,6 +14,7 @@ export default function SearchBar({ setSearchTerm, setSelectedCategory }) {
           <input 
             type="text" 
             placeholder="Search the archive..." 
+            value={searchTerm}
             className="w-full pl-16 pr-6 py-5 rounded-full bg-transparent outline-none font-bold text-white placeholder:text-gray-600 focus:ring-0"
             onChange={(e) => setSearchTerm(e.target.value)}
           />

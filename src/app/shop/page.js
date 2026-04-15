@@ -1,5 +1,6 @@
 "use client";
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { allProducts } from '@/lib/products';
 import { useCart } from '@/context/CartContext';
 import SearchBar from '@/components/SearchBar';
@@ -7,23 +8,25 @@ import ProductCards from '@/components/ProductCards';
 import Toast from '@/components/Toast';
 import { motion } from 'framer-motion';
 
-export default function ShopArchive() {
+function ShopContent() {
   const { addToCart } = useCart();
-  const [searchTerm, setSearchTerm] = useState("");
+  const searchParams = useSearchParams();
+  const urlQuery = searchParams.get('q') || '';
+
+  const [searchTerm, setSearchTerm] = useState(urlQuery);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
-  
+
+  // Sync search term reactively when URL param changes (e.g. navbar search)
+  useEffect(() => {
+    setSearchTerm(urlQuery);
+  }, [urlQuery]);
+
   // Custom Spotlight logic for consistency
   const spotlightRef = useRef(null);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      const q = params.get("q");
-      if (q) setSearchTerm(q);
-    }
-
     const handleMouseMove = (e) => {
       if (spotlightRef.current) {
         spotlightRef.current.style.transform = `translate(${e.clientX - 400}px, ${e.clientY - 400}px)`;
@@ -87,6 +90,7 @@ export default function ShopArchive() {
 
         {/* Filtering Logic */}
         <SearchBar 
+          searchTerm={searchTerm}
           setSearchTerm={setSearchTerm} 
           setSelectedCategory={setSelectedCategory} 
         />
@@ -117,5 +121,17 @@ export default function ShopArchive() {
         onClose={() => setShowToast(false)} 
       />
     </main>
+  );
+}
+
+export default function ShopArchive() {
+  return (
+    <Suspense fallback={
+      <main className="min-h-screen bg-[#050505] pt-32 pb-24 flex items-center justify-center">
+        <p className="text-gray-500 font-black uppercase tracking-widest animate-pulse">Loading Vault...</p>
+      </main>
+    }>
+      <ShopContent />
+    </Suspense>
   );
 }

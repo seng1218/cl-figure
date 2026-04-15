@@ -73,7 +73,7 @@ export default function Home() {
           <div className="flex items-center gap-16 py-4 animate-marquee opacity-40 hover:opacity-100 transition-opacity duration-700">
             {/* We duplicate the list to ensure infinite smooth scrolling */}
             {[...Array(3)].map((_, i) => (
-              <div key={i} className="flex items-center gap-16 min-width-[max-content]">
+              <div key={i} className="flex items-center gap-16 min-w-max">
                 <span className="text-2xl md:text-3xl font-black text-gray-500 uppercase tracking-widest italic">FuRyu</span>
                 <span className="text-gray-800">|</span>
                 <span className="text-2xl md:text-3xl font-black text-gray-500 uppercase tracking-widest italic">Banpresto</span>
@@ -107,9 +107,7 @@ export default function Home() {
                 <h2 className="text-5xl md:text-7xl font-black text-white italic tracking-tighter leading-none">
                   {grailProduct.name}
                 </h2>
-                <p className="text-gray-500 font-medium text-lg max-w-md leading-relaxed">
 
-                </p>
                 <div className="flex items-center gap-6 pt-6">
                   <Link href={`/product/${grailProduct.id}`} className="bg-white text-black px-10 py-5 font-black text-[10px] uppercase tracking-[0.4em] hover:bg-blue-600 hover:text-white transition-all flex items-center gap-3 group border border-transparent hover:shadow-[0_0_30px_rgba(37,99,235,0.5)]">
                     View Details <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />

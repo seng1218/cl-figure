@@ -41,7 +41,7 @@ export default function CheckoutPage() {
   const certificateRef = useRef(null);
 
   // --- 2. SHIPPING PROGRESS LOGIC ---
-  const FREE_SHIPPING_THRESHOLD = 500; // Adjust this if needed
+  const FREE_SHIPPING_THRESHOLD = 200; // Matches CartContext threshold
   const progress = Math.min((cartTotal / FREE_SHIPPING_THRESHOLD) * 100, 100);
   const remainingForFree = FREE_SHIPPING_THRESHOLD - cartTotal;
 
@@ -311,6 +311,7 @@ export default function CheckoutPage() {
                   placeholder="JOHN DOE"
                   value={cardName}
                   onChange={(e) => setCardName(e.target.value.toUpperCase())}
+                  autoComplete="cc-name"
                   className="w-full bg-white/5 border border-white/10 p-5 rounded-[1.5rem] outline-none font-mono uppercase transition-all focus:border-blue-500"
                 />
               </div>
@@ -322,18 +323,12 @@ export default function CheckoutPage() {
                     <span className="text-[10px] font-black uppercase tracking-widest text-blue-400">{getCardType()}</span>
                   )}
                 </div>
-                <input
-                  required type="text"
-                  placeholder="0000 0000 0000 0000"
-                  value={cardNumber}
-                  onChange={handleCardChange}
-                  className={`w-full bg-white/5 border p-5 rounded-[1.5rem] outline-none transition-all font-mono ${isCardValid ? "border-blue-500" : "border-white/10"}`}
-                />
+                <input required type="text" placeholder="0000 0000 0000 0000" value={cardNumber} onChange={handleCardChange} autoComplete="cc-number" inputMode="numeric" className={`w-full bg-white/5 border p-5 rounded-[1.5rem] outline-none transition-all font-mono ${isCardValid ? "border-blue-500" : "border-white/10"}`} />
               </div>
 
               <div className="grid grid-cols-2 gap-6">
-                <input required type="text" placeholder="MM/YY" value={expiry} onChange={handleExpiryChange} className="bg-white/5 border border-white/10 p-5 rounded-[1.5rem] outline-none font-mono" />
-                <input required type="password" placeholder="CVV" maxLength="3" className="bg-white/5 border border-white/10 p-5 rounded-[1.5rem] outline-none font-mono" />
+                <input required type="text" placeholder="MM/YY" value={expiry} onChange={handleExpiryChange} autoComplete="cc-exp" inputMode="numeric" className="bg-white/5 border border-white/10 p-5 rounded-[1.5rem] outline-none font-mono" />
+                <input required type="password" placeholder="CVV" maxLength="3" autoComplete="cc-csc" inputMode="numeric" className="bg-white/5 border border-white/10 p-5 rounded-[1.5rem] outline-none font-mono" />
               </div>
 
               <motion.button

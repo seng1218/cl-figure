@@ -3,7 +3,12 @@
     "allow": [
       "Bash(grep -r import.*from c:/Users/HMS/my-figurine-shop/src --include=*.js --include=*.jsx)",
       "Bash(npm list:*)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(head -100 /c/Users/HMS/my-figurine-shop/src/app/product/[id]/page.js)",
+      "Bash(npm run:*)",
+      "Bash(node_modules/.bin/opennextjs-cloudflare build:*)",
+      "Bash(node_modules/.bin/wrangler deploy:*)"
     ]
   }
 }
