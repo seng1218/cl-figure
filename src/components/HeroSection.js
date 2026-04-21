@@ -1,9 +1,11 @@
 "use client";
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
+import { useCMS } from '@/context/CMSContext';
 
 export default function HeroSection({ onExplore }) {
   const { scrollY } = useScroll();
+  const { hero, site } = useCMS();
 
   // Parallax for marquee
   const sliderX = useTransform(scrollY, [0, 1000], [0, -1000]);
@@ -44,7 +46,7 @@ export default function HeroSection({ onExplore }) {
           animate={{ opacity: 1, y: 0 }}
           className="text-white font-black text-[10px] md:text-xs tracking-[1em] uppercase mb-8 block opacity-80"
         >
-          Established 2023
+          {hero?.tagline || 'Established 2023'}
         </motion.span>
 
         <motion.h1
@@ -53,7 +55,7 @@ export default function HeroSection({ onExplore }) {
           transition={{ delay: 0.2, duration: 0.8, ease: "easeOut" }}
           className="text-7xl md:text-[12rem] font-black text-white tracking-tighter mb-8 italic leading-none drop-shadow-2xl"
         >
-          Vault 6 Studios<span className="text-blue-600 animate-pulse">.</span>
+          {site?.name || 'Vault 6 Studios'}<span className="text-blue-600 animate-pulse">.</span>
         </motion.h1>
 
         <motion.div
@@ -69,7 +71,7 @@ export default function HeroSection({ onExplore }) {
             className="group relative bg-white text-black px-12 py-6 font-black text-xs uppercase tracking-[0.4em] flex items-center gap-4 hover:bg-blue-600 hover:text-white transition-all overflow-hidden"
           >
             <div className="absolute inset-0 bg-blue-600 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out z-0" />
-            <span className="relative z-10">Enter Vault</span>
+            <span className="relative z-10">{hero?.ctaLabel || 'Enter Vault'}</span>
             <ArrowRight size={18} className="relative z-10 group-hover:translate-x-2 transition-transform" />
           </motion.button>
         </motion.div>

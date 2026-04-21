@@ -1,7 +1,9 @@
 import Navbar from "@/components/Navbar";
 import CommsPortal from "@/components/CommsPortal";
 import Footer from "@/components/Footer";
+import AnnouncementBanner from "@/components/AnnouncementBanner";
 import { CartProvider } from "@/context/CartContext";
+import { CMSProvider } from "@/context/CMSContext";
 import "./globals.css";
 
 export const metadata = {
@@ -41,14 +43,17 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className="overscroll-none flex flex-col min-h-screen">
-        <CartProvider>
-          <Navbar />
-          <main className="pt-20 flex-grow">
-            {children}
-          </main>
-          <Footer />
-          <CommsPortal />
-        </CartProvider>
+        <CMSProvider>
+          <CartProvider>
+            <AnnouncementBanner />
+            <Navbar />
+            <main className="pt-20 flex-grow">
+              {children}
+            </main>
+            <Footer />
+            <CommsPortal />
+          </CartProvider>
+        </CMSProvider>
       </body>
     </html>
   );

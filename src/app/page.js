@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
+import { useCMS } from '@/context/CMSContext';
 import HeroSection from '@/components/HeroSection';
 import ProductCards from '@/components/ProductCards';
 import VaultEntrance from '@/components/VaultEntrance';
@@ -13,6 +14,7 @@ import Link from 'next/link';
 export default function Home() {
   const router = useRouter();
   const { addToCart } = useCart();
+  const { brands, ethos, home: cmsHome } = useCMS();
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [isVaultOpen, setIsVaultOpen] = useState(false);
@@ -74,18 +76,12 @@ export default function Home() {
             {/* We duplicate the list to ensure infinite smooth scrolling */}
             {[...Array(3)].map((_, i) => (
               <div key={i} className="flex items-center gap-16 min-w-max">
-                <span className="text-2xl md:text-3xl font-black text-gray-500 uppercase tracking-widest italic">FuRyu</span>
-                <span className="text-gray-800">|</span>
-                <span className="text-2xl md:text-3xl font-black text-gray-500 uppercase tracking-widest italic">Banpresto</span>
-                <span className="text-gray-800">|</span>
-                <span className="text-2xl md:text-3xl font-black text-gray-500 uppercase tracking-widest italic">Taito</span>
-                <span className="text-gray-800">|</span>
-                <span className="text-2xl md:text-3xl font-black text-gray-500 uppercase tracking-widest italic">Bear Panda</span>
-                <span className="text-gray-800">|</span>
-                <span className="text-2xl md:text-3xl font-black text-gray-500 uppercase tracking-widest italic">Alter</span>
-                <span className="text-gray-800">|</span>
-                <span className="text-2xl md:text-3xl font-black text-gray-500 uppercase tracking-widest italic">Animester</span>
-                <span className="text-gray-800">|</span>
+                {(brands || []).map((brand, j) => (
+                  <span key={j} className="flex items-center gap-16">
+                    <span className="text-2xl md:text-3xl font-black text-gray-500 uppercase tracking-widest italic">{brand}</span>
+                    <span className="text-gray-800">|</span>
+                  </span>
+                ))}
               </div>
             ))}
           </div>
@@ -161,21 +157,20 @@ export default function Home() {
           </div>
 
           <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-24 relative z-10 text-center md:text-left">
-            <div className="space-y-6 flex flex-col items-center md:items-start">
-              <ShieldCheck size={48} className="text-blue-600 mb-2" strokeWidth={1} />
-              <h3 className="text-2xl font-black text-white uppercase tracking-widest">100% Verified</h3>
-              <p className="text-gray-500 text-sm leading-relaxed max-w-[250px]">No bootlegs. No recasts. Every item is verified against manufacturer records before entering our catalog.</p>
-            </div>
-            <div className="space-y-6 flex flex-col items-center md:items-start">
-              <Lock size={48} className="text-white mb-2" strokeWidth={1} />
-              <h3 className="text-2xl font-black text-white uppercase tracking-widest">Secure Transport</h3>
-              <p className="text-gray-500 text-sm leading-relaxed max-w-[250px]">Figures are packed in impact-resistant casing before dispatch. While we cannot control external couriers, we remain reachable if an item is damaged in transit.</p>
-            </div>
-            <div className="space-y-6 flex flex-col items-center md:items-start">
-              <Cpu size={48} className="text-blue-600 mb-2" strokeWidth={1} />
-              <h3 className="text-2xl font-black text-white uppercase tracking-widest">Order Tracking</h3>
-              <p className="text-gray-500 text-sm leading-relaxed max-w-[250px]">Your order history is digitized. Track your purchases and collection seamlessly within your dashboard.</p>
-            </div>
+            {[
+              { Icon: ShieldCheck, color: 'text-blue-600', defaults: { title: '100% Verified', description: 'No bootlegs. No recasts. Every item is verified against manufacturer records before entering our catalog.' } },
+              { Icon: Lock, color: 'text-white', defaults: { title: 'Secure Transport', description: 'Figures are packed in impact-resistant casing before dispatch. While we cannot control external couriers, we remain reachable if an item is damaged in transit.' } },
+              { Icon: Cpu, color: 'text-blue-600', defaults: { title: 'Order Tracking', description: 'Your order history is digitized. Track your purchases and collection seamlessly within your dashboard.' } },
+            ].map(({ Icon, color, defaults }, i) => {
+              const card = (ethos && ethos[i]) ? ethos[i] : defaults;
+              return (
+                <div key={i} className="space-y-6 flex flex-col items-center md:items-start">
+                  <Icon size={48} className={`${color} mb-2`} strokeWidth={1} />
+                  <h3 className="text-2xl font-black text-white uppercase tracking-widest">{card.title}</h3>
+                  <p className="text-gray-500 text-sm leading-relaxed max-w-[250px]">{card.description}</p>
+                </div>
+              );
+            })}
           </div>
         </section>
 
@@ -184,11 +179,11 @@ export default function Home() {
           <div className="absolute inset-0 bg-blue-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 z-0 pointer-events-none mix-blend-screen" />
           <div className="relative z-10">
             <h2 className="text-4xl md:text-6xl font-black text-white italic tracking-tighter mb-6 relative inline-block">
-              JOIN THE SYNDICATE.
+              {cmsHome?.syndicateHeading || 'JOIN THE SYNDICATE.'}
               <span className="absolute -top-6 -right-10 text-[10px] bg-blue-600 text-white px-3 py-1 rounded-full font-black uppercase tracking-widest not-italic">Secured</span>
             </h2>
             <p className="text-gray-500 text-sm md:text-base mb-12 max-w-lg mx-auto leading-relaxed">
-              The highest-tier drops go fast. Submit your email to get early access to new drops before they go public.
+              {cmsHome?.syndicateDescription || 'The highest-tier drops go fast. Submit your email to get early access to new drops before they go public.'}
             </p>
 
             <Link

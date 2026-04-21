@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingBag, ArrowRight, Menu, X, Search } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
+import { useCMS } from '@/context/CMSContext';
 import Link from 'next/link';
 import CartSidebar from './CartSidebar';
 
@@ -11,6 +12,7 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const { cart } = useCart();
+  const { site } = useCMS();
   const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   useEffect(() => {
@@ -56,9 +58,9 @@ export default function Navbar() {
                 : 'text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]'
               }`}
             >
-              Vault 6 Studios<span className="text-blue-500">.</span>
+              {site?.name || 'Vault 6 Studios'}<span className="text-blue-500">.</span>
             </span>
-            <span className="text-[8px] font-black uppercase tracking-[0.3em] text-gray-500 mt-0.5">by Crafted Legacies</span>
+            <span className="text-[8px] font-black uppercase tracking-[0.3em] text-gray-500 mt-0.5">{site?.tagline || 'by Crafted Legacies'}</span>
           </Link>
 
           {/* Desktop Nav Links */}

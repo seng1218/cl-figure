@@ -14,6 +14,9 @@ export default function AdminDashboard() {
   const [editingId, setEditingId] = useState(null);
   const [subscribers, setSubscribers] = useState([]);
   const [showSubscribers, setShowSubscribers] = useState(false);
+  const [showContent, setShowContent] = useState(false);
+  const [cms, setCms] = useState(null);
+  const [cmsSaving, setCmsSaving] = useState({});
 
   // Form State
   const [formData, setFormData] = useState({
@@ -81,10 +84,38 @@ export default function AdminDashboard() {
     }
   };
 
+  const fetchCMS = async () => {
+    try {
+      const res = await fetch('/api/cms/', { cache: 'no-store' });
+      if (res.ok) setCms(await res.json());
+    } catch (err) {
+      console.error('Failed to load CMS:', err);
+    }
+  };
+
+  const saveCMSSection = async (section, data) => {
+    setCmsSaving(prev => ({ ...prev, [section]: true }));
+    try {
+      const res = await fetch('/api/cms/', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'x-admin-key': passcode },
+        body: JSON.stringify({ section, data }),
+      });
+      const result = await res.json();
+      if (result.success) setCms(result.cms);
+      else alert('Save failed: ' + result.error);
+    } catch {
+      alert('Connection error saving CMS.');
+    } finally {
+      setCmsSaving(prev => ({ ...prev, [section]: false }));
+    }
+  };
+
   useEffect(() => {
     if (isAuthenticated) {
       fetchInventory();
       fetchSubscribers();
+      fetchCMS();
     }
   }, [isAuthenticated]);
 
@@ -470,7 +501,127 @@ export default function AdminDashboard() {
           )}
         </div>
 
+        {/* CONTENT CONTROL */}
+        {cms && (
+          <div className="mt-20">
+            <button
+              onClick={() => setShowContent(v => !v)}
+              className="w-full flex justify-between items-center border-b border-gray-800 pb-4 mb-6 group"
+            >
+              <h2 className="text-2xl font-black text-white italic tracking-tighter group-hover:text-blue-500 transition-colors">CONTENT CONTROL</h2>
+              <span className="text-gray-600 font-black text-[10px] uppercase tracking-widest">{showContent ? 'Collapse ▲' : 'Expand ▼'}</span>
+            </button>
+
+            {showContent && (
+              <div className="space-y-8">
+
+                {/* Announcement Banner */}
+                <CMSSection title="Announcement Banner" onSave={() => saveCMSSection('announcement', cms.announcement)} saving={cmsSaving.announcement}>
+                  <div className="flex items-center gap-4 mb-4">
+                    <label className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Enabled</label>
+                    <button
+                      type="button"
+                      onClick={() => setCms(p => ({ ...p, announcement: { ...p.announcement, enabled: !p.announcement.enabled } }))}
+                      className={`w-12 h-6 rounded-full transition-colors ${cms.announcement?.enabled ? 'bg-blue-600' : 'bg-gray-700'}`}
+                    >
+                      <span className={`block w-5 h-5 rounded-full bg-white transition-transform mx-0.5 ${cms.announcement?.enabled ? 'translate-x-6' : 'translate-x-0'}`} />
+                    </button>
+                  </div>
+                  <CMSField label="Banner Text" value={cms.announcement?.text || ''} onChange={v => setCms(p => ({ ...p, announcement: { ...p.announcement, text: v } }))} />
+                  <CMSField label="Link URL (optional)" value={cms.announcement?.link || ''} onChange={v => setCms(p => ({ ...p, announcement: { ...p.announcement, link: v } }))} />
+                  <div className="space-y-2">
+                    <label className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Type</label>
+                    <select value={cms.announcement?.type || 'info'} onChange={e => setCms(p => ({ ...p, announcement: { ...p.announcement, type: e.target.value } }))} className="w-full bg-[#0a0a0a] border border-gray-800 text-white p-3 font-bold focus:outline-none focus:border-blue-600">
+                      <option value="info">Info (Blue)</option>
+                      <option value="warning">Warning (Yellow)</option>
+                      <option value="promo">Promo (Green)</option>
+                    </select>
+                  </div>
+                </CMSSection>
+
+                {/* Site Identity */}
+                <CMSSection title="Site Identity" onSave={() => saveCMSSection('site', cms.site)} saving={cmsSaving.site}>
+                  <CMSField label="Site Name" value={cms.site?.name || ''} onChange={v => setCms(p => ({ ...p, site: { ...p.site, name: v } }))} />
+                  <CMSField label="Tagline (under logo)" value={cms.site?.tagline || ''} onChange={v => setCms(p => ({ ...p, site: { ...p.site, tagline: v } }))} />
+                </CMSSection>
+
+                {/* Hero Section */}
+                <CMSSection title="Hero Section" onSave={() => saveCMSSection('hero', cms.hero)} saving={cmsSaving.hero}>
+                  <CMSField label="Tagline (e.g. Established 2023)" value={cms.hero?.tagline || ''} onChange={v => setCms(p => ({ ...p, hero: { ...p.hero, tagline: v } }))} />
+                  <CMSField label="CTA Button Label" value={cms.hero?.ctaLabel || ''} onChange={v => setCms(p => ({ ...p, hero: { ...p.hero, ctaLabel: v } }))} />
+                </CMSSection>
+
+                {/* Brands Marquee */}
+                <CMSSection title="Brands Marquee" onSave={() => saveCMSSection('brands', cms.brands)} saving={cmsSaving.brands}>
+                  <div className="space-y-2">
+                    <label className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Brands (one per line)</label>
+                    <textarea
+                      rows={5}
+                      value={(cms.brands || []).join('\n')}
+                      onChange={e => setCms(p => ({ ...p, brands: e.target.value.split('\n').map(s => s.trim()).filter(Boolean) }))}
+                      className="w-full bg-[#0a0a0a] border border-gray-800 text-white p-3 font-bold focus:outline-none focus:border-blue-600 transition-colors"
+                    />
+                  </div>
+                </CMSSection>
+
+                {/* Syndicate Section */}
+                <CMSSection title="Syndicate Section" onSave={() => saveCMSSection('home', cms.home)} saving={cmsSaving.home}>
+                  <CMSField label="Heading" value={cms.home?.syndicateHeading || ''} onChange={v => setCms(p => ({ ...p, home: { ...p.home, syndicateHeading: v } }))} />
+                  <CMSField label="Description" value={cms.home?.syndicateDescription || ''} onChange={v => setCms(p => ({ ...p, home: { ...p.home, syndicateDescription: v } }))} textarea />
+                </CMSSection>
+
+                {/* Ethos Cards */}
+                <CMSSection title="Ethos Cards" onSave={() => saveCMSSection('ethos', cms.ethos)} saving={cmsSaving.ethos}>
+                  {(cms.ethos || []).map((card, i) => (
+                    <div key={i} className="border border-gray-800 p-4 rounded-xl space-y-3 mb-4">
+                      <p className="text-[10px] text-blue-600 font-black uppercase tracking-widest">Card {i + 1}</p>
+                      <CMSField label="Title" value={card.title || ''} onChange={v => setCms(p => { const e = [...p.ethos]; e[i] = { ...e[i], title: v }; return { ...p, ethos: e }; })} />
+                      <CMSField label="Description" value={card.description || ''} onChange={v => setCms(p => { const e = [...p.ethos]; e[i] = { ...e[i], description: v }; return { ...p, ethos: e }; })} textarea />
+                    </div>
+                  ))}
+                </CMSSection>
+
+                {/* Contact Info */}
+                <CMSSection title="Contact Info" onSave={() => saveCMSSection('contact', cms.contact)} saving={cmsSaving.contact}>
+                  <CMSField label="WhatsApp Number (e.g. +60123456789)" value={cms.contact?.whatsapp || ''} onChange={v => setCms(p => ({ ...p, contact: { ...p.contact, whatsapp: v } }))} />
+                </CMSSection>
+
+              </div>
+            )}
+          </div>
+        )}
+
       </div>
     </main>
+  );
+}
+
+function CMSSection({ title, children, onSave, saving }) {
+  return (
+    <div className="bg-[#0a0a0a] border border-gray-800 rounded-2xl p-6 space-y-4">
+      <h3 className="text-sm font-black text-white uppercase tracking-widest border-b border-gray-800 pb-3">{title}</h3>
+      {children}
+      <button
+        type="button"
+        onClick={onSave}
+        disabled={saving}
+        className="mt-2 bg-blue-600 text-white px-8 py-3 font-black text-[10px] uppercase tracking-[0.3em] hover:bg-white hover:text-black transition-all disabled:opacity-50"
+      >
+        {saving ? 'Saving...' : 'Save Section'}
+      </button>
+    </div>
+  );
+}
+
+function CMSField({ label, value, onChange, textarea }) {
+  return (
+    <div className="space-y-2">
+      <label className="text-[10px] text-gray-400 font-black uppercase tracking-widest">{label}</label>
+      {textarea ? (
+        <textarea rows={3} value={value} onChange={e => onChange(e.target.value)} className="w-full bg-[#050505] border border-gray-800 text-white p-3 font-bold focus:outline-none focus:border-blue-600 transition-colors" />
+      ) : (
+        <input type="text" value={value} onChange={e => onChange(e.target.value)} className="w-full bg-[#050505] border border-gray-800 text-white p-3 font-bold focus:outline-none focus:border-blue-600 transition-colors" />
+      )}
+    </div>
   );
 }

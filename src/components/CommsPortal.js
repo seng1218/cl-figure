@@ -2,10 +2,12 @@
 import { MessageSquareCode, X } from 'lucide-react';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useCMS } from '@/context/CMSContext';
 
 export default function CommsPortal() {
   const [isOpen, setIsOpen] = useState(false);
-  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP;
+  const { contact } = useCMS();
+  const whatsappNumber = contact?.whatsapp || process.env.NEXT_PUBLIC_WHATSAPP;
 
   return (
     <>
