@@ -12,6 +12,8 @@ export default function AdminDashboard() {
   const [successStatus, setSuccessStatus] = useState(false);
   const [inventory, setInventory] = useState([]);
   const [editingId, setEditingId] = useState(null);
+  const [subscribers, setSubscribers] = useState([]);
+  const [showSubscribers, setShowSubscribers] = useState(false);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -56,7 +58,7 @@ export default function AdminDashboard() {
 
   const fetchInventory = async () => {
     try {
-      const res = await fetch('/api/products/');
+      const res = await fetch('/api/products/', { cache: 'no-store' });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setInventory(Array.isArray(data) ? data : []);
@@ -65,9 +67,24 @@ export default function AdminDashboard() {
     }
   };
 
+  const fetchSubscribers = async () => {
+    try {
+      const res = await fetch('/api/subscribe', {
+        headers: { 'x-admin-key': passcode },
+        cache: 'no-store',
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data.success) setSubscribers(data.subscribers || []);
+    } catch (err) {
+      console.error('Failed to load subscribers:', err);
+    }
+  };
+
   useEffect(() => {
     if (isAuthenticated) {
       fetchInventory();
+      fetchSubscribers();
     }
   }, [isAuthenticated]);
 
@@ -419,6 +436,38 @@ export default function AdminDashboard() {
               <p className="text-gray-600 text-xs italic font-bold">The Vault is completely empty.</p>
             )}
           </div>
+        </div>
+
+        {/* SYNDICATE SUBSCRIBERS */}
+        <div className="mt-20">
+          <button
+            onClick={() => setShowSubscribers(v => !v)}
+            className="w-full flex justify-between items-center border-b border-gray-800 pb-4 mb-6 group"
+          >
+            <h2 className="text-2xl font-black text-white italic tracking-tighter group-hover:text-blue-500 transition-colors">
+              SYNDICATE SUBSCRIBERS ({subscribers.length})
+            </h2>
+            <span className="text-gray-600 font-black text-[10px] uppercase tracking-widest">{showSubscribers ? 'Collapse ▲' : 'Expand ▼'}</span>
+          </button>
+
+          {showSubscribers && (
+            <div className="space-y-3">
+              {subscribers.length === 0 && (
+                <p className="text-gray-600 text-xs italic font-bold">No subscribers yet.</p>
+              )}
+              {subscribers.map((sub) => (
+                <div key={sub.id} className="bg-[#0a0a0a] border border-gray-800 px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-2 hover:border-blue-900/50 transition-colors">
+                  <div>
+                    <p className="text-white font-bold text-sm">{sub.email}</p>
+                    {sub.name && <p className="text-gray-500 text-[10px] font-black uppercase tracking-widest">{sub.name}</p>}
+                  </div>
+                  <p className="text-gray-700 text-[10px] font-bold shrink-0">
+                    {new Date(sub.joinedAt).toLocaleDateString('en-MY', { day: 'numeric', month: 'short', year: 'numeric' })}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
       </div>

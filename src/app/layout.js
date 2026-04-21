@@ -5,8 +5,28 @@ import { CartProvider } from "@/context/CartContext";
 import "./globals.css";
 
 export const metadata = {
-  title: "Vault 6 Studios. | The Vault",
+  title: {
+    default: "Vault 6 Studios. | The Vault",
+    template: "%s | Vault 6 Studios",
+  },
   description: "Exclusive S-Tier figurines. Highly curated. Zero filler.",
+  keywords: ["figurine", "anime figure", "collectible", "FuRyu", "Banpresto", "Taito", "Malaysia"],
+  openGraph: {
+    siteName: "Vault 6 Studios",
+    title: "Vault 6 Studios. | The Vault",
+    description: "Exclusive S-Tier figurines. Highly curated. Zero filler.",
+    type: "website",
+    locale: "en_MY",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Vault 6 Studios. | The Vault",
+    description: "Exclusive S-Tier figurines. Highly curated. Zero filler.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export const viewport = {

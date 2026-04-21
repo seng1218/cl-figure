@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect, useRef, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { allProducts } from '@/lib/products';
 import { useCart } from '@/context/CartContext';
 import SearchBar from '@/components/SearchBar';
 import ProductCards from '@/components/ProductCards';
@@ -13,10 +12,18 @@ function ShopContent() {
   const searchParams = useSearchParams();
   const urlQuery = searchParams.get('q') || '';
 
+  const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState(urlQuery);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
+
+  useEffect(() => {
+    fetch('/api/products/', { cache: 'no-store' })
+      .then(r => r.json())
+      .then(data => { if (Array.isArray(data)) setProducts(data); })
+      .catch(console.error);
+  }, []);
 
   // Sync search term reactively when URL param changes (e.g. navbar search)
   useEffect(() => {
@@ -43,7 +50,7 @@ function ShopContent() {
     setTimeout(() => setShowToast(false), 3000);
   };
 
-  const filteredProducts = allProducts.filter(item => {
+  const filteredProducts = products.filter(item => {
     const term = searchTerm.toLowerCase();
     const searchFields = [item.name, item.manufacturer, item.series].filter(Boolean);
     const matchesSearch = searchFields.some(field => field.toLowerCase().includes(term));

@@ -42,7 +42,7 @@ async function saveFile(file, cfEnv) {
 async function readInventory(cfEnv) {
   if (cfEnv?.INVENTORY_KV) {
     const raw = await cfEnv.INVENTORY_KV.get('inventory');
-    if (raw) return JSON.parse(raw);
+    return raw ? JSON.parse(raw) : [];
   }
   const filePath = path.join(process.cwd(), 'src/data/inventory.json');
   return JSON.parse(fs.readFileSync(filePath, 'utf8'));
@@ -131,7 +131,7 @@ export async function PUT(req) {
     const idToEdit = formData.get('id');
 
     const inventory = await readInventory(cfEnv);
-    const index = inventory.findIndex(item => item.id === idToEdit);
+    const index = inventory.findIndex(item => String(item.id) === String(idToEdit));
     if (index === -1) {
       return NextResponse.json({ success: false, error: "Item not found." }, { status: 404 });
     }
@@ -188,7 +188,7 @@ export async function DELETE(req) {
     const { id: idToDelete } = await req.json();
 
     const inventory = await readInventory(cfEnv);
-    const filtered = inventory.filter(item => item.id !== idToDelete);
+    const filtered = inventory.filter(item => String(item.id) !== String(idToDelete));
     await writeInventory(filtered, cfEnv);
     return NextResponse.json({ success: true });
   } catch (error) {

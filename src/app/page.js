@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { allProducts } from '@/lib/products';
 import { useCart } from '@/context/CartContext';
 import HeroSection from '@/components/HeroSection';
 import ProductCards from '@/components/ProductCards';
@@ -17,7 +16,14 @@ export default function Home() {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [isVaultOpen, setIsVaultOpen] = useState(false);
-  const [isSyndicateJoined, setIsSyndicateJoined] = useState(false);
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    fetch('/api/products/', { cache: 'no-store' })
+      .then(r => r.json())
+      .then(data => { if (Array.isArray(data)) setProducts(data); })
+      .catch(console.error);
+  }, []);
 
   // Custom Spotlight logic
   const spotlightRef = useRef(null);
@@ -39,15 +45,9 @@ export default function Home() {
     setTimeout(() => setShowToast(false), 3000);
   };
 
-  const handleSyndicateSubmit = (e) => {
-    e.preventDefault();
-    setIsSyndicateJoined(true);
-  };
 
-  // The Grail is the first product
-  const grailProduct = allProducts[0];
-  // Recent drops are the next 3
-  const recentDrops = allProducts.slice(1, 4);
+  const grailProduct = products[0];
+  const recentDrops = products.slice(1, 4);
 
   return (
     <main className="min-h-screen bg-[#050505] pb-32 relative overflow-x-hidden">
@@ -191,27 +191,12 @@ export default function Home() {
               The highest-tier drops go fast. Submit your email to get early access to new drops before they go public.
             </p>
 
-            {isSyndicateJoined ? (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="inline-block bg-[#111] border border-green-900/50 text-green-500 px-12 py-6 text-xs uppercase font-black tracking-[0.3em] shadow-[0_0_30px_rgba(34,197,94,0.2)]"
-              >
-                [ Access Requested. Stand by for Comms. ]
-              </motion.div>
-            ) : (
-              <form className="flex flex-col md:flex-row gap-4 max-w-2xl mx-auto" onSubmit={handleSyndicateSubmit}>
-                <input
-                  type="email"
-                  placeholder="Enter your email address..."
-                  className="flex-grow bg-[#050505] border border-gray-700 text-white px-8 py-5 text-[10px] md:text-xs uppercase font-black tracking-widest focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-all placeholder:text-gray-700"
-                  required
-                />
-                <button type="submit" className="bg-blue-600 text-white px-10 py-5 font-black text-[10px] md:text-xs uppercase tracking-[0.3em] hover:bg-white hover:text-black transition-all whitespace-nowrap shadow-[0_0_30px_rgba(37,99,235,0.3)] hover:shadow-[0_0_50px_rgba(255,255,255,0.5)]">
-                  Request Access
-                </button>
-              </form>
-            )}
+            <Link
+              href="/join"
+              className="inline-flex items-center gap-3 bg-blue-600 text-white px-12 py-5 font-black text-[10px] md:text-xs uppercase tracking-[0.3em] hover:bg-white hover:text-black transition-all shadow-[0_0_30px_rgba(37,99,235,0.3)] hover:shadow-[0_0_50px_rgba(255,255,255,0.5)]"
+            >
+              Request Access <ArrowRight size={14} />
+            </Link>
           </div>
         </section>
 

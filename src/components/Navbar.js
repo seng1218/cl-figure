@@ -49,15 +49,16 @@ export default function Navbar() {
             }`}
         >
           {/* LOGO WITH CONTRAST FIX */}
-          <Link
-            href="/"
-            className={`text-2xl font-black tracking-tighter transition-all duration-500
+          <Link href="/" className="flex flex-col leading-none">
+            <span className={`text-2xl font-black tracking-tighter transition-all duration-500
               ${isScrolled
                 ? 'text-white'
                 : 'text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]'
               }`}
-          >
-            Vault 6 Studios<span className="text-blue-500">.</span>
+            >
+              Vault 6 Studios<span className="text-blue-500">.</span>
+            </span>
+            <span className="text-[8px] font-black uppercase tracking-[0.3em] text-gray-500 mt-0.5">by Crafted Legacies</span>
           </Link>
 
           {/* Desktop Nav Links */}
@@ -68,8 +69,8 @@ export default function Navbar() {
             <Link href="/#ethos" className="text-[10px] uppercase font-black tracking-[0.2em] hover:text-white transition-colors">
               Ethos
             </Link>
-            <Link href="/#syndicate" className="text-[10px] uppercase font-black tracking-[0.2em] hover:text-white transition-colors">
-              Syndicate
+            <Link href="/join" className="text-[10px] uppercase font-black tracking-[0.2em] hover:text-blue-500 transition-colors text-blue-600">
+              Join
             </Link>
           </div>
 
@@ -167,11 +168,11 @@ export default function Navbar() {
                 Ethos
               </Link>
               <Link
-                href="/#syndicate"
+                href="/join"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="text-4xl font-black text-white uppercase italic tracking-tighter hover:text-blue-500 transition-colors"
+                className="text-4xl font-black text-blue-600 uppercase italic tracking-tighter hover:text-blue-400 transition-colors"
               >
-                Syndicate
+                Join Syndicate
               </Link>
               <div className="w-16 h-px bg-gray-800 my-4" />
               <Link
