@@ -5,6 +5,7 @@ import { useCart } from '@/context/CartContext';
 import SearchBar from '@/components/SearchBar';
 import ProductCards from '@/components/ProductCards';
 import Toast from '@/components/Toast';
+import LiveActivityToast from '@/components/LiveActivityToast';
 import { motion } from 'framer-motion';
 
 export default function ShopClient() {
@@ -14,7 +15,7 @@ export default function ShopClient() {
 
   const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState(urlQuery);
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedSeries, setSelectedSeries] = useState("All");
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
 
@@ -55,12 +56,14 @@ export default function ShopClient() {
     setTimeout(() => setShowToast(false), 3000);
   };
 
+  const seriesList = [...new Set(products.map(p => p.series).filter(Boolean))].sort();
+
   const filteredProducts = products.filter(item => {
     const term = searchTerm.toLowerCase();
     const searchFields = [item.name, item.manufacturer, item.series].filter(Boolean);
     const matchesSearch = searchFields.some(field => field.toLowerCase().includes(term));
-    const matchesCategory = selectedCategory === "All" || item.category === selectedCategory;
-    return matchesSearch && matchesCategory;
+    const matchesSeries = selectedSeries === "All" || item.series === selectedSeries;
+    return matchesSearch && matchesSeries;
   });
 
   const sortedProducts = [...filteredProducts].sort((a, b) => {
@@ -99,7 +102,8 @@ export default function ShopClient() {
         <SearchBar
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
-          setSelectedCategory={setSelectedCategory}
+          setSelectedSeries={setSelectedSeries}
+          series={seriesList}
         />
 
         <section className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8 mt-12">
@@ -125,6 +129,7 @@ export default function ShopClient() {
         isVisible={showToast}
         onClose={() => setShowToast(false)}
       />
+      <LiveActivityToast products={products} />
     </main>
   );
 }

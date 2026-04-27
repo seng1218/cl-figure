@@ -43,6 +43,7 @@ export default function CheckoutPage() {
   const [isShaking, setIsShaking] = useState(false);
   const [orderError, setOrderError] = useState('');
   const [orderId, setOrderId] = useState('');
+  const [orderedItems, setOrderedItems] = useState([]);
   const [timeLeft, setTimeLeft] = useState(300);
   const [paymentMethod, setPaymentMethod] = useState('card');
 
@@ -127,6 +128,7 @@ export default function CheckoutPage() {
     try {
       const id = await placeOrder();
       setOrderId(id);
+      setOrderedItems([...cart]);
       clearCart();
       setIsSuccess(true);
     } catch (err) {
@@ -142,6 +144,7 @@ export default function CheckoutPage() {
     try {
       const id = await placeOrder();
       setOrderId(id);
+      setOrderedItems([...cart]);
       clearCart();
       setIsSuccess(true);
     } catch (err) {
@@ -180,6 +183,20 @@ export default function CheckoutPage() {
                 <div><p className="text-[9px] uppercase font-bold text-gray-400 mb-1">Vault Status</p><p className="text-xs font-black text-green-600 uppercase">Secured</p></div>
                 <div><p className="text-[9px] uppercase font-bold text-gray-400 mb-1">Total Value</p><p className="text-xs font-black text-gray-900">RM {grandTotal.toFixed(2)}</p></div>
               </div>
+              {orderedItems.length > 0 && (
+                <div className="py-5 border-b border-dashed border-gray-200 space-y-3">
+                  <p className="text-[9px] uppercase font-black tracking-widest text-gray-400 mb-3">Acquired Assets</p>
+                  {orderedItems.map((item, i) => (
+                    <div key={i} className="flex items-center gap-3">
+                      <img src={item.image} alt={item.name} className="w-12 h-12 rounded-xl object-cover bg-gray-100 shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-black text-gray-900 truncate">{item.name}</p>
+                        <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">Qty {item.quantity} · RM {item.price.toFixed(2)}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
               <div className="space-y-1">
                 <p className="text-[9px] uppercase font-black tracking-widest text-gray-400">Dispatch To</p>
                 <p className="text-xs font-bold text-gray-700">{shipping.fullName}</p>

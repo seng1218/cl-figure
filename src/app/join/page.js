@@ -86,7 +86,7 @@ export default function JoinPage() {
       </div>
 
       <div className="relative z-10 flex-grow flex items-center px-6 py-16">
-        <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
 
           {/* LEFT: Manifesto */}
           <motion.div

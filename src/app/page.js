@@ -8,6 +8,7 @@ import ProductCards from '@/components/ProductCards';
 import VaultEntrance from '@/components/VaultEntrance';
 import Toast from '@/components/Toast';
 import TrackingModule from '@/components/TrackingModule';
+import LiveActivityToast from '@/components/LiveActivityToast';
 import { Lock, ArrowRight, Activity, ShieldCheck, Cpu } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
@@ -117,7 +118,7 @@ export default function Home() {
         {/* 3. The "Grail" Exhibition */}
         {grailProduct && (
           <section className="max-w-7xl mx-auto px-6 py-32 border-b border-gray-900">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
               <div className="order-2 lg:order-1 space-y-8">
                 <span className="text-blue-600 font-black text-[10px] uppercase tracking-[0.5em] flex items-center gap-4">
                   <Activity size={14} className="animate-pulse" /> The Grail
@@ -193,7 +194,10 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.2 }}
-                className="bg-[#0a0a0a] border border-gray-800 p-10 md:p-12 rounded-[2.5rem] hover:border-blue-600 transition-all group"
+                className={`bg-[#0a0a0a] border border-gray-800 rounded-[2.5rem] hover:border-blue-600 transition-all group
+                  ${idx === 0 ? 'md:col-span-2 p-10 md:p-14' : 'p-10 md:p-12'}
+                  ${idx === 2 ? 'md:col-start-2 md:col-span-2' : ''}
+                `}
               >
                 <div className="w-12 h-12 bg-blue-600/10 rounded-2xl flex items-center justify-center mb-8 group-hover:bg-blue-600 transition-colors duration-500">
                   {idx === 0 ? <Activity className="text-blue-500 group-hover:text-white" size={24} /> : 
@@ -241,6 +245,7 @@ export default function Home() {
         isVisible={showToast}
         onClose={() => setShowToast(false)}
       />
+      <LiveActivityToast products={products} />
     </main>
   );
 }
