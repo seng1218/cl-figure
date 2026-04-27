@@ -90,27 +90,27 @@ export default function Home() {
         {/* 2. Hero Section */}
         <HeroSection onExplore={() => setIsVaultOpen(true)} />
 
-        {/* 2.5 Borrowed Authority Marquee */}
-        <section className="py-8 border-b border-gray-900 bg-[#020202] overflow-hidden whitespace-nowrap relative">
-          <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[#020202] to-transparent z-10" />
-          <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#020202] to-transparent z-10" />
-          <div className="flex items-center gap-16 py-4 animate-marquee opacity-40 hover:opacity-100 transition-opacity duration-700">
-            {/* We duplicate the list to ensure infinite smooth scrolling */}
-            {[...Array(3)].map((_, i) => (
-              <div key={i} className="flex items-center gap-16 min-w-max">
-                {(brands || []).map((brand, j) => (
-                  <span key={j} className="flex items-center gap-16">
-                    <span className="text-2xl md:text-3xl font-black text-gray-500 uppercase tracking-widest italic">{brand}</span>
-                    <span className="text-gray-800">|</span>
-                  </span>
-                ))}
+        {/* 2.5 Intel Feed Marquee */}
+        <section className="py-5 border-b border-gray-900 bg-[#020202] overflow-hidden whitespace-nowrap relative">
+          <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[#020202] to-transparent z-10 pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#020202] to-transparent z-10 pointer-events-none" />
+          <div className="flex items-center animate-marquee">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="flex items-center gap-12 min-w-max px-12">
+                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-blue-500">SYNDICATE</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/60">847 OPERATIVES ACTIVE</span>
+                <span className="text-blue-900">·</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-blue-500">NEXT DROP</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/60">CLASSIFIED</span>
+                <span className="text-blue-900">·</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-blue-500">ORIGIN</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/60">100% VERIFIED</span>
+                <span className="text-blue-900">·</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-blue-500">VAULT STATUS</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/60">OPERATIONAL</span>
+                <span className="text-blue-900">·</span>
               </div>
             ))}
-          </div>
-          <div className="text-center mt-4">
-            <span className="text-[9px] uppercase font-black tracking-[0.3em] text-blue-600/60">
-              Curated Collectibles · Verified Authentic
-            </span>
           </div>
         </section>
 

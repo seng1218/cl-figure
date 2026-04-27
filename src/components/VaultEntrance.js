@@ -82,7 +82,7 @@ export default function VaultEntrance({ isOpen, onComplete }) {
                 ) : (
                   <Fingerprint 
                     size={80} 
-                    className={`transition-colors duration-300 ${scanState === 'scanning' ? 'text-blue-500' : 'text-gray-600 group-hover:text-blue-400'}`} 
+                    className={`transition-colors duration-300 ${scanState === 'scanning' ? 'text-blue-500' : 'text-gray-500 group-hover:text-blue-400'}`} 
                     strokeWidth={1} 
                   />
                 )}

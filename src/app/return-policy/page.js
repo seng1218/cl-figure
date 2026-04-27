@@ -20,7 +20,7 @@ export default function ReturnPolicyPage() {
 
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-gray-600 hover:text-white text-[10px] font-black uppercase tracking-widest transition-colors mb-12"
+          className="inline-flex items-center gap-2 text-gray-500 hover:text-white text-[10px] font-black uppercase tracking-widest transition-colors mb-12"
         >
           <ArrowLeft size={12} /> Back to Vault
         </Link>
@@ -32,7 +32,7 @@ export default function ReturnPolicyPage() {
           <h1 className="text-5xl md:text-6xl font-black text-white italic tracking-tighter leading-none mb-4">
             RETURN &amp; REFUND POLICY
           </h1>
-          <p className="text-gray-600 text-xs font-bold uppercase tracking-widest">
+          <p className="text-gray-500 text-xs font-bold uppercase tracking-widest">
             Effective: 1 January 2025 &nbsp;·&nbsp; Jurisdiction: Malaysia
           </p>
         </div>
@@ -130,7 +130,7 @@ export default function ReturnPolicyPage() {
             <p>
               For all return and refund enquiries, reach us via WhatsApp. Contact details are available in the footer of this site.
             </p>
-            <p className="text-gray-600 text-xs">
+            <p className="text-gray-500 text-xs">
               Vault 6 Studios operates as a private seller of authentic Japanese collectible figures, registered and operating within Malaysia.
             </p>
           </Section>

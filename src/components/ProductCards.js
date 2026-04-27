@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Plus } from 'lucide-react';
+import { Plus, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 
 export default function ProductCard({ item, index, onAdd, alwaysColor = false }) {
@@ -51,8 +51,12 @@ export default function ProductCard({ item, index, onAdd, alwaysColor = false })
       <Link href={`/product/${item.id}`} className="mt-5 block group/info">
         <span className="text-blue-600 font-black text-[9px] uppercase tracking-[0.4em] drop-shadow-[0_0_10px_rgba(37,99,235,0.8)] block mb-1">{item.series || ''}</span>
         <h3 className="text-lg md:text-2xl font-black text-white tracking-tighter group-hover/info:text-blue-400 transition-colors uppercase italic leading-tight line-clamp-2">{item.name}</h3>
-        <div className="flex items-center justify-between mt-3 border-t border-gray-900 pt-3">
-          <span className="text-[9px] font-black text-gray-700 uppercase tracking-[0.2em]">Value</span>
+        <div className="flex items-center gap-2 mt-3 mb-2">
+          <ShieldCheck size={10} className="text-blue-500 shrink-0" />
+          <span className="text-[8px] font-black uppercase tracking-[0.3em] text-blue-500">Origin Verified</span>
+        </div>
+        <div className="flex items-center justify-between border-t border-gray-900 pt-3">
+          <span className="text-[9px] font-black text-gray-500 uppercase tracking-[0.2em]">Value</span>
           <span className="text-base font-black text-white italic">RM {item.price.toFixed(2)}</span>
         </div>
       </Link>

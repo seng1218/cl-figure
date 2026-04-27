@@ -11,7 +11,7 @@ export default function Footer() {
             Return Policy
           </Link>
         </div>
-        <p className="text-gray-600 font-black text-[10px] uppercase tracking-[0.3em]">
+        <p className="text-gray-500 font-black text-[10px] uppercase tracking-[0.3em]">
           &copy; {new Date().getFullYear()} Vault 6 Studios. ALL RIGHTS RESERVED.
         </p>
       </div>

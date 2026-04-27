@@ -76,7 +76,7 @@ export default function HeroSection({ onExplore }) {
           </motion.button>
           
           <a href="/shop" className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 hover:text-white transition-colors border-b border-transparent hover:border-white pb-1">
-            Bypass Security (Quick Entry)
+            Browse the Archive
           </a>
         </motion.div>
       </div>

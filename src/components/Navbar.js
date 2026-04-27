@@ -101,10 +101,10 @@ export default function Navbar() {
               </Link>
             )}
 
-            {/* Cart Button with contrast border */}
+            {/* Cart Button with vault state label */}
             <button
               onClick={() => setIsSidebarOpen(true)}
-              className={`relative p-3 rounded-full transition-all duration-500 shadow-xl
+              className={`relative flex items-center gap-2 px-4 py-3 rounded-full transition-all duration-500 shadow-xl
                 ${isScrolled
                   ? 'bg-[#111] text-white hover:bg-blue-600 border border-gray-800'
                   : 'bg-white/10 text-white border border-white/20 hover:scale-110 backdrop-blur-sm'
@@ -114,10 +114,22 @@ export default function Navbar() {
               <AnimatePresence>
                 {itemCount > 0 && (
                   <motion.span
+                    initial={{ opacity: 0, width: 0 }}
+                    animate={{ opacity: 1, width: 'auto' }}
+                    exit={{ opacity: 0, width: 0 }}
+                    className="hidden md:block text-[9px] font-black uppercase tracking-widest overflow-hidden whitespace-nowrap"
+                  >
+                    Vault · {itemCount}
+                  </motion.span>
+                )}
+              </AnimatePresence>
+              <AnimatePresence>
+                {itemCount > 0 && (
+                  <motion.span
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     exit={{ scale: 0 }}
-                    className="absolute -top-1 -right-1 bg-blue-600 text-white text-[9px] font-black h-5 w-5 flex items-center justify-center rounded-full border-2 border-white"
+                    className="md:hidden absolute -top-1 -right-1 bg-blue-600 text-white text-[9px] font-black h-5 w-5 flex items-center justify-center rounded-full border-2 border-[#0a0a0a]"
                   >
                     {itemCount}
                   </motion.span>

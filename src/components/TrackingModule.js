@@ -124,12 +124,12 @@ export default function TrackingModule() {
                       return (
                         <div key={step.id} className="flex md:flex-col items-center gap-4 md:gap-3">
                           <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 border-2 transition-all duration-500 ${
-                            isActive ? 'bg-blue-600 border-blue-600 text-white shadow-[0_0_20px_rgba(37,99,235,0.4)]' : 'bg-[#111] border-gray-800 text-gray-600'
+                            isActive ? 'bg-blue-600 border-blue-600 text-white shadow-[0_0_20px_rgba(37,99,235,0.4)]' : 'bg-[#111] border-gray-800 text-gray-500'
                           }`}>
                             <Icon className="w-5 h-5" />
                           </div>
                           <div className="md:text-center">
-                            <p className={`font-black text-[10px] md:text-xs uppercase tracking-widest ${isActive ? 'text-white' : 'text-gray-600'}`}>
+                            <p className={`font-black text-[10px] md:text-xs uppercase tracking-widest ${isActive ? 'text-white' : 'text-gray-500'}`}>
                               {step.label}
                             </p>
                           </div>

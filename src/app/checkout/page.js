@@ -365,7 +365,7 @@ export default function CheckoutPage() {
                   <button onClick={() => setStep(1)} className="text-[9px] font-black uppercase tracking-widest text-gray-400 hover:text-blue-600 transition-colors">Edit</button>
                 </div>
                 <p className="text-xs font-black text-gray-900">{shipping.fullName} · {shipping.phone}</p>
-                <p className="text-xs text-gray-600">{shipping.address1}{shipping.address2 ? `, ${shipping.address2}` : ''}, {shipping.postcode} {shipping.city}, {shipping.state}</p>
+                <p className="text-xs text-gray-500">{shipping.address1}{shipping.address2 ? `, ${shipping.address2}` : ''}, {shipping.postcode} {shipping.city}, {shipping.state}</p>
               </div>
 
               <AnimatePresence mode="popLayout">

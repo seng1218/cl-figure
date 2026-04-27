@@ -114,7 +114,7 @@ export default function ShopClient() {
           ))}
           {sortedProducts.length === 0 && (
             <div className="col-span-full py-20 text-center">
-              <p className="text-gray-600 font-black uppercase tracking-widest">No figures match your search.</p>
+              <p className="text-gray-500 font-black uppercase tracking-widest">No figures match your search.</p>
             </div>
           )}
         </section>

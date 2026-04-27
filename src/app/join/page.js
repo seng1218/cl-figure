@@ -76,7 +76,7 @@ export default function JoinPage() {
 
       {/* Back nav */}
       <div className="relative z-10 px-6 pt-8 flex justify-between items-center max-w-7xl mx-auto w-full">
-        <Link href="/" className="text-gray-600 hover:text-white text-[10px] font-black uppercase tracking-[0.4em] transition-colors flex items-center gap-2">
+        <Link href="/" className="text-gray-500 hover:text-white text-[10px] font-black uppercase tracking-[0.4em] transition-colors flex items-center gap-2">
           ← Vault
         </Link>
         <span className="text-blue-600 font-black text-[10px] uppercase tracking-[0.4em] flex items-center gap-2">
@@ -146,7 +146,7 @@ export default function JoinPage() {
                   </div>
                   <div>
                     <p className="text-white font-black text-sm uppercase tracking-wider">{label}</p>
-                    <p className="text-gray-600 text-xs leading-relaxed mt-1">{desc}</p>
+                    <p className="text-gray-500 text-xs leading-relaxed mt-1">{desc}</p>
                   </div>
                 </motion.div>
               ))}
@@ -169,7 +169,7 @@ export default function JoinPage() {
                   </div>
                 ))}
               </div>
-              <p className="text-gray-600 text-[10px] font-black uppercase tracking-widest">
+              <p className="text-gray-500 text-[10px] font-black uppercase tracking-widest">
                 Collectors already inside the Vault
               </p>
             </motion.div>
@@ -220,7 +220,7 @@ export default function JoinPage() {
                     <div className="mb-10">
                       <Lock size={32} className="text-blue-600 mb-6" strokeWidth={1} />
                       <h2 className="text-3xl font-black text-white italic tracking-tighter">Request Clearance</h2>
-                      <p className="text-gray-600 text-[10px] font-black uppercase tracking-[0.4em] mt-2">Syndicate application form</p>
+                      <p className="text-gray-500 text-[10px] font-black uppercase tracking-[0.4em] mt-2">Syndicate application form</p>
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-5">

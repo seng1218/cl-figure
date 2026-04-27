@@ -45,7 +45,7 @@ export default function CartSidebar({ isOpen, onClose }) {
             <div className="flex-grow overflow-y-auto p-6 space-y-6">
               {cart.length === 0 ? (
                 <div className="text-center py-20">
-                  <p className="text-gray-600 font-bold uppercase text-xs tracking-widest italic">The Vault is empty.</p>
+                  <p className="text-gray-500 font-bold uppercase text-xs tracking-widest italic">The Vault is empty.</p>
                 </div>
               ) : (
                 cart.map((item) => (

@@ -254,7 +254,7 @@ export default function ProductDetail() {
                     key={tab}
                     onClick={() => setActiveTab(tab)}
                     className={`pb-4 text-[10px] font-black uppercase tracking-[0.2em] transition-colors relative z-10 
-                      ${activeTab === tab ? 'text-blue-600' : 'text-gray-600 hover:text-white'}`}
+                      ${activeTab === tab ? 'text-blue-600' : 'text-gray-500 hover:text-white'}`}
                   >
                     {tab}
                     {activeTab === tab && (
