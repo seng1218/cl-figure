@@ -62,18 +62,22 @@ export default function HeroSection({ onExplore }) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
-          className="flex flex-col md:flex-row items-center justify-center gap-6 mt-12"
+          className="flex flex-col items-center justify-center gap-6 mt-12"
         >
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={onExplore}
-            className="group relative bg-white text-black px-12 py-6 font-black text-xs uppercase tracking-[0.4em] flex items-center gap-4 hover:bg-blue-600 hover:text-white transition-all overflow-hidden"
+            className="group relative bg-white text-black px-12 py-6 font-black text-xs uppercase tracking-[0.4em] flex items-center gap-4 hover:bg-blue-600 hover:text-white transition-all overflow-hidden shadow-2xl"
           >
             <div className="absolute inset-0 bg-blue-600 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out z-0" />
             <span className="relative z-10">{hero?.ctaLabel || 'Enter Vault'}</span>
             <ArrowRight size={18} className="relative z-10 group-hover:translate-x-2 transition-transform" />
           </motion.button>
+          
+          <a href="/shop" className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 hover:text-white transition-colors border-b border-transparent hover:border-white pb-1">
+            Bypass Security (Quick Entry)
+          </a>
         </motion.div>
       </div>
     </section>

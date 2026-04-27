@@ -2,8 +2,11 @@ import crypto from 'crypto';
 
 const SESSION_TTL = 7200; // 2 hours
 
-// In-memory fallback for local dev — cleared on Worker restart
-const localSessions = new Map();
+// Persistent session store for local dev (persists across HMR reloads)
+if (!global._localSessions) {
+  global._localSessions = new Map();
+}
+const localSessions = global._localSessions;
 
 export function generateToken() {
   return crypto.randomBytes(32).toString('hex');
@@ -20,8 +23,8 @@ export function clearCookie() {
 }
 
 export function getSessionToken(req) {
-  const cookie = req.headers.get('cookie') || '';
-  const match = cookie.match(/(?:^|;\s*)admin_session=([a-f0-9]{64})/);
+  const cookieHeader = req.headers.get('cookie') || '';
+  const match = cookieHeader.match(/(?:^|;\s*)admin_session=([a-f0-9]{64})/);
   return match ? match[1] : null;
 }
 

@@ -31,7 +31,16 @@ export async function POST(req) {
   await storeSession(token, cfEnv);
 
   const res = NextResponse.json({ ok: true });
-  res.headers.set('Set-Cookie', sessionCookie(token));
+  
+  // Use Next.js cookie API for better reliability
+  res.cookies.set('admin_session', token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV !== 'development',
+    sameSite: 'strict',
+    maxAge: 7200, // 2 hours
+    path: '/',
+  });
+
   return res;
 }
 
@@ -40,7 +49,8 @@ export async function DELETE(req) {
   const cfEnv = await getCFEnv();
   const token = getSessionToken(req);
   await deleteSession(token, cfEnv);
+  
   const res = NextResponse.json({ ok: true });
-  res.headers.set('Set-Cookie', clearCookie());
+  res.cookies.delete('admin_session');
   return res;
 }

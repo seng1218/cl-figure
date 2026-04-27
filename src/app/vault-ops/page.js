@@ -6,6 +6,7 @@ import Link from 'next/link';
 
 export default function AdminDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(true);
   const [passcode, setPasscode] = useState("");
   const [errorMSG, setErrorMSG] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -81,7 +82,7 @@ export default function AdminDashboard() {
 
   const fetchSubscribers = async () => {
     try {
-      const res = await fetch('/api/subscribe', {
+      const res = await fetch('/api/subscribe/', {
         cache: 'no-store',
       });
       if (!res.ok) return;
@@ -103,7 +104,7 @@ export default function AdminDashboard() {
 
   const fetchOrders = async () => {
     try {
-      const res = await fetch('/api/orders', {
+      const res = await fetch('/api/orders/', {
         cache: 'no-store',
       });
       if (!res.ok) return;
@@ -111,6 +112,19 @@ export default function AdminDashboard() {
       if (data.success) setOrders(data.orders || []);
     } catch (err) {
       console.error('Failed to load orders:', err);
+    }
+  };
+
+  const checkAuth = async () => {
+    try {
+      const res = await fetch('/api/auth/check/');
+      if (res.ok) {
+        setIsAuthenticated(true);
+      }
+    } catch (err) {
+      console.error("Auth check failed:", err);
+    } finally {
+      setIsVerifying(false);
     }
   };
 
@@ -139,6 +153,10 @@ export default function AdminDashboard() {
       setCmsSaving(prev => ({ ...prev, [section]: false }));
     }
   };
+
+  useEffect(() => {
+    checkAuth();
+  }, []);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -207,6 +225,14 @@ export default function AdminDashboard() {
   const handleEdit = (item) => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
     setEditingId(item.id);
+    setImageFile(null);
+    setAdditionalImages([]);
+    // Reset file inputs visually
+    const fileInput = document.getElementById('image-upload');
+    if (fileInput) fileInput.value = '';
+    const extraInput = document.getElementById('extra-images-upload');
+    if (extraInput) extraInput.value = '';
+
     setFormData({
       name: item.name,
       manufacturer: item.manufacturer || "",
@@ -229,6 +255,11 @@ export default function AdminDashboard() {
       name: "", manufacturer: "", series: "", price: "", stock: "1", scale: "1/7", category: "Ready Stock", dispatchCondition: "10/10 MISB (Mint in Sealed Box)", sealIntegrity: "Intact / Untampered", productSpecs: "ABS, PVC", authenticity: "Verified Authentic", description: ""
     });
     setImageFile(null);
+    setAdditionalImages([]);
+    const fileInput = document.getElementById('image-upload');
+    if (fileInput) fileInput.value = '';
+    const extraInput = document.getElementById('extra-images-upload');
+    if (extraInput) extraInput.value = '';
   };
 
   const handleDelete = async (id) => {
@@ -247,6 +278,17 @@ export default function AdminDashboard() {
       alert("Failed to delete item.");
     }
   };
+
+  if (isVerifying) {
+    return (
+      <main className="min-h-screen bg-[#050505] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+          <p className="text-blue-500 font-black text-[10px] uppercase tracking-[0.5em]">Verifying Biometrics...</p>
+        </div>
+      </main>
+    );
+  }
 
   if (!isAuthenticated) {
     return (
@@ -551,7 +593,7 @@ export default function AdminDashboard() {
                 <p className="text-gray-600 text-xs italic font-bold">No orders found.</p>
               )}
               {orders.map((order) => (
-                <OrderCard key={order.id} order={order} onUpdate={fetchOrders} />
+                <OrderCard key={order.id} order={order} onUpdate={fetchOrders} onRemove={fetchOrders} />
               ))}
             </div>
           )}
@@ -631,6 +673,39 @@ export default function AdminDashboard() {
                 <CMSSection title="Contact Info" onSave={() => saveCMSSection('contact', cms.contact)} saving={cmsSaving.contact} status={cmsStatus.contact}>
                   <CMSField label="WhatsApp Number (e.g. +60123456789)" value={cms.contact?.whatsapp || ''} onChange={v => setCms(p => ({ ...p, contact: { ...p.contact, whatsapp: v } }))} />
                 </CMSSection>
+                
+                {/* Vault Ethos */}
+                <CMSSection title="Vault Ethos" onSave={() => saveCMSSection('ethos', cms.ethos)} saving={cmsSaving.ethos} status={cmsStatus.ethos}>
+                  <CMSField label="Ethos Heading" value={cms.ethos?.heading || ''} onChange={v => setCms(p => ({ ...p, ethos: { ...p.ethos, heading: v } }))} />
+                  <CMSField label="Ethos Subheading" value={cms.ethos?.subheading || ''} onChange={v => setCms(p => ({ ...p, ethos: { ...p.ethos, subheading: v } }))} />
+                  
+                  <div className="space-y-4 pt-4 border-t border-gray-800">
+                    <label className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Ethos Values</label>
+                    {(Array.isArray(cms.ethos?.values) ? cms.ethos.values : []).map((value, idx) => (
+                      <div key={idx} className="bg-[#050505] p-4 rounded-xl border border-gray-900 space-y-3">
+                        <CMSField 
+                          label={`Value ${idx + 1} Title`} 
+                          value={value.title} 
+                          onChange={v => {
+                            const newValues = [...cms.ethos.values];
+                            newValues[idx] = { ...newValues[idx], title: v };
+                            setCms(p => ({ ...p, ethos: { ...p.ethos, values: newValues } }));
+                          }} 
+                        />
+                        <CMSField 
+                          label={`Value ${idx + 1} Description`} 
+                          value={value.desc} 
+                          textarea
+                          onChange={v => {
+                            const newValues = [...cms.ethos.values];
+                            newValues[idx] = { ...newValues[idx], desc: v };
+                            setCms(p => ({ ...p, ethos: { ...p.ethos, values: newValues } }));
+                          }} 
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </CMSSection>
 
               </div>
             )}
@@ -680,17 +755,40 @@ function CMSField({ label, value, onChange, textarea }) {
   );
 }
 
-function OrderCard({ order, onUpdate }) {
+function OrderCard({ order, onUpdate, onRemove }) {
   const [isEditing, setIsEditing] = useState(false);
+  const [isRemoving, setIsRemoving] = useState(false);
   const [status, setStatus] = useState(order.status);
   const [courier, setCourier] = useState(order.courier || '');
   const [trackingNumber, setTrackingNumber] = useState(order.trackingNumber || '');
   const [isSaving, setIsSaving] = useState(false);
 
+  const handleRemove = async () => {
+    if (!confirm(`INCINERATE ORDER: Permanently delete order ${order.id}? This cannot be undone.`)) return;
+    setIsRemoving(true);
+    try {
+      const res = await fetch('/api/orders/', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: order.id })
+      });
+      const data = await res.json();
+      if (data.success) {
+        onRemove();
+      } else {
+        alert('Failed to remove order: ' + data.error);
+      }
+    } catch {
+      alert('Error removing order.');
+    } finally {
+      setIsRemoving(false);
+    }
+  };
+
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      const res = await fetch('/api/orders', {
+      const res = await fetch('/api/orders/', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: order.id, status, courier, trackingNumber })
@@ -794,9 +892,18 @@ function OrderCard({ order, onUpdate }) {
             {order.courier && <span><strong className="text-gray-400">Courier:</strong> {order.courier}</span>}
             {order.trackingNumber && <span><strong className="text-gray-400">Tracking:</strong> <span className="text-blue-400 font-mono">{order.trackingNumber}</span></span>}
           </div>
-          <button onClick={() => setIsEditing(true)} className="border border-gray-700 text-white px-4 py-2 font-black text-[9px] uppercase tracking-widest hover:bg-[#111] transition-all flex items-center gap-2">
-            <Edit3 size={12} /> Update Status
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleRemove}
+              disabled={isRemoving}
+              className="border border-red-900/50 text-red-600 px-4 py-2 font-black text-[9px] uppercase tracking-widest hover:bg-red-600 hover:text-white hover:border-red-600 transition-all flex items-center gap-2 disabled:opacity-50"
+            >
+              <Trash2 size={12} /> {isRemoving ? 'Removing...' : 'Remove'}
+            </button>
+            <button onClick={() => setIsEditing(true)} className="border border-gray-700 text-white px-4 py-2 font-black text-[9px] uppercase tracking-widest hover:bg-[#111] transition-all flex items-center gap-2">
+              <Edit3 size={12} /> Update Status
+            </button>
+          </div>
         </div>
       )}
     </div>

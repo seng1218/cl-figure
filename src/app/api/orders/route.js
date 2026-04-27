@@ -185,3 +185,26 @@ export async function PUT(req) {
     return NextResponse.json({ success: false, error: 'Failed to update order.' }, { status: 500 });
   }
 }
+// DELETE /api/orders — admin only, remove an order by ID
+export async function DELETE(req) {
+  const cfEnv = await getCFEnv();
+  if (!await isAuthorized(req, cfEnv)) {
+    return NextResponse.json({ success: false, error: 'Unauthorized.' }, { status: 401 });
+  }
+  try {
+    const { id } = await req.json();
+    if (!id) {
+      return NextResponse.json({ success: false, error: 'Order ID is required.' }, { status: 400 });
+    }
+    const orders = await readOrders(cfEnv);
+    const filtered = orders.filter(o => o.id !== id);
+    if (filtered.length === orders.length) {
+      return NextResponse.json({ success: false, error: 'Order not found.' }, { status: 404 });
+    }
+    await writeOrders(filtered, cfEnv);
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('DELETE /api/orders error:', error);
+    return NextResponse.json({ success: false, error: 'Failed to delete order.' }, { status: 500 });
+  }
+}

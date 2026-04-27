@@ -68,8 +68,8 @@ export default function Navbar() {
             <Link href="/shop" className="text-[10px] uppercase font-black tracking-[0.2em] hover:text-white transition-colors">
               Collection
             </Link>
-            <Link href="/#ethos" className="text-[10px] uppercase font-black tracking-[0.2em] hover:text-white transition-colors">
-              Ethos
+            <Link href="/#tracking" className="text-[10px] uppercase font-black tracking-[0.2em] hover:text-white transition-colors">
+              Tracking
             </Link>
             <Link href="/join" className="text-[10px] uppercase font-black tracking-[0.2em] hover:text-blue-500 transition-colors text-blue-600">
               Join
@@ -165,11 +165,11 @@ export default function Navbar() {
                 Collection
               </Link>
               <Link
-                href="/#ethos"
+                href="/#tracking"
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="text-4xl font-black text-white uppercase italic tracking-tighter hover:text-blue-500 transition-colors"
               >
-                Ethos
+                Tracking
               </Link>
               <Link
                 href="/join"

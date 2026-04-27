@@ -17,6 +17,7 @@ export default function JoinPage() {
   const [status, setStatus] = useState('idle'); // idle | loading | success | error | duplicate
   const [errorMsg, setErrorMsg] = useState('');
   const [memberCount, setMemberCount] = useState(null);
+  const [website, setWebsite] = useState(''); // Honeypot
   const spotlightRef = useRef(null);
 
   useEffect(() => {
@@ -38,7 +39,7 @@ export default function JoinPage() {
       const res = await fetch('/api/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, name }),
+        body: JSON.stringify({ email, name, website }),
       });
       const data = await res.json();
 
@@ -243,6 +244,18 @@ export default function JoinPage() {
                           onChange={(e) => setEmail(e.target.value)}
                           required
                           className="w-full bg-[#050505] border border-gray-800 text-white p-4 font-bold text-sm focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-colors placeholder:text-gray-700"
+                        />
+                      </div>
+
+                      {/* Honeypot field - hidden from users, caught by bots */}
+                      <div className="hidden" aria-hidden="true">
+                        <input
+                          type="text"
+                          name="website"
+                          value={website}
+                          onChange={(e) => setWebsite(e.target.value)}
+                          tabIndex="-1"
+                          autoComplete="off"
                         />
                       </div>
 

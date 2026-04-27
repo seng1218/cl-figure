@@ -171,7 +171,45 @@ export default function Home() {
           </div>
         </section>
 
-        {/* 5. Artifact Tracking Module */}
+        {/* 5. Our Ethos */}
+        <section id="ethos" className="max-w-7xl mx-auto px-6 py-32 border-b border-gray-900 overflow-hidden">
+          <div className="flex flex-col items-center text-center mb-20">
+            <span className="text-blue-600 font-black text-[10px] uppercase tracking-[0.5em] mb-4">
+              Vault Standards
+            </span>
+            <h2 className="text-5xl md:text-7xl font-black text-white italic tracking-tighter leading-none mb-6">
+              {ethos?.heading || 'OUR ETHOS.'}
+            </h2>
+            <p className="text-gray-500 text-[10px] md:text-xs font-black uppercase tracking-[0.4em]">
+              {ethos?.subheading || 'UNCOMPROMISING STANDARDS.'}
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+            {(Array.isArray(ethos?.values) ? ethos.values : []).map((value, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.2 }}
+                className="bg-[#0a0a0a] border border-gray-800 p-10 md:p-12 rounded-[2.5rem] hover:border-blue-600 transition-all group"
+              >
+                <div className="w-12 h-12 bg-blue-600/10 rounded-2xl flex items-center justify-center mb-8 group-hover:bg-blue-600 transition-colors duration-500">
+                  {idx === 0 ? <Activity className="text-blue-500 group-hover:text-white" size={24} /> : 
+                   idx === 1 ? <ShieldCheck className="text-blue-500 group-hover:text-white" size={24} /> : 
+                   <Cpu className="text-blue-500 group-hover:text-white" size={24} />}
+                </div>
+                <h3 className="text-xl font-black text-white italic tracking-tighter mb-4 group-hover:text-blue-500 transition-colors">{value.title}</h3>
+                <p className="text-gray-500 text-sm leading-relaxed font-medium">
+                  {value.desc}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+
+        {/* 6. Artifact Tracking Module */}
         <section id="tracking" className="bg-transparent py-32 relative overflow-hidden px-6">
           <TrackingModule />
         </section>
