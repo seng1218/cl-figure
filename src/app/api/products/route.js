@@ -1,9 +1,21 @@
 import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import crypto from 'crypto';
+import seedInventory from '@/data/inventory.json';
+
+const ALLOWED_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 
 function isAuthorized(req) {
-  return req.headers.get('x-admin-key') === process.env.ADMIN_SECRET;
+  const secret = process.env.ADMIN_SECRET;
+  if (!secret) return false;
+  const provided = req.headers.get('x-admin-key') || '';
+  
+  const providedHash = crypto.createHash('sha256').update(provided).digest();
+  const secretHash = crypto.createHash('sha256').update(secret).digest();
+
+  return crypto.timingSafeEqual(providedHash, secretHash);
 }
 
 // Returns Cloudflare env bindings when running on Workers, null in local dev
@@ -19,6 +31,8 @@ async function getCFEnv() {
 
 // Upload an image file — R2 on Cloudflare, local /public/uploads in dev
 async function saveFile(file, cfEnv) {
+  if (!ALLOWED_MIME_TYPES.has(file.type)) throw new Error('Invalid file type.');
+  if (file.size > MAX_FILE_SIZE) throw new Error('File exceeds 10 MB limit.');
   const safeFilename = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
   const uid = Math.random().toString(36).substring(2, 8);
   const filename = `${Date.now()}-${uid}-${safeFilename}`;
@@ -38,14 +52,21 @@ async function saveFile(file, cfEnv) {
   return `/uploads/${filename}`;
 }
 
-// Read inventory — KV on Cloudflare, local JSON file in dev
+// Read inventory — KV on Cloudflare, local JSON file in dev, static seed as fallback
 async function readInventory(cfEnv) {
   if (cfEnv?.INVENTORY_KV) {
     const raw = await cfEnv.INVENTORY_KV.get('inventory');
-    return raw ? JSON.parse(raw) : [];
+    if (raw !== null) return JSON.parse(raw);
+    // KV empty on first deploy — seed from bundled JSON
+    await cfEnv.INVENTORY_KV.put('inventory', JSON.stringify(seedInventory));
+    return [...seedInventory];
   }
-  const filePath = path.join(process.cwd(), 'src/data/inventory.json');
-  return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  try {
+    const filePath = path.join(process.cwd(), 'src/data/inventory.json');
+    return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  } catch {
+    return [...seedInventory];
+  }
 }
 
 // Write inventory — KV on Cloudflare, local JSON file in dev
@@ -67,7 +88,7 @@ export async function GET() {
     return NextResponse.json(inventory);
   } catch (error) {
     console.error("GET Error:", error);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: "Failed to load inventory." }, { status: 500 });
   }
 }
 
@@ -176,6 +197,45 @@ export async function PUT(req) {
   } catch (error) {
     console.error("PUT Error:", error);
     return NextResponse.json({ success: false, error: "Failed to update item." }, { status: 500 });
+  }
+}
+
+// PATCH /api/products — decrement stock for purchased items (called by /api/orders)
+export async function PATCH(req) {
+  if (!isAuthorized(req)) {
+    return NextResponse.json({ success: false, error: "Unauthorized." }, { status: 401 });
+  }
+  try {
+    const { items } = await req.json();
+    if (!Array.isArray(items) || items.length === 0) {
+      return NextResponse.json({ success: false, error: 'Invalid items.' }, { status: 400 });
+    }
+    const cfEnv = await getCFEnv();
+    const inventory = await readInventory(cfEnv);
+
+    for (const { id, quantity } of items) {
+      const product = inventory.find(p => String(p.id) === String(id));
+      if (!product) {
+        return NextResponse.json({ success: false, error: `Item ${id} not found.` }, { status: 404 });
+      }
+      if (product.stock < quantity) {
+        return NextResponse.json({
+          success: false,
+          error: `"${product.name}" only has ${product.stock} unit${product.stock === 1 ? '' : 's'} left.`,
+        }, { status: 409 });
+      }
+    }
+
+    for (const { id, quantity } of items) {
+      const idx = inventory.findIndex(p => String(p.id) === String(id));
+      inventory[idx].stock -= quantity;
+    }
+
+    await writeInventory(inventory, cfEnv);
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('PATCH Error:', error);
+    return NextResponse.json({ success: false, error: 'Failed to update stock.' }, { status: 500 });
   }
 }
 
