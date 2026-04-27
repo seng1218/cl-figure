@@ -49,7 +49,7 @@ export default function ProductCard({ item, index, onAdd, alwaysColor = false })
       </Link>
 
       <Link href={`/product/${item.id}`} className="mt-5 block group/info">
-        <span className="text-blue-600 font-black text-[9px] uppercase tracking-[0.4em] drop-shadow-[0_0_10px_rgba(37,99,235,0.8)] block mb-1">{item.series}</span>
+        <span className="text-blue-600 font-black text-[9px] uppercase tracking-[0.4em] drop-shadow-[0_0_10px_rgba(37,99,235,0.8)] block mb-1">{item.series || ''}</span>
         <h3 className="text-lg md:text-2xl font-black text-white tracking-tighter group-hover/info:text-blue-400 transition-colors uppercase italic leading-tight line-clamp-2">{item.name}</h3>
         <div className="flex items-center justify-between mt-3 border-t border-gray-900 pt-3">
           <span className="text-[9px] font-black text-gray-700 uppercase tracking-[0.2em]">Value</span>

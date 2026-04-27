@@ -28,6 +28,7 @@ export default function ProductDetail() {
   const [buttonState, setButtonState] = useState('idle'); // idle, loading, secured
   const [activeTab, setActiveTab] = useState('overview'); // overview, specs
   const [selectedIdx, setSelectedIdx] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
 
   const product = allProducts.find((p) => p.id.toString() === id);
 
@@ -89,10 +90,58 @@ export default function ProductDetail() {
     y.set(0);
   };
 
+  const renderCTA = () => (
+    <button
+      onClick={handleAddToCart}
+      disabled={buttonState !== 'idle' || product.stock <= 0}
+      className={`w-full py-5 rounded-3xl font-black text-xs uppercase tracking-[0.3em] flex items-center justify-center gap-3 transition-all duration-300 shadow-xl overflow-hidden relative
+        ${buttonState === 'idle' && product.stock > 0 ? 'bg-white text-black hover:bg-blue-600 hover:text-white hover:shadow-[0_0_30px_rgba(37,99,235,0.4)]' : ''}
+        ${buttonState === 'idle' && product.stock <= 0 ? 'bg-red-900/40 text-red-500 border border-red-900/50 cursor-not-allowed' : ''}
+        ${buttonState === 'loading' ? 'bg-blue-600 text-white shadow-[0_0_50px_rgba(37,99,235,0.5)] scale-[0.98]' : ''}
+        ${buttonState === 'secured' ? 'bg-green-600 text-white shadow-[0_0_50px_rgba(34,197,94,0.4)] bg-opacity-90' : ''}
+      `}
+    >
+      {buttonState === 'loading' && (
+        <motion.div
+          initial={{ left: '-100%' }}
+          animate={{ left: '100%' }}
+          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+          className="absolute inset-y-0 w-1/3 bg-white/20 skew-x-12 blur-md"
+        />
+      )}
+      <AnimatePresence mode="wait">
+        {buttonState === 'idle' && product.stock > 0 && (
+          <motion.div key="idle" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="flex items-center gap-3">
+            <Plus size={18} /> Add to Collection
+          </motion.div>
+        )}
+        {buttonState === 'idle' && product.stock <= 0 && (
+          <motion.div key="soldout" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="flex items-center gap-3">
+            SOLD OUT
+          </motion.div>
+        )}
+        {buttonState === 'loading' && (
+          <motion.div key="loading" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="flex items-center gap-3 z-10 relative">
+            <Loader2 size={18} className="animate-spin" /> Encrypting...
+          </motion.div>
+        )}
+        {buttonState === 'secured' && (
+          <motion.div key="secured" initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }} className="flex items-center gap-3">
+            <Lock size={18} /> Secured in Vault
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </button>
+  );
+
   if (!product) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen bg-[#050505] flex flex-col items-center justify-center gap-6 text-center px-6">
         <p className="text-gray-400 font-black uppercase tracking-widest">Item Not Found in Vault</p>
+        <div className="flex gap-8">
+          <Link href="/shop" className="text-blue-600 font-black text-[10px] uppercase tracking-widest hover:text-white transition-colors">Browse Collection</Link>
+          <Link href="/" className="text-gray-500 font-black text-[10px] uppercase tracking-widest hover:text-white transition-colors">Return to Vault</Link>
+        </div>
       </div>
     );
   }
@@ -135,12 +184,15 @@ export default function ProductDetail() {
                     transition={{ y: { repeat: Infinity, duration: 4, ease: "easeInOut" } }}
                     className="aspect-[4/5] rounded-[3rem] bg-[#111] border border-gray-800 shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative cursor-pointer"
                   >
-                    <motion.div className="w-full h-full rounded-[3rem] overflow-hidden absolute inset-0">
+                    <motion.div 
+                      className="w-full h-full rounded-[3rem] overflow-hidden absolute inset-0"
+                      onClick={() => setLightboxOpen(true)}
+                    >
                       <motion.img
                         key={selectedIdx}
                         src={images[selectedIdx]}
                         style={{ transform: "translateZ(30px) scale(1.05)" }}
-                        className="w-full h-full object-cover origin-center"
+                        className="w-full h-full object-cover origin-center cursor-zoom-in"
                         alt={product.name}
                       />
                     </motion.div>
@@ -267,50 +319,10 @@ export default function ProductDetail() {
             </div>
 
             {/* Call to Action - Vault Securing */}
-            <div className="flex flex-col sm:flex-row gap-4 pt-6">
-              <button
-                onClick={handleAddToCart}
-                disabled={buttonState !== 'idle' || product.stock <= 0}
-                className={`flex-grow py-6 rounded-3xl font-black text-xs uppercase tracking-[0.3em] flex items-center justify-center gap-3 transition-all duration-300 shadow-xl overflow-hidden relative
-                  ${buttonState === 'idle' && product.stock > 0 ? 'bg-white text-black hover:bg-blue-600 hover:text-white hover:shadow-[0_0_30px_rgba(37,99,235,0.4)]' : ''}
-                  ${buttonState === 'idle' && product.stock <= 0 ? 'bg-red-900/40 text-red-500 border border-red-900/50 cursor-not-allowed' : ''}
-                  ${buttonState === 'loading' ? 'bg-blue-600 text-white shadow-[0_0_50px_rgba(37,99,235,0.5)] scale-[0.98]' : ''}
-                  ${buttonState === 'secured' ? 'bg-green-600 text-white shadow-[0_0_50px_rgba(34,197,94,0.4)] bg-opacity-90' : ''}
-                `}
-              >
-                {/* The glowing sweeping effect behind loading */}
-                {buttonState === 'loading' && (
-                  <motion.div
-                    initial={{ left: '-100%' }}
-                    animate={{ left: '100%' }}
-                    transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                    className="absolute inset-y-0 w-1/3 bg-white/20 skew-x-12 blur-md"
-                  />
-                )}
-
-                <AnimatePresence mode="wait">
-                  {buttonState === 'idle' && product.stock > 0 && (
-                    <motion.div key="idle" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="flex items-center gap-3">
-                      <Plus size={18} /> Add to Collection
-                    </motion.div>
-                  )}
-                  {buttonState === 'idle' && product.stock <= 0 && (
-                    <motion.div key="soldout" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="flex items-center gap-3">
-                      SOLD OUT
-                    </motion.div>
-                  )}
-                  {buttonState === 'loading' && (
-                    <motion.div key="loading" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="flex items-center gap-3 z-10 relative">
-                      <Loader2 size={18} className="animate-spin" /> Encrypting...
-                    </motion.div>
-                  )}
-                  {buttonState === 'secured' && (
-                    <motion.div key="secured" initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }} className="flex items-center gap-3">
-                      <Lock size={18} /> Secured in Vault
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </button>
+            <div className="hidden md:flex flex-col sm:flex-row gap-4 pt-6">
+              <div className="flex-grow">
+                {renderCTA()}
+              </div>
 
               <button className="px-8 py-6 rounded-3xl border border-gray-800 hover:bg-[#111] hover:border-gray-700 transition-all text-gray-500 hover:text-white group">
                 <Info size={18} className="group-hover:scale-110 transition-transform" />
@@ -350,6 +362,40 @@ export default function ProductDetail() {
           </section>
         )}
       </div>
+
+      {/* Mobile Sticky CTA */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 p-4 bg-[#050505]/95 backdrop-blur-xl border-t border-gray-800 z-50">
+        {renderCTA()}
+      </div>
+
+      {/* Lightbox Overlay */}
+      <AnimatePresence>
+        {lightboxOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setLightboxOpen(false)}
+            className="fixed inset-0 z-[200] bg-black/95 backdrop-blur-3xl flex items-center justify-center p-4 cursor-zoom-out"
+          >
+            <motion.img
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.9 }}
+              src={product.images?.length ? product.images[selectedIdx] : product.image}
+              className="max-w-full max-h-full object-contain rounded-2xl"
+              alt={product.name}
+              onClick={(e) => e.stopPropagation()}
+            />
+            <button 
+              onClick={() => setLightboxOpen(false)}
+              className="absolute top-6 right-6 text-white bg-black/50 hover:bg-white hover:text-black rounded-full p-4 transition-colors font-black uppercase tracking-widest text-[10px]"
+            >
+              Close [X]
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* The Toast Component itself (fallback or subtle global confirmation) */}
       <Toast

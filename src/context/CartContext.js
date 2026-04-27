@@ -20,13 +20,11 @@ export function CartProvider({ children }) {
   };
 
   const updateQuantity = (productId, amount) => {
-    setCart((prev) => prev.map(item => {
-      if (item.id === productId) {
-        const newQty = item.quantity + amount;
-        return { ...item, quantity: newQty > 0 ? newQty : 1 };
-      }
-      return item;
-    }));
+    setCart((prev) => prev.reduce((acc, item) => {
+      if (item.id !== productId) return [...acc, item];
+      const newQty = item.quantity + amount;
+      return newQty > 0 ? [...acc, { ...item, quantity: newQty }] : acc;
+    }, []));
   };
 
   const removeFromCart = (productId) => {

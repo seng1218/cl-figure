@@ -7,6 +7,7 @@ import HeroSection from '@/components/HeroSection';
 import ProductCards from '@/components/ProductCards';
 import VaultEntrance from '@/components/VaultEntrance';
 import Toast from '@/components/Toast';
+import TrackingModule from '@/components/TrackingModule';
 import { Lock, ArrowRight, Activity, ShieldCheck, Cpu } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
@@ -19,25 +20,32 @@ export default function Home() {
   const [toastMessage, setToastMessage] = useState("");
   const [isVaultOpen, setIsVaultOpen] = useState(false);
   const [products, setProducts] = useState([]);
+  const [productsError, setProductsError] = useState(false);
 
   useEffect(() => {
     fetch('/api/products/', { cache: 'no-store' })
       .then(r => r.json())
-      .then(data => { if (Array.isArray(data)) setProducts(data); })
-      .catch(console.error);
+      .then(data => { if (Array.isArray(data)) setProducts(data); else setProductsError(true); })
+      .catch(() => setProductsError(true));
   }, []);
 
-  // Custom Spotlight logic
   const spotlightRef = useRef(null);
 
   useEffect(() => {
+    let rafId;
     const handleMouseMove = (e) => {
-      if (spotlightRef.current) {
-        spotlightRef.current.style.transform = `translate(${e.clientX - 400}px, ${e.clientY - 400}px)`;
-      }
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        if (spotlightRef.current) {
+          spotlightRef.current.style.transform = `translate(${e.clientX - 400}px, ${e.clientY - 400}px)`;
+        }
+      });
     };
     window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      cancelAnimationFrame(rafId);
+    };
   }, []);
 
   const handleAddToVault = (item) => {
@@ -50,6 +58,20 @@ export default function Home() {
 
   const grailProduct = products[0];
   const recentDrops = products.slice(1, 4);
+
+  if (productsError) {
+    return (
+      <main className="min-h-screen bg-[#050505] flex flex-col items-center justify-center gap-6 text-center px-6">
+        <p className="text-gray-500 font-black uppercase tracking-widest text-sm">Vault Temporarily Offline</p>
+        <button
+          onClick={() => { setProductsError(false); fetch('/api/products/', { cache: 'no-store' }).then(r => r.json()).then(data => { if (Array.isArray(data)) setProducts(data); }).catch(() => setProductsError(true)); }}
+          className="text-blue-600 font-black text-[10px] uppercase tracking-widest hover:text-white transition-colors"
+        >
+          Retry
+        </button>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-[#050505] pb-32 relative overflow-x-hidden">
@@ -136,7 +158,7 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="columns-1 sm:columns-2 lg:columns-3 gap-8 space-y-8">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
             {recentDrops.map((item, index) => (
               <ProductCards
                 key={item.id}
@@ -149,29 +171,9 @@ export default function Home() {
           </div>
         </section>
 
-        {/* 5. Brand ETHOS Manifesto */}
-        <section id="ethos" className="bg-transparent py-32 relative overflow-hidden">
-          {/* Faint massive background text */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[15vw] md:text-[20vw] font-black text-white/5 whitespace-nowrap italic tracking-tighter pointer-events-none select-none">
-            THE ETHOS
-          </div>
-
-          <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-24 relative z-10 text-center md:text-left">
-            {[
-              { Icon: ShieldCheck, color: 'text-blue-600', defaults: { title: '100% Verified', description: 'No bootlegs. No recasts. Every item is verified against manufacturer records before entering our catalog.' } },
-              { Icon: Lock, color: 'text-white', defaults: { title: 'Secure Transport', description: 'Figures are packed in impact-resistant casing before dispatch. While we cannot control external couriers, we remain reachable if an item is damaged in transit.' } },
-              { Icon: Cpu, color: 'text-blue-600', defaults: { title: 'Order Tracking', description: 'Your order history is digitized. Track your purchases and collection seamlessly within your dashboard.' } },
-            ].map(({ Icon, color, defaults }, i) => {
-              const card = (ethos && ethos[i]) ? ethos[i] : defaults;
-              return (
-                <div key={i} className="space-y-6 flex flex-col items-center md:items-start">
-                  <Icon size={48} className={`${color} mb-2`} strokeWidth={1} />
-                  <h3 className="text-2xl font-black text-white uppercase tracking-widest">{card.title}</h3>
-                  <p className="text-gray-500 text-sm leading-relaxed max-w-[250px]">{card.description}</p>
-                </div>
-              );
-            })}
-          </div>
+        {/* 5. Artifact Tracking Module */}
+        <section id="tracking" className="bg-transparent py-32 relative overflow-hidden px-6">
+          <TrackingModule />
         </section>
 
         {/* 6. The Syndicate Waitlist */}

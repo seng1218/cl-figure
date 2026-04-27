@@ -79,13 +79,15 @@ export default function Navbar() {
           <div className="flex items-center gap-4 md:gap-6">
             {/* Search Input */}
             <form action="/shop" method="GET" className={`hidden md:flex items-center rounded-full px-3 py-1.5 transition-all duration-300 ${isScrolled ? 'bg-[#111] border border-gray-800' : 'bg-white/10 border border-white/20 backdrop-blur-sm'}`}>
-              <Search size={14} className={isScrolled ? 'text-gray-500' : 'text-white/80'} />
-              <input 
+              <input
                 name="q"
                 type="text"
                 placeholder="SEARCH VAULT..."
                 className="bg-transparent border-none outline-none text-[10px] text-white uppercase font-black tracking-widest pl-3 w-28 focus:w-48 transition-all placeholder:text-gray-500"
               />
+              <button type="submit" className="flex items-center justify-center ml-1 hover:opacity-70 transition-opacity" aria-label="Search">
+                <Search size={14} className={isScrolled ? 'text-gray-500' : 'text-white/80'} />
+              </button>
             </form>
 
             {itemCount > 0 && (

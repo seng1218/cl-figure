@@ -1,9 +1,17 @@
 import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import crypto from 'crypto';
 
 function isAuthorized(req) {
-  return req.headers.get('x-admin-key') === process.env.ADMIN_SECRET;
+  const secret = process.env.ADMIN_SECRET;
+  if (!secret) return false;
+  const provided = req.headers.get('x-admin-key') || '';
+  
+  const providedHash = crypto.createHash('sha256').update(provided).digest();
+  const secretHash = crypto.createHash('sha256').update(secret).digest();
+
+  return crypto.timingSafeEqual(providedHash, secretHash);
 }
 
 async function getCFEnv() {
@@ -61,7 +69,7 @@ async function sendWelcomeEmail(email, name) {
           <h1 style="font-size:40px;font-weight:900;letter-spacing:-2px;font-style:italic;color:#fff;margin:0 0 8px;line-height:1;">ACCESS GRANTED.</h1>
           <p style="color:#6b7280;font-size:10px;text-transform:uppercase;letter-spacing:4px;font-weight:bold;margin:0 0 32px;">CLEARANCE LEVEL: SYNDICATE</p>
           <p style="color:#9ca3af;line-height:1.8;font-size:14px;margin:0 0 16px;">
-            ${name ? `${name}, you are` : 'You are'} now part of an elite circle of collectors.
+            ${name ? `${name.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;')}, you are` : 'You are'} now part of an elite circle of collectors.
             The highest-tier drops hit your inbox before the public ever sees them.
           </p>
           <p style="color:#9ca3af;line-height:1.8;font-size:14px;margin:0 0 40px;">
@@ -99,7 +107,13 @@ export async function GET(req) {
 
 export async function POST(req) {
   try {
-    const { email, name } = await req.json();
+    const { email, name, website } = await req.json();
+
+    // Honeypot check: If 'website' is filled, it's likely a bot
+    if (website) {
+      console.warn('Bot subscription attempt blocked via honeypot.');
+      return NextResponse.json({ success: true }); // Return 200 to trick the bot
+    }
 
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return NextResponse.json({ success: false, error: 'Invalid email address.' }, { status: 400 });
