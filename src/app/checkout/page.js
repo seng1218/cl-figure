@@ -106,7 +106,7 @@ export default function CheckoutPage() {
 
   const placeOrder = async () => {
     setOrderError('');
-    const res = await fetch('/api/orders', {
+    const res = await fetch('/api/orders/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ cart, shipping, cartTotal, shippingFee, grandTotal, paymentMethod }),

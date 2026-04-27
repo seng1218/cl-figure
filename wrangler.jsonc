@@ -6,11 +6,14 @@
   "observability": {
     "enabled": true
   },
+  // nodejs_compat: enables Node.js built-ins (fs, path, crypto, etc.)
+  // global_fetch_strictly_public: prevents SSRF on internal Cloudflare IPs
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"
   },
+  // KV namespace: stores inventory, orders, subscribers, CMS data, sessions
   "kv_namespaces": [
     {
       "binding": "INVENTORY_KV",
@@ -18,10 +21,16 @@
       "preview_id": "20070842a5ff4f25b22dccc08b3631f8"
     }
   ],
+  // R2 bucket: stores uploaded product images
   "r2_buckets": [
     {
       "binding": "UPLOADS_BUCKET",
       "bucket_name": "cl-figure-uploads"
     }
   ]
+  // Secrets (set via: wrangler secret put SECRET_NAME):
+  //   ADMIN_SECRET    — hashed admin passkey for /vault-ops
+  //   R2_PUBLIC_URL   — public CDN URL for your R2 bucket images
+  //   RESEND_API_KEY  — (optional) Resend.com key for welcome emails
+  //   NEXT_PUBLIC_WHATSAPP — set as var below if non-sensitive
 }
