@@ -1,18 +1,7 @@
 import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
-import crypto from 'crypto';
-
-function isAuthorized(req) {
-  const secret = process.env.ADMIN_SECRET;
-  if (!secret) return false;
-  const provided = req.headers.get('x-admin-key') || '';
-  
-  const providedHash = crypto.createHash('sha256').update(provided).digest();
-  const secretHash = crypto.createHash('sha256').update(secret).digest();
-
-  return crypto.timingSafeEqual(providedHash, secretHash);
-}
+import { isAuthorized } from '@/lib/adminAuth';
 
 async function getCFEnv() {
   try {
@@ -93,11 +82,11 @@ async function sendWelcomeEmail(email, name) {
 export const dynamic = 'force-dynamic';
 
 export async function GET(req) {
-  if (!isAuthorized(req)) {
+  const cfEnv = await getCFEnv();
+  if (!await isAuthorized(req, cfEnv)) {
     return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
   }
   try {
-    const cfEnv = await getCFEnv();
     const subscribers = await readSubscribers(cfEnv);
     return NextResponse.json({ success: true, subscribers, count: subscribers.length });
   } catch (err) {

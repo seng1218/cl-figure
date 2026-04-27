@@ -1,22 +1,11 @@
 import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
-import crypto from 'crypto';
 import seedInventory from '@/data/inventory.json';
+import { isAuthorized } from '@/lib/adminAuth';
 
 const ALLOWED_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
-
-function isAuthorized(req) {
-  const secret = process.env.ADMIN_SECRET;
-  if (!secret) return false;
-  const provided = req.headers.get('x-admin-key') || '';
-  
-  const providedHash = crypto.createHash('sha256').update(provided).digest();
-  const secretHash = crypto.createHash('sha256').update(secret).digest();
-
-  return crypto.timingSafeEqual(providedHash, secretHash);
-}
 
 // Returns Cloudflare env bindings when running on Workers, null in local dev
 async function getCFEnv() {
@@ -93,11 +82,11 @@ export async function GET() {
 }
 
 export async function POST(req) {
-  if (!isAuthorized(req)) {
+  const cfEnv = await getCFEnv();
+  if (!await isAuthorized(req, cfEnv)) {
     return NextResponse.json({ success: false, error: "Unauthorized." }, { status: 401 });
   }
   try {
-    const cfEnv = await getCFEnv();
     const formData = await req.formData();
 
     // Primary image
@@ -143,11 +132,11 @@ export async function POST(req) {
 }
 
 export async function PUT(req) {
-  if (!isAuthorized(req)) {
+  const cfEnv = await getCFEnv();
+  if (!await isAuthorized(req, cfEnv)) {
     return NextResponse.json({ success: false, error: "Unauthorized." }, { status: 401 });
   }
   try {
-    const cfEnv = await getCFEnv();
     const formData = await req.formData();
     const idToEdit = formData.get('id');
 
@@ -202,7 +191,8 @@ export async function PUT(req) {
 
 // PATCH /api/products — decrement stock for purchased items (called by /api/orders)
 export async function PATCH(req) {
-  if (!isAuthorized(req)) {
+  const cfEnv = await getCFEnv();
+  if (!await isAuthorized(req, cfEnv)) {
     return NextResponse.json({ success: false, error: "Unauthorized." }, { status: 401 });
   }
   try {
@@ -210,7 +200,6 @@ export async function PATCH(req) {
     if (!Array.isArray(items) || items.length === 0) {
       return NextResponse.json({ success: false, error: 'Invalid items.' }, { status: 400 });
     }
-    const cfEnv = await getCFEnv();
     const inventory = await readInventory(cfEnv);
 
     for (const { id, quantity } of items) {
@@ -240,11 +229,11 @@ export async function PATCH(req) {
 }
 
 export async function DELETE(req) {
-  if (!isAuthorized(req)) {
+  const cfEnv = await getCFEnv();
+  if (!await isAuthorized(req, cfEnv)) {
     return NextResponse.json({ success: false, error: "Unauthorized." }, { status: 401 });
   }
   try {
-    const cfEnv = await getCFEnv();
     const { id: idToDelete } = await req.json();
 
     const inventory = await readInventory(cfEnv);

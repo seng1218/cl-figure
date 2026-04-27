@@ -4,8 +4,6 @@ import { motion } from 'framer-motion';
 import { Lock, Unlock, Database, PlusCircle, CheckCircle2, AlertTriangle, Edit3, Trash2, X } from 'lucide-react';
 import Link from 'next/link';
 
-let _adminKey = '';
-
 export default function AdminDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [passcode, setPasscode] = useState("");
@@ -41,6 +39,11 @@ export default function AdminDashboard() {
   const [imageFile, setImageFile] = useState(null);
   const [additionalImages, setAdditionalImages] = useState([]);
 
+  const handleLogout = async () => {
+    await fetch('/api/auth/', { method: 'DELETE' });
+    setIsAuthenticated(false);
+  };
+
   const handleAuth = async (e) => {
     e.preventDefault();
     try {
@@ -49,7 +52,6 @@ export default function AdminDashboard() {
         headers: { 'x-admin-key': passcode }
       });
       if (res.ok) {
-        _adminKey = passcode;
         setPasscode("");
         setIsAuthenticated(true);
         setErrorMSG("");
@@ -80,7 +82,6 @@ export default function AdminDashboard() {
   const fetchSubscribers = async () => {
     try {
       const res = await fetch('/api/subscribe', {
-        headers: { 'x-admin-key': _adminKey },
         cache: 'no-store',
       });
       if (!res.ok) return;
@@ -103,7 +104,6 @@ export default function AdminDashboard() {
   const fetchOrders = async () => {
     try {
       const res = await fetch('/api/orders', {
-        headers: { 'x-admin-key': _adminKey },
         cache: 'no-store',
       });
       if (!res.ok) return;
@@ -120,7 +120,7 @@ export default function AdminDashboard() {
     try {
       const res = await fetch('/api/cms/', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json', 'x-admin-key': _adminKey },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ section, data }),
       });
       const result = await res.json();
@@ -173,7 +173,6 @@ export default function AdminDashboard() {
 
       const res = await fetch('/api/products/', {
         method: editingId ? 'PUT' : 'POST',
-        headers: { 'x-admin-key': _adminKey },
         body: data
       });
 
@@ -237,7 +236,7 @@ export default function AdminDashboard() {
     try {
       const res = await fetch('/api/products/', {
         method: 'DELETE',
-        headers: { 'Content-Type': 'application/json', 'x-admin-key': _adminKey },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id })
       });
       const data = await res.json();
@@ -297,7 +296,10 @@ export default function AdminDashboard() {
             </span>
             <h1 className="text-4xl md:text-5xl font-black text-white italic tracking-tighter">ARCHIVE DASHBOARD.</h1>
           </div>
-          <Link href="/" className="text-gray-500 hover:text-white font-black text-[10px] uppercase tracking-widest transition-colors mb-2">Exit Admin</Link>
+          <div className="flex items-center gap-4 mb-2">
+            <button onClick={handleLogout} className="text-red-600 hover:text-red-400 font-black text-[10px] uppercase tracking-widest transition-colors">Lock Terminal</button>
+            <Link href="/" className="text-gray-500 hover:text-white font-black text-[10px] uppercase tracking-widest transition-colors">Exit Admin</Link>
+          </div>
         </div>
 
         <form onSubmit={handleSubmit} className="bg-[#111] border border-gray-800 rounded-[2rem] p-8 md:p-12 shadow-2xl space-y-8">
@@ -690,7 +692,7 @@ function OrderCard({ order, onUpdate }) {
     try {
       const res = await fetch('/api/orders', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json', 'x-admin-key': _adminKey },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: order.id, status, courier, trackingNumber })
       });
       const data = await res.json();

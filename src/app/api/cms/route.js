@@ -1,10 +1,7 @@
 import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
-
-function isAuthorized(req) {
-  return req.headers.get('x-admin-key') === process.env.ADMIN_SECRET;
-}
+import { isAuthorized } from '@/lib/adminAuth';
 
 async function getCFEnv() {
   try {
@@ -24,11 +21,6 @@ export const CMS_DEFAULTS = {
     syndicateDescription: 'The highest-tier drops go fast. Submit your email to get early access to new drops before they go public.',
   },
   brands: ['FuRyu', 'Banpresto', 'Taito', 'Bear Panda', 'Alter', 'Animester'],
-  ethos: [
-    { title: '100% Verified', description: 'No bootlegs. No recasts. Every item is verified against manufacturer records before entering our catalog.' },
-    { title: 'Secure Transport', description: 'Figures are packed in impact-resistant casing before dispatch. While we cannot control external couriers, we remain reachable if an item is damaged in transit.' },
-    { title: 'Order Tracking', description: 'Your order history is digitized. Track your purchases and collection seamlessly within your dashboard.' },
-  ],
   contact: { whatsapp: '' },
   site: { name: 'Vault 6 Studios', tagline: 'by Crafted Legacies' },
 };
@@ -70,12 +62,12 @@ export async function GET() {
 }
 
 export async function PUT(req) {
-  if (!isAuthorized(req)) {
+  const cfEnv = await getCFEnv();
+  if (!await isAuthorized(req, cfEnv)) {
     return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
   }
   try {
     const body = await req.json();
-    const cfEnv = await getCFEnv();
     const current = await readCMS(cfEnv);
     // Merge at section level — PUT with { section: 'hero', data: {...} }
     const { section, data } = body;

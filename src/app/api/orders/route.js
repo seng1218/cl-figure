@@ -1,17 +1,8 @@
 import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
-import crypto from 'crypto';
 import seedInventory from '@/data/inventory.json';
-
-function isAuthorized(req) {
-  const secret = process.env.ADMIN_SECRET;
-  if (!secret) return false;
-  const provided = req.headers.get('x-admin-key') || '';
-  const providedHash = crypto.createHash('sha256').update(provided).digest();
-  const secretHash = crypto.createHash('sha256').update(secret).digest();
-  return crypto.timingSafeEqual(providedHash, secretHash);
-}
+import { isAuthorized } from '@/lib/adminAuth';
 
 async function getCFEnv() {
   try {
@@ -151,11 +142,11 @@ export async function POST(req) {
 
 // GET /api/orders — admin only, list all orders
 export async function GET(req) {
-  if (!isAuthorized(req)) {
+  const cfEnv = await getCFEnv();
+  if (!await isAuthorized(req, cfEnv)) {
     return NextResponse.json({ success: false, error: 'Unauthorized.' }, { status: 401 });
   }
   try {
-    const cfEnv = await getCFEnv();
     const orders = await readOrders(cfEnv);
     return NextResponse.json({ success: true, orders, count: orders.length });
   } catch (error) {
@@ -166,7 +157,8 @@ export async function GET(req) {
 
 // PUT /api/orders — admin only, update order status and tracking
 export async function PUT(req) {
-  if (!isAuthorized(req)) {
+  const cfEnv = await getCFEnv();
+  if (!await isAuthorized(req, cfEnv)) {
     return NextResponse.json({ success: false, error: 'Unauthorized.' }, { status: 401 });
   }
   try {
@@ -174,8 +166,6 @@ export async function PUT(req) {
     if (!id || !status) {
       return NextResponse.json({ success: false, error: 'Order ID and status are required.' }, { status: 400 });
     }
-
-    const cfEnv = await getCFEnv();
     const orders = await readOrders(cfEnv);
     
     const orderIndex = orders.findIndex(o => o.id === id);
