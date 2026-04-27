@@ -108,6 +108,9 @@ export async function POST(req) {
     const shippingFee = cartTotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
     const grandTotal = cartTotal + shippingFee;
 
+    // Snapshot inventory before mutation for rollback
+    const inventorySnapshot = JSON.stringify(inventory);
+
     // Decrement stock
     for (const { id, quantity } of cart) {
       const idx = inventory.findIndex(p => String(p.id) === String(id));
@@ -115,7 +118,7 @@ export async function POST(req) {
     }
     await writeInventory(inventory, cfEnv);
 
-    // Persist order
+    // Persist order — rollback inventory if this fails
     const orders = await readOrders(cfEnv);
     const orderId = `V6-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 5).toUpperCase()}`;
     const newOrder = {
@@ -131,7 +134,12 @@ export async function POST(req) {
     };
 
     orders.unshift(newOrder);
-    await writeOrders(orders, cfEnv);
+    try {
+      await writeOrders(orders, cfEnv);
+    } catch (writeErr) {
+      await writeInventory(JSON.parse(inventorySnapshot), cfEnv).catch(() => {});
+      throw writeErr;
+    }
 
     return NextResponse.json({ success: true, orderId });
   } catch (error) {

@@ -8,6 +8,7 @@ import AdminShortcut from "@/components/AdminShortcut";
 import "./globals.css";
 
 export const metadata = {
+  metadataBase: new URL('https://www.vault6studios.com'),
   title: {
     default: "Vault 6 Studios. | The Vault",
     template: "%s | Vault 6 Studios",
