@@ -28,6 +28,9 @@
     "react": "19.0.0",
     "react-dom": "19.0.0"
   },
+  "engines": {
+    "node": ">=18.17.0"
+  },
   "devDependencies": {
     "eslint": "^10.2.1",
     "eslint-config-next": "^15.5.0",
