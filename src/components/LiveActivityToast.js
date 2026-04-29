@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ShieldCheck } from 'lucide-react';
 
 const CITIES = ['Kuala Lumpur', 'Petaling Jaya', 'Johor Bahru', 'Penang', 'Shah Alam', 'Ipoh', 'Kota Kinabalu', 'Kuching', 'Subang Jaya', 'Klang'];
-const ACTIONS = ['secured', 'acquired', 'added to vault'];
+const ACTIONS = ['is viewing', 'is browsing', 'is checking out'];
 const MINS = [1, 2, 3, 5, 7, 10, 12, 15, 18, 20, 22, 25, 30];
 
 function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
