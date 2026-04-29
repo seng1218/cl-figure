@@ -2,6 +2,7 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { useCMS } from '@/context/CMSContext';
+import Image from 'next/image';
 
 export default function HeroSection({ onExplore }) {
   const { scrollY } = useScroll();
@@ -15,12 +16,18 @@ export default function HeroSection({ onExplore }) {
 
       {/* BACKGROUND VISUAL WITH PARALLAX */}
       <div className="absolute inset-0 z-0 bg-[#050505]">
-        <motion.img
+        <motion.div
           style={{ y: useTransform(scrollY, [0, 1000], [0, 300]) }}
-          src="/banner.png"
-          alt="Vault Artifact"
-          className="w-full h-full object-cover object-top opacity-20 scale-110 mix-blend-luminosity grayscale contrast-125"
-        />
+          className="absolute inset-0"
+        >
+          <Image
+            src="/banner.png"
+            alt="Vault Artifact"
+            fill
+            priority
+            className="object-cover object-top opacity-20 scale-110 mix-blend-luminosity grayscale contrast-125"
+          />
+        </motion.div>
         {/* Provocative harsh dark fade */}
         <div className="absolute inset-0 bg-gradient-to-b from-[#050505] via-transparent to-[#050505]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#050505_100%)]" />

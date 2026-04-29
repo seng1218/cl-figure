@@ -106,7 +106,7 @@ export default function ShopClient() {
           series={seriesList}
         />
 
-        <section className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8 mt-12">
+        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8 mt-12">
           {sortedProducts.map((item, index) => (
             <ProductCards
               key={item.id}

@@ -3,7 +3,6 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Lock, Zap, Shield, Bell, ArrowRight, CheckCircle2, AlertTriangle, Users } from 'lucide-react';
 import Link from 'next/link';
-import confetti from 'canvas-confetti';
 
 const BENEFITS = [
   { icon: Bell, label: 'Early Drop Access', desc: 'New vault entries hit your inbox 24hrs before public release.' },
@@ -48,11 +47,13 @@ export default function JoinPage() {
         if (data.count) setMemberCount(data.count);
         const end = Date.now() + 2500;
         const colors = ['#2563eb', '#fff', '#60a5fa'];
-        (function frame() {
-          confetti({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0 }, colors });
-          confetti({ particleCount: 3, angle: 120, spread: 55, origin: { x: 1 }, colors });
-          if (Date.now() < end) requestAnimationFrame(frame);
-        }());
+        import('canvas-confetti').then(({ default: confetti }) => {
+          (function frame() {
+            confetti({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0 }, colors });
+            confetti({ particleCount: 3, angle: 120, spread: 55, origin: { x: 1 }, colors });
+            if (Date.now() < end) requestAnimationFrame(frame);
+          }());
+        });
       } else if (res.status === 409) {
         setStatus('duplicate');
       } else {

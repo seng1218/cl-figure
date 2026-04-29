@@ -17,7 +17,6 @@ import {
 } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
-import confetti from 'canvas-confetti';
 
 const MY_STATES = [
   'Johor', 'Kedah', 'Kelantan', 'Kuala Lumpur', 'Labuan', 'Melaka',
@@ -74,11 +73,13 @@ export default function CheckoutPage() {
     if (isSuccess) {
       const end = Date.now() + 3000;
       const colors = ['#2563eb', '#fbbf24', '#ffffff'];
-      (function frame() {
-        confetti({ particleCount: 2, angle: 60, spread: 55, origin: { x: 0 }, colors });
-        confetti({ particleCount: 2, angle: 120, spread: 55, origin: { x: 1 }, colors });
-        if (Date.now() < end) requestAnimationFrame(frame);
-      }());
+      import('canvas-confetti').then(({ default: confetti }) => {
+        (function frame() {
+          confetti({ particleCount: 2, angle: 60, spread: 55, origin: { x: 0 }, colors });
+          confetti({ particleCount: 2, angle: 120, spread: 55, origin: { x: 1 }, colors });
+          if (Date.now() < end) requestAnimationFrame(frame);
+        }());
+      });
       const timer = setInterval(() => setTimeLeft(t => (t > 0 ? t - 1 : 0)), 1000);
       return () => clearInterval(timer);
     }

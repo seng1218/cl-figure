@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 function PreorderCountdown({ deadline }) {
   const [timeLeft, setTimeLeft] = useState(null);
@@ -44,9 +45,11 @@ export default function ProductCard({ item, index, onAdd, alwaysColor = false })
       className="group break-inside-avoid mb-8"
     >
       <Link href={`/product/${item.id}`} className={`block relative ${aspectClass} overflow-hidden bg-[#111] border border-[#222] glitch-hover`}>
-        <img
+        <Image
           src={item.image}
-          className={`w-full h-full object-cover transition-all duration-[1.5s] ease-out group-hover:scale-110 ${
+          fill
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          className={`object-cover transition-all duration-[1.5s] ease-out group-hover:scale-110 ${
             alwaysColor
               ? 'brightness-90 contrast-110'
               : 'grayscale brightness-75 contrast-125 group-hover:grayscale-0 group-hover:brightness-100'

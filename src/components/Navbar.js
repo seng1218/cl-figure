@@ -103,6 +103,7 @@ export default function Navbar() {
 
             {/* Cart Button with vault state label */}
             <button
+              aria-label="Open cart"
               onClick={() => setIsSidebarOpen(true)}
               className={`relative flex items-center gap-2 px-4 py-3 rounded-full transition-all duration-500 shadow-xl
                 ${isScrolled
@@ -139,6 +140,7 @@ export default function Navbar() {
 
             {/* Mobile Menu Toggle */}
             <button
+              aria-label="Open menu"
               onClick={() => setIsMobileMenuOpen(true)}
               className={`md:hidden relative p-3 rounded-full transition-all duration-500 shadow-xl
                 ${isScrolled
@@ -162,6 +164,7 @@ export default function Navbar() {
             className="fixed inset-0 z-[110] bg-[#050505]/95 backdrop-blur-md flex flex-col items-center justify-center pointer-events-auto"
           >
             <button
+              aria-label="Close menu"
               onClick={() => setIsMobileMenuOpen(false)}
               className="absolute top-8 right-8 p-3 bg-[#111] text-white rounded-full hover:bg-blue-600 border border-gray-800 transition-all"
             >
