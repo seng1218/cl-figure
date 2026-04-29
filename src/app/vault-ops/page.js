@@ -819,6 +819,8 @@ function OrderCard({ order, onUpdate, onRemove }) {
         </div>
         <div className="text-right">
           <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${
+            order.status === 'awaiting_payment' ? 'bg-orange-900/40 text-orange-400 border border-orange-900/50' :
+            order.status === 'payment_failed' ? 'bg-red-900/40 text-red-500 border border-red-900/50' :
             order.status === 'pending' ? 'bg-yellow-900/40 text-yellow-500 border border-yellow-900/50' :
             order.status === 'processing' ? 'bg-blue-900/40 text-blue-500 border border-blue-900/50' :
             order.status === 'dispatched' ? 'bg-purple-900/40 text-purple-400 border border-purple-900/50' :
@@ -854,6 +856,8 @@ function OrderCard({ order, onUpdate, onRemove }) {
             <div className="space-y-2">
               <label className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Status</label>
               <select value={status} onChange={(e) => setStatus(e.target.value)} className="w-full bg-[#050505] border border-gray-800 text-white p-3 font-bold focus:outline-none focus:border-blue-600 appearance-none">
+                <option value="awaiting_payment">Awaiting Payment</option>
+                <option value="payment_failed">Payment Failed</option>
                 <option value="pending">Pending</option>
                 <option value="processing">Processing (Secured)</option>
                 <option value="dispatched">Dispatched</option>

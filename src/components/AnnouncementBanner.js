@@ -17,17 +17,21 @@ export default function AnnouncementBanner() {
   if (!announcement?.enabled || dismissed || !announcement.text) return null;
 
   const style = TYPE_STYLES[announcement.type] || TYPE_STYLES.info;
+  // Only allow safe absolute URLs or root-relative paths to prevent javascript: URIs
+  const safeLink = announcement.link && /^(https?:\/\/|\/)/.test(announcement.link)
+    ? announcement.link
+    : null;
   const content = (
     <span className="flex items-center gap-2 justify-center flex-1 text-center">
       {announcement.text}
-      {announcement.link && <ArrowRight size={12} className="shrink-0" />}
+      {safeLink && <ArrowRight size={12} className="shrink-0" />}
     </span>
   );
 
   return (
     <div className={`w-full border-b ${style} py-2 px-6 flex items-center gap-4 text-[10px] font-black uppercase tracking-widest relative z-[110]`}>
-      {announcement.link ? (
-        <Link href={announcement.link} className="flex-1 flex items-center gap-2 justify-center hover:opacity-80 transition-opacity">
+      {safeLink ? (
+        <Link href={safeLink} className="flex-1 flex items-center gap-2 justify-center hover:opacity-80 transition-opacity">
           {content}
         </Link>
       ) : (

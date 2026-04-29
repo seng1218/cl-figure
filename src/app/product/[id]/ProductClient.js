@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { allProducts } from '@/lib/products';
 import { useCart } from '@/context/CartContext';
@@ -30,7 +30,24 @@ export default function ProductDetail() {
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
 
-  const product = allProducts.find((p) => p.id.toString() === id);
+  const seedProduct = allProducts.find(p => p.id.toString() === id) || null;
+  const [product, setProduct] = useState(seedProduct);
+  // true while live fetch is in flight (only relevant when product not in seed)
+  const [fetchDone, setFetchDone] = useState(!!seedProduct);
+
+  // Seed data is build-time only; fetch live inventory to pick up products added after deploy
+  useEffect(() => {
+    fetch('/api/products/', { cache: 'no-store' })
+      .then(r => r.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          const live = data.find(p => p.id.toString() === id);
+          if (live) setProduct(live);
+        }
+      })
+      .catch(() => {})
+      .finally(() => setFetchDone(true));
+  }, [id]);
 
   const relatedProducts = (allProducts || [])
     .filter((p) =>
@@ -133,6 +150,14 @@ export default function ProductDetail() {
       </AnimatePresence>
     </button>
   );
+
+  if (!product && !fetchDone) {
+    return (
+      <div className="min-h-screen bg-[#050505] flex items-center justify-center">
+        <div className="w-10 h-10 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   if (!product) {
     return (

@@ -12,16 +12,6 @@ export function generateToken() {
   return crypto.randomBytes(32).toString('hex');
 }
 
-export function sessionCookie(token) {
-  const sec = process.env.NODE_ENV !== 'development' ? '; Secure' : '';
-  return `admin_session=${token}; HttpOnly${sec}; SameSite=Strict; Max-Age=${SESSION_TTL}; Path=/`;
-}
-
-export function clearCookie() {
-  const sec = process.env.NODE_ENV !== 'development' ? '; Secure' : '';
-  return `admin_session=; HttpOnly${sec}; SameSite=Strict; Max-Age=0; Path=/`;
-}
-
 export function getSessionToken(req) {
   const cookieHeader = req.headers.get('cookie') || '';
   const match = cookieHeader.match(/(?:^|;\s*)admin_session=([a-f0-9]{64})/);

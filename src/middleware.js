@@ -8,7 +8,12 @@ export function middleware(request) {
     const accessQuery = url.searchParams.get('access');
 
     // If they have the correct query param, let them through and set a cookie
-    const vaultKey = process.env.VAULT_ACCESS_KEY || 'syndicate';
+    const vaultKey = process.env.VAULT_ACCESS_KEY;
+    if (!vaultKey) {
+      // Env var not configured — deny all access rather than exposing a weak default
+      url.pathname = '/404';
+      return NextResponse.rewrite(url);
+    }
     if (accessQuery === vaultKey) {
       const response = NextResponse.next();
       response.cookies.set('syndicate-access', 'true', {

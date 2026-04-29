@@ -27,11 +27,13 @@ async function saveFile(file, cfEnv) {
   const filename = `${Date.now()}-${uid}-${safeFilename}`;
 
   if (cfEnv?.UPLOADS_BUCKET) {
+    const r2PublicUrl = process.env.R2_PUBLIC_URL;
+    if (!r2PublicUrl) throw new Error('R2_PUBLIC_URL is not configured. Set it via: wrangler secret put R2_PUBLIC_URL');
     const bytes = await file.arrayBuffer();
     await cfEnv.UPLOADS_BUCKET.put(filename, bytes, {
       httpMetadata: { contentType: file.type }
     });
-    return `${process.env.R2_PUBLIC_URL}/${filename}`;
+    return `${r2PublicUrl}/${filename}`;
   }
 
   // Local dev fallback
