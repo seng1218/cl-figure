@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 import seedInventory from '@/data/inventory.json';
+import { getMemberIdFromSession, getMemberSessionToken } from '@/lib/memberAuth';
 
 const FREE_SHIPPING_THRESHOLD = 200;
 const SHIPPING_FEE = 10;
@@ -61,9 +62,41 @@ async function writeOrders(orders, cfEnv) {
 
 export const dynamic = 'force-dynamic';
 
+async function readVouchers(cfEnv) {
+  if (cfEnv?.INVENTORY_KV) {
+    const raw = await cfEnv.INVENTORY_KV.get('vouchers');
+    return raw ? JSON.parse(raw) : [];
+  }
+  try {
+    return JSON.parse(fs.readFileSync(path.join(process.cwd(), 'src/data/vouchers.json'), 'utf8'));
+  } catch {
+    return [];
+  }
+}
+
+async function writeVouchers(vouchers, cfEnv) {
+  if (cfEnv?.INVENTORY_KV) {
+    await cfEnv.INVENTORY_KV.put('vouchers', JSON.stringify(vouchers));
+    return;
+  }
+  fs.writeFileSync(path.join(process.cwd(), 'src/data/vouchers.json'), JSON.stringify(vouchers, null, 2));
+}
+
+async function readMembers(cfEnv) {
+  if (cfEnv?.INVENTORY_KV) {
+    const raw = await cfEnv.INVENTORY_KV.get('members');
+    return raw ? JSON.parse(raw) : [];
+  }
+  try {
+    return JSON.parse(fs.readFileSync(path.join(process.cwd(), 'src/data/members.json'), 'utf8'));
+  } catch {
+    return [];
+  }
+}
+
 export async function POST(req) {
   try {
-    const { cart, shipping } = await req.json();
+    const { cart, shipping, voucherCode } = await req.json();
 
     if (!Array.isArray(cart) || cart.length === 0) {
       return NextResponse.json({ success: false, error: 'Cart is empty.' }, { status: 400 });
@@ -99,7 +132,37 @@ export async function POST(req) {
     });
     const cartTotal = serverItems.reduce((sum, i) => sum + i.price * i.quantity, 0);
     const shippingFee = cartTotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
-    const grandTotal = cartTotal + shippingFee;
+
+    // Resolve member session (optional)
+    const memberToken = getMemberSessionToken(req);
+    const memberId = memberToken ? await getMemberIdFromSession(memberToken, cfEnv) : null;
+
+    // Validate and apply voucher (server-side only)
+    let discountAmount = 0;
+    let appliedVoucherCode = null;
+    let voucherIdx = -1;
+    if (voucherCode) {
+      const normalizedCode = String(voucherCode).trim().toUpperCase();
+      const vouchers = await readVouchers(cfEnv);
+      voucherIdx = vouchers.findIndex(v => v.code === normalizedCode);
+      if (voucherIdx !== -1) {
+        const v = vouchers[voucherIdx];
+        const now = new Date();
+        const valid =
+          v.isActive &&
+          (!v.expiresAt || new Date(v.expiresAt) > now) &&
+          (v.maxUses === null || v.usedCount < v.maxUses) &&
+          cartTotal >= v.minOrder;
+        if (valid) {
+          discountAmount = v.type === 'percent'
+            ? Math.round((cartTotal * v.value / 100) * 100) / 100
+            : Math.min(v.value, cartTotal);
+          appliedVoucherCode = normalizedCode;
+        }
+      }
+    }
+
+    const grandTotal = Math.max(0, cartTotal - discountAmount) + shippingFee;
 
     const inventorySnapshot = JSON.stringify(inventory);
     for (const { id, quantity } of cart) {
@@ -118,7 +181,10 @@ export async function POST(req) {
       items: serverItems,
       cartTotal,
       shippingFee,
+      discountAmount,
+      voucherCode: appliedVoucherCode,
       grandTotal,
+      memberId: memberId || null,
     };
     orders.unshift(newOrder);
 
@@ -127,6 +193,26 @@ export async function POST(req) {
     } catch (writeErr) {
       await writeInventory(JSON.parse(inventorySnapshot), cfEnv).catch(() => {});
       throw writeErr;
+    }
+
+    // Mark voucher as used after order persisted
+    if (appliedVoucherCode && voucherIdx !== -1) {
+      try {
+        const vouchers = await readVouchers(cfEnv);
+        const vi = vouchers.findIndex(v => v.code === appliedVoucherCode);
+        if (vi !== -1) {
+          vouchers[vi].usedCount += 1;
+          const memberEmail = memberId
+            ? (await readMembers(cfEnv)).find(m => m.id === memberId)?.email
+            : null;
+          if (memberEmail && !vouchers[vi].usedBy.includes(memberEmail)) {
+            vouchers[vi].usedBy.push(memberEmail);
+          }
+          await writeVouchers(vouchers, cfEnv);
+        }
+      } catch {
+        // Non-fatal: voucher stats may be stale but order is safe
+      }
     }
 
     const origin = req.headers.get('origin') || req.headers.get('host') || '';

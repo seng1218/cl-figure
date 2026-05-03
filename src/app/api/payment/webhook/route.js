@@ -3,6 +3,26 @@ import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 
+async function readMembers(cfEnv) {
+  if (cfEnv?.INVENTORY_KV) {
+    const raw = await cfEnv.INVENTORY_KV.get('members');
+    return raw ? JSON.parse(raw) : [];
+  }
+  try {
+    return JSON.parse(fs.readFileSync(path.join(process.cwd(), 'src/data/members.json'), 'utf8'));
+  } catch {
+    return [];
+  }
+}
+
+async function writeMembers(members, cfEnv) {
+  if (cfEnv?.INVENTORY_KV) {
+    await cfEnv.INVENTORY_KV.put('members', JSON.stringify(members));
+    return;
+  }
+  fs.writeFileSync(path.join(process.cwd(), 'src/data/members.json'), JSON.stringify(members, null, 2));
+}
+
 export const dynamic = 'force-dynamic';
 
 async function getCFEnv() {
@@ -84,6 +104,23 @@ export async function POST(req) {
         orders[idx].status = 'processing';
         orders[idx].paidAt = new Date().toISOString();
         if (payment_id) orders[idx].hitpayPaymentId = payment_id;
+
+        // Credit member points and totalSpent
+        const order = orders[idx];
+        if (order.memberId) {
+          try {
+            const members = await readMembers(cfEnv);
+            const mi = members.findIndex(m => m.id === order.memberId);
+            if (mi !== -1) {
+              const earned = order.grandTotal || 0;
+              members[mi].totalSpent = (members[mi].totalSpent || 0) + earned;
+              members[mi].points = (members[mi].points || 0) + Math.floor(earned);
+              await writeMembers(members, cfEnv);
+            }
+          } catch {
+            // Non-fatal: member stats may lag
+          }
+        }
       } else if (status === 'failed') {
         orders[idx].status = 'payment_failed';
       }

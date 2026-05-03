@@ -36,6 +36,10 @@ export default function CheckoutPage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderError, setOrderError] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('card');
+  const [voucherInput, setVoucherInput] = useState('');
+  const [voucherApplied, setVoucherApplied] = useState(null); // { code, discount, description }
+  const [voucherError, setVoucherError] = useState('');
+  const [voucherLoading, setVoucherLoading] = useState(false);
 
   const [shipping, setShipping] = useState({
     fullName: '', phone: '', address1: '', address2: '', city: '', postcode: '', state: '',
@@ -53,6 +57,32 @@ export default function CheckoutPage() {
   const FREE_SHIPPING_THRESHOLD = 200;
   const progress = Math.min((cartTotal / FREE_SHIPPING_THRESHOLD) * 100, 100);
   const remainingForFree = FREE_SHIPPING_THRESHOLD - cartTotal;
+  const discountAmount = voucherApplied?.discount || 0;
+  const discountedTotal = Math.max(0, cartTotal - discountAmount) + shippingFee;
+
+  const handleApplyVoucher = async () => {
+    if (!voucherInput.trim()) return;
+    setVoucherLoading(true);
+    setVoucherError('');
+    setVoucherApplied(null);
+    try {
+      const res = await fetch('/api/voucher/validate/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: voucherInput.trim(), cartTotal }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setVoucherApplied({ code: data.code, discount: data.discount, description: data.description });
+      } else {
+        setVoucherError(data.error || 'Invalid voucher.');
+      }
+    } catch {
+      setVoucherError('Failed to validate voucher.');
+    } finally {
+      setVoucherLoading(false);
+    }
+  };
 
   const handleProceedToPayment = async () => {
     setIsProcessing(true);
@@ -61,7 +91,7 @@ export default function CheckoutPage() {
       const res = await fetch('/api/payment/create/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cart, shipping }),
+        body: JSON.stringify({ cart, shipping, voucherCode: voucherApplied?.code || null }),
       });
       const data = await res.json();
       if (!data.success) throw new Error(data.error || 'Payment initiation failed.');
@@ -254,12 +284,51 @@ export default function CheckoutPage() {
                 ))}
               </AnimatePresence>
 
+              {/* Voucher input */}
+              <div className="pt-4 border-t border-gray-100">
+                {voucherApplied ? (
+                  <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded-2xl px-4 py-3">
+                    <div>
+                      <span className="text-green-700 font-black text-[10px] uppercase tracking-widest">✓ {voucherApplied.code}</span>
+                      {voucherApplied.description && <p className="text-green-600 text-[10px] mt-0.5">{voucherApplied.description}</p>}
+                      <p className="text-green-700 text-xs font-black mt-0.5">−RM {voucherApplied.discount.toFixed(2)}</p>
+                    </div>
+                    <button onClick={() => { setVoucherApplied(null); setVoucherInput(''); }} className="text-gray-400 hover:text-red-500 text-[10px] font-black uppercase">Remove</button>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <label className="text-[9px] font-black uppercase tracking-widest text-gray-400">Voucher Code</label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={voucherInput}
+                        onChange={e => { setVoucherInput(e.target.value.toUpperCase()); setVoucherError(''); }}
+                        onKeyDown={e => e.key === 'Enter' && handleApplyVoucher()}
+                        placeholder="ENTER CODE"
+                        className="flex-1 border border-gray-200 rounded-2xl px-4 py-3 text-sm font-black text-gray-900 uppercase focus:outline-none focus:border-blue-500 transition-colors tracking-widest"
+                      />
+                      <button
+                        onClick={handleApplyVoucher}
+                        disabled={voucherLoading || !voucherInput.trim()}
+                        className="bg-gray-900 text-white px-5 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest disabled:opacity-40 hover:bg-blue-600 transition-colors"
+                      >
+                        {voucherLoading ? '...' : 'Apply'}
+                      </button>
+                    </div>
+                    {voucherError && <p className="text-red-500 text-[10px] font-black uppercase tracking-widest">{voucherError}</p>}
+                  </div>
+                )}
+              </div>
+
               <div className="pt-6 mt-4 border-t border-gray-100 space-y-3">
                 <div className="flex justify-between text-[10px] font-black uppercase text-gray-400"><span>Subtotal</span><span>RM {cartTotal.toFixed(2)}</span></div>
+                {discountAmount > 0 && (
+                  <div className="flex justify-between text-[10px] font-black uppercase text-green-600"><span>Voucher ({voucherApplied.code})</span><span>−RM {discountAmount.toFixed(2)}</span></div>
+                )}
                 <div className="flex justify-between text-[10px] font-black uppercase text-gray-400"><span>Shipping</span><span>{shippingFee === 0 ? 'FREE' : `RM ${shippingFee.toFixed(2)}`}</span></div>
                 <div className="flex justify-between items-center pt-4">
                   <span className="text-gray-900 font-black uppercase text-[10px]">Order Total</span>
-                  <span className="text-4xl font-black text-gray-900 italic tracking-tighter">RM {grandTotal.toFixed(2)}</span>
+                  <span className="text-4xl font-black text-gray-900 italic tracking-tighter">RM {discountedTotal.toFixed(2)}</span>
                 </div>
               </div>
             </div>
@@ -343,7 +412,7 @@ export default function CheckoutPage() {
                 </div>
                 <p className="text-gray-400 text-sm leading-relaxed max-w-xs mx-auto">
                   You will be redirected to <span className="text-white font-black">HitPay</span> to complete your payment of{' '}
-                  <span className="text-white font-black">RM {grandTotal.toFixed(2)}</span> securely.
+                  <span className="text-white font-black">RM {discountedTotal.toFixed(2)}</span> securely.
                 </p>
                 <p className="text-gray-600 text-[10px] font-black uppercase tracking-widest pt-1">
                   Cards · FPX · Touch &apos;n Go · GrabPay · and more
@@ -357,7 +426,7 @@ export default function CheckoutPage() {
               >
                 {isProcessing
                   ? 'Redirecting to HitPay...'
-                  : <><Lock size={16} /> Pay RM {grandTotal.toFixed(2)}</>
+                  : <><Lock size={16} /> Pay RM {discountedTotal.toFixed(2)}</>
                 }
               </button>
 

@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Lock, Unlock, Database, PlusCircle, CheckCircle2, AlertTriangle, Edit3, Trash2, X } from 'lucide-react';
+import { Lock, Unlock, Database, PlusCircle, CheckCircle2, AlertTriangle, Edit3, Trash2, X, Users, UserX, UserCheck, Key, Eye, EyeOff, Ticket, MessageSquare, Star, ChevronDown, ChevronUp, Phone, StickyNote, BarChart3, Tag, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AdminDashboard() {
@@ -21,6 +21,21 @@ export default function AdminDashboard() {
   const [cmsStatus, setCmsStatus] = useState({}); // { sectionName: 'success' | 'error' }
   const [orders, setOrders] = useState([]);
   const [showOrders, setShowOrders] = useState(false);
+  const [members, setMembers] = useState([]);
+  const [showMembers, setShowMembers] = useState(false);
+  const [newMemberEmail, setNewMemberEmail] = useState('');
+  const [newMemberName, setNewMemberName] = useState('');
+  const [memberCreateStatus, setMemberCreateStatus] = useState('idle'); // idle | loading | success | error
+  const [memberCreateResult, setMemberCreateResult] = useState(null); // { email, password }
+  const [memberActionLoading, setMemberActionLoading] = useState({}); // { [id]: true }
+  const [vouchers, setVouchers] = useState([]);
+  const [showVouchers, setShowVouchers] = useState(false);
+  const [voucherForm, setVoucherForm] = useState({ code: '', type: 'percent', value: '', minOrder: '', maxUses: '', expiresAt: '', description: '' });
+  const [voucherCreateStatus, setVoucherCreateStatus] = useState('idle');
+  const [voucherActionLoading, setVoucherActionLoading] = useState({});
+  const [feedbacks, setFeedbacks] = useState([]);
+  const [showFeedbacks, setShowFeedbacks] = useState(false);
+  const [feedbackActionLoading, setFeedbackActionLoading] = useState({});
 
   // Form State
   const [formData, setFormData] = useState({
@@ -102,6 +117,39 @@ export default function AdminDashboard() {
     }
   };
 
+  const fetchMembers = async () => {
+    try {
+      const res = await fetch('/api/members/', { cache: 'no-store' });
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data.success) setMembers(data.members || []);
+    } catch (err) {
+      console.error('Failed to load members:', err);
+    }
+  };
+
+  const fetchVouchers = async () => {
+    try {
+      const res = await fetch('/api/vouchers/', { cache: 'no-store' });
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data.success) setVouchers(data.vouchers || []);
+    } catch (err) {
+      console.error('Failed to load vouchers:', err);
+    }
+  };
+
+  const fetchFeedbacks = async () => {
+    try {
+      const res = await fetch('/api/feedbacks/', { cache: 'no-store' });
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data.success) setFeedbacks(data.feedbacks || []);
+    } catch (err) {
+      console.error('Failed to load feedbacks:', err);
+    }
+  };
+
   const fetchOrders = async () => {
     try {
       const res = await fetch('/api/orders/', {
@@ -164,6 +212,9 @@ export default function AdminDashboard() {
       fetchSubscribers();
       fetchCMS();
       fetchOrders();
+      fetchMembers();
+      fetchVouchers();
+      fetchFeedbacks();
     }
   }, [isAuthenticated]);
 
@@ -575,6 +626,371 @@ export default function AdminDashboard() {
           )}
         </div>
 
+        {/* SYNDICATE MEMBERS */}
+        <div className="mt-20">
+          <button
+            onClick={() => setShowMembers(v => !v)}
+            className="w-full flex justify-between items-center border-b border-gray-800 pb-4 mb-6 group"
+          >
+            <h2 className="text-2xl font-black text-white italic tracking-tighter group-hover:text-blue-500 transition-colors flex items-center gap-3">
+              <Users size={20} /> SYNDICATE MEMBERS ({members.length})
+            </h2>
+            <span className="text-gray-600 font-black text-[10px] uppercase tracking-widest">{showMembers ? 'Collapse ▲' : 'Expand ▼'}</span>
+          </button>
+
+          {showMembers && (
+            <div className="space-y-6">
+              {/* Create Member Form */}
+              <div className="bg-[#0a0a0a] border border-blue-900/30 rounded-2xl p-6 space-y-4">
+                <h3 className="text-sm font-black text-white uppercase tracking-widest border-b border-gray-800 pb-3">
+                  Provision New Member
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Email <span className="text-red-600">*</span></label>
+                    <input
+                      type="email"
+                      value={newMemberEmail}
+                      onChange={e => setNewMemberEmail(e.target.value)}
+                      placeholder="member@example.com"
+                      className="w-full bg-[#050505] border border-gray-800 text-white p-3 font-bold focus:outline-none focus:border-blue-600 transition-colors"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Name <span className="text-gray-600 normal-case">(optional)</span></label>
+                    <input
+                      type="text"
+                      value={newMemberName}
+                      onChange={e => setNewMemberName(e.target.value)}
+                      placeholder="Operative Name"
+                      className="w-full bg-[#050505] border border-gray-800 text-white p-3 font-bold focus:outline-none focus:border-blue-600 transition-colors"
+                    />
+                  </div>
+                </div>
+
+                {memberCreateResult && (
+                  <div className="bg-green-900/10 border border-green-900/30 p-4 rounded-xl space-y-2">
+                    <p className="text-green-500 font-black text-[10px] uppercase tracking-widest">✓ Member Created — Credentials Below</p>
+                    <p className="text-gray-300 text-sm font-bold">Email: <span className="text-white">{memberCreateResult.email}</span></p>
+                    <p className="text-gray-300 text-sm font-bold flex items-center gap-2">
+                      Password: <span className="text-blue-400 font-mono text-base tracking-widest">{memberCreateResult.password}</span>
+                    </p>
+                    <p className="text-gray-600 text-[10px] font-bold uppercase tracking-wider">Credentials email sent. Note this password — shown once only.</p>
+                  </div>
+                )}
+
+                {memberCreateStatus === 'error' && (
+                  <p className="text-red-500 text-[10px] font-black uppercase tracking-widest animate-pulse">Failed to create member.</p>
+                )}
+
+                <button
+                  type="button"
+                  disabled={memberCreateStatus === 'loading' || !newMemberEmail}
+                  onClick={async () => {
+                    setMemberCreateStatus('loading');
+                    setMemberCreateResult(null);
+                    try {
+                      const res = await fetch('/api/members/', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: newMemberEmail, name: newMemberName }),
+                      });
+                      const data = await res.json();
+                      if (data.success) {
+                        setMemberCreateStatus('idle');
+                        setMemberCreateResult({ email: newMemberEmail, password: data.generatedPassword });
+                        setNewMemberEmail('');
+                        setNewMemberName('');
+                        fetchMembers();
+                      } else {
+                        setMemberCreateStatus('error');
+                        alert('Error: ' + data.error);
+                      }
+                    } catch {
+                      setMemberCreateStatus('error');
+                    }
+                  }}
+                  className="bg-blue-600 text-white px-8 py-3 font-black text-[10px] uppercase tracking-[0.3em] hover:bg-white hover:text-black transition-all disabled:opacity-50 flex items-center gap-2"
+                >
+                  <PlusCircle size={14} />
+                  {memberCreateStatus === 'loading' ? 'Provisioning...' : 'Provision Member'}
+                </button>
+              </div>
+
+              {/* Members List */}
+              <div className="space-y-3">
+                {members.length === 0 && (
+                  <p className="text-gray-600 text-xs italic font-bold">No members provisioned yet.</p>
+                )}
+                {members.map(member => (
+                  <MemberCard
+                    key={member.id}
+                    member={member}
+                    memberOrders={orders.filter(o => o.memberId === member.id)}
+                    actionLoading={memberActionLoading[member.id]}
+                    onAction={async (id, action, extra = {}) => {
+                      setMemberActionLoading(prev => ({ ...prev, [id]: true }));
+                      try {
+                        const res = await fetch('/api/members/', {
+                          method: 'PUT',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ id, action, ...extra }),
+                        });
+                        const data = await res.json();
+                        if (data.success) {
+                          if (data.generatedPassword) {
+                            alert(`New password for ${member.email}:\n\n${data.generatedPassword}\n\nCredentials email sent.`);
+                          }
+                          fetchMembers();
+                        } else {
+                          alert('Action failed: ' + data.error);
+                        }
+                      } catch {
+                        alert('Error performing action.');
+                      } finally {
+                        setMemberActionLoading(prev => ({ ...prev, [id]: false }));
+                      }
+                    }}
+                    onDelete={async (id) => {
+                      if (!confirm(`REVOKE MEMBER: Permanently remove ${member.email}?`)) return;
+                      setMemberActionLoading(prev => ({ ...prev, [id]: true }));
+                      try {
+                        const res = await fetch('/api/members/', {
+                          method: 'DELETE',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ id }),
+                        });
+                        const data = await res.json();
+                        if (data.success) fetchMembers();
+                        else alert('Delete failed: ' + data.error);
+                      } catch {
+                        alert('Error deleting member.');
+                      } finally {
+                        setMemberActionLoading(prev => ({ ...prev, [id]: false }));
+                      }
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* VOUCHER CONTROL */}
+        <div className="mt-20">
+          <button
+            onClick={() => setShowVouchers(v => !v)}
+            className="w-full flex justify-between items-center border-b border-gray-800 pb-4 mb-6 group"
+          >
+            <h2 className="text-2xl font-black text-white italic tracking-tighter group-hover:text-blue-500 transition-colors flex items-center gap-3">
+              <Ticket size={20} /> VOUCHER CONTROL ({vouchers.length})
+            </h2>
+            <span className="text-gray-600 font-black text-[10px] uppercase tracking-widest">{showVouchers ? 'Collapse ▲' : 'Expand ▼'}</span>
+          </button>
+
+          {showVouchers && (
+            <div className="space-y-6">
+              {/* Create voucher form */}
+              <div className="bg-[#0a0a0a] border border-blue-900/30 rounded-2xl p-6 space-y-4">
+                <h3 className="text-sm font-black text-white uppercase tracking-widest border-b border-gray-800 pb-3">Issue New Voucher</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Code <span className="text-red-600">*</span></label>
+                    <input type="text" value={voucherForm.code} onChange={e => setVoucherForm(p => ({ ...p, code: e.target.value.toUpperCase() }))} placeholder="e.g. SYNDICATE20" className="w-full bg-[#050505] border border-gray-800 text-white p-3 font-bold font-mono focus:outline-none focus:border-blue-600 transition-colors uppercase" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Type <span className="text-red-600">*</span></label>
+                    <select value={voucherForm.type} onChange={e => setVoucherForm(p => ({ ...p, type: e.target.value }))} className="w-full bg-[#050505] border border-gray-800 text-white p-3 font-bold focus:outline-none focus:border-blue-600 transition-colors appearance-none">
+                      <option value="percent">Percentage (%)</option>
+                      <option value="fixed">Fixed Amount (RM)</option>
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Value <span className="text-red-600">*</span></label>
+                    <input type="number" value={voucherForm.value} onChange={e => setVoucherForm(p => ({ ...p, value: e.target.value }))} placeholder={voucherForm.type === 'percent' ? '20' : '15'} min="1" max={voucherForm.type === 'percent' ? '100' : undefined} className="w-full bg-[#050505] border border-gray-800 text-white p-3 font-bold focus:outline-none focus:border-blue-600 transition-colors" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Min Order (RM)</label>
+                    <input type="number" value={voucherForm.minOrder} onChange={e => setVoucherForm(p => ({ ...p, minOrder: e.target.value }))} placeholder="0" min="0" className="w-full bg-[#050505] border border-gray-800 text-white p-3 font-bold focus:outline-none focus:border-blue-600 transition-colors" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Max Uses</label>
+                    <input type="number" value={voucherForm.maxUses} onChange={e => setVoucherForm(p => ({ ...p, maxUses: e.target.value }))} placeholder="Unlimited" min="1" className="w-full bg-[#050505] border border-gray-800 text-white p-3 font-bold focus:outline-none focus:border-blue-600 transition-colors" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Expires At</label>
+                    <input type="date" value={voucherForm.expiresAt} onChange={e => setVoucherForm(p => ({ ...p, expiresAt: e.target.value }))} className="w-full bg-[#050505] border border-gray-800 text-white p-3 font-bold focus:outline-none focus:border-blue-600 transition-colors" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Description</label>
+                  <input type="text" value={voucherForm.description} onChange={e => setVoucherForm(p => ({ ...p, description: e.target.value }))} placeholder="Internal note or displayed hint" className="w-full bg-[#050505] border border-gray-800 text-white p-3 font-bold focus:outline-none focus:border-blue-600 transition-colors" />
+                </div>
+                {voucherCreateStatus === 'error' && (
+                  <p className="text-red-500 text-[10px] font-black uppercase tracking-widest animate-pulse">Failed to create voucher.</p>
+                )}
+                {voucherCreateStatus === 'success' && (
+                  <p className="text-green-500 text-[10px] font-black uppercase tracking-widest">✓ Voucher issued.</p>
+                )}
+                <button
+                  type="button"
+                  disabled={voucherCreateStatus === 'loading' || !voucherForm.code || !voucherForm.value}
+                  onClick={async () => {
+                    setVoucherCreateStatus('loading');
+                    try {
+                      const res = await fetch('/api/vouchers/', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                          code: voucherForm.code,
+                          type: voucherForm.type,
+                          value: Number(voucherForm.value),
+                          minOrder: voucherForm.minOrder ? Number(voucherForm.minOrder) : 0,
+                          maxUses: voucherForm.maxUses ? Number(voucherForm.maxUses) : null,
+                          expiresAt: voucherForm.expiresAt || null,
+                          description: voucherForm.description,
+                        }),
+                      });
+                      const data = await res.json();
+                      if (data.success) {
+                        setVoucherCreateStatus('success');
+                        setVoucherForm({ code: '', type: 'percent', value: '', minOrder: '', maxUses: '', expiresAt: '', description: '' });
+                        fetchVouchers();
+                        setTimeout(() => setVoucherCreateStatus('idle'), 3000);
+                      } else {
+                        setVoucherCreateStatus('error');
+                        alert('Error: ' + data.error);
+                        setTimeout(() => setVoucherCreateStatus('idle'), 3000);
+                      }
+                    } catch {
+                      setVoucherCreateStatus('error');
+                      setTimeout(() => setVoucherCreateStatus('idle'), 3000);
+                    }
+                  }}
+                  className="bg-blue-600 text-white px-8 py-3 font-black text-[10px] uppercase tracking-[0.3em] hover:bg-white hover:text-black transition-all disabled:opacity-50 flex items-center gap-2"
+                >
+                  <Tag size={14} />
+                  {voucherCreateStatus === 'loading' ? 'Issuing...' : 'Issue Voucher'}
+                </button>
+              </div>
+
+              {/* Voucher list */}
+              <div className="space-y-3">
+                {vouchers.length === 0 && <p className="text-gray-600 text-xs italic font-bold">No vouchers issued yet.</p>}
+                {vouchers.map(v => (
+                  <div key={v.id} className="bg-[#0a0a0a] border border-gray-800 px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:border-blue-900/50 transition-colors">
+                    <div className="flex items-start gap-4">
+                      <div className="shrink-0 w-10 h-10 bg-blue-900/20 border border-blue-900/30 flex items-center justify-center rounded-full">
+                        <Ticket size={16} className="text-blue-500" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-white font-black font-mono text-sm tracking-widest">{v.code}</span>
+                          <span className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest border ${v.isActive ? 'bg-green-900/20 text-green-500 border-green-900/30' : 'bg-gray-800 text-gray-500 border-gray-700'}`}>{v.isActive ? 'Active' : 'Disabled'}</span>
+                          <span className="bg-blue-900/10 text-blue-400 border border-blue-900/20 px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest">
+                            {v.type === 'percent' ? `${v.value}% off` : `RM${v.value} off`}
+                          </span>
+                          {v.minOrder > 0 && <span className="text-gray-600 text-[8px] font-black uppercase">min RM{v.minOrder}</span>}
+                        </div>
+                        {v.description && <p className="text-gray-500 text-[10px] mt-0.5">{v.description}</p>}
+                        <p className="text-gray-700 text-[10px] font-bold mt-0.5">
+                          Used: {v.usedCount}{v.maxUses ? `/${v.maxUses}` : ''} · Created {new Date(v.createdAt).toLocaleDateString('en-MY', { day: 'numeric', month: 'short', year: 'numeric' })}
+                          {v.expiresAt && ` · Expires ${new Date(v.expiresAt).toLocaleDateString('en-MY', { day: 'numeric', month: 'short', year: 'numeric' })}`}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex gap-2 shrink-0">
+                      <button
+                        disabled={voucherActionLoading[v.id]}
+                        onClick={async () => {
+                          setVoucherActionLoading(p => ({ ...p, [v.id]: true }));
+                          try {
+                            const res = await fetch('/api/vouchers/', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: v.id, isActive: !v.isActive }) });
+                            const data = await res.json();
+                            if (data.success) fetchVouchers();
+                            else alert('Failed: ' + data.error);
+                          } catch { alert('Error.'); }
+                          finally { setVoucherActionLoading(p => ({ ...p, [v.id]: false })); }
+                        }}
+                        className={`flex items-center gap-1.5 px-4 py-2 font-black text-[9px] uppercase tracking-widest border transition-all disabled:opacity-50 ${v.isActive ? 'border-yellow-900/50 text-yellow-600 hover:bg-yellow-600 hover:text-white hover:border-yellow-600' : 'border-green-900/50 text-green-600 hover:bg-green-600 hover:text-white hover:border-green-600'}`}
+                      >
+                        {v.isActive ? 'Disable' : 'Enable'}
+                      </button>
+                      <button
+                        disabled={voucherActionLoading[v.id]}
+                        onClick={async () => {
+                          if (!confirm(`Delete voucher ${v.code}?`)) return;
+                          setVoucherActionLoading(p => ({ ...p, [v.id]: true }));
+                          try {
+                            const res = await fetch('/api/vouchers/', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: v.id }) });
+                            const data = await res.json();
+                            if (data.success) fetchVouchers();
+                            else alert('Failed: ' + data.error);
+                          } catch { alert('Error.'); }
+                          finally { setVoucherActionLoading(p => ({ ...p, [v.id]: false })); }
+                        }}
+                        className="flex items-center gap-1.5 border border-red-900/50 text-red-500 px-4 py-2 font-black text-[9px] uppercase tracking-widest hover:bg-red-600 hover:text-white hover:border-red-600 transition-all disabled:opacity-50"
+                      >
+                        <Trash2 size={11} /> Delete
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* FEEDBACK INTEL */}
+        <div className="mt-20">
+          <button
+            onClick={() => setShowFeedbacks(v => !v)}
+            className="w-full flex justify-between items-center border-b border-gray-800 pb-4 mb-6 group"
+          >
+            <h2 className="text-2xl font-black text-white italic tracking-tighter group-hover:text-blue-500 transition-colors flex items-center gap-3">
+              <MessageSquare size={20} /> FEEDBACK INTEL ({feedbacks.length})
+              {feedbacks.filter(f => f.status === 'new').length > 0 && (
+                <span className="bg-blue-600 text-white text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest">{feedbacks.filter(f => f.status === 'new').length} NEW</span>
+              )}
+            </h2>
+            <span className="text-gray-600 font-black text-[10px] uppercase tracking-widest">{showFeedbacks ? 'Collapse ▲' : 'Expand ▼'}</span>
+          </button>
+
+          {showFeedbacks && (
+            <div className="space-y-3">
+              {feedbacks.length === 0 && <p className="text-gray-600 text-xs italic font-bold">No feedback received yet.</p>}
+              {feedbacks.map(fb => (
+                <FeedbackCard
+                  key={fb.id}
+                  feedback={fb}
+                  actionLoading={feedbackActionLoading[fb.id]}
+                  onUpdate={async (id, updates) => {
+                    setFeedbackActionLoading(p => ({ ...p, [id]: true }));
+                    try {
+                      const res = await fetch('/api/feedbacks/', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, ...updates }) });
+                      const data = await res.json();
+                      if (data.success) fetchFeedbacks();
+                      else alert('Failed: ' + data.error);
+                    } catch { alert('Error.'); }
+                    finally { setFeedbackActionLoading(p => ({ ...p, [id]: false })); }
+                  }}
+                  onDelete={async (id) => {
+                    if (!confirm('Delete this feedback?')) return;
+                    setFeedbackActionLoading(p => ({ ...p, [id]: true }));
+                    try {
+                      const res = await fetch('/api/feedbacks/', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) });
+                      const data = await res.json();
+                      if (data.success) fetchFeedbacks();
+                      else alert('Failed: ' + data.error);
+                    } catch { alert('Error.'); }
+                    finally { setFeedbackActionLoading(p => ({ ...p, [id]: false })); }
+                  }}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+
         {/* ORDER DEPLOYMENTS */}
         <div className="mt-20">
           <button
@@ -714,6 +1130,270 @@ export default function AdminDashboard() {
 
       </div>
     </main>
+  );
+}
+
+const TIER_CONFIG = {
+  bronze:   { label: 'Bronze',   color: 'bg-amber-900/20 text-amber-600 border-amber-900/30' },
+  silver:   { label: 'Silver',   color: 'bg-zinc-800/60 text-zinc-300 border-zinc-700/50' },
+  gold:     { label: 'Gold',     color: 'bg-yellow-900/20 text-yellow-400 border-yellow-900/30' },
+  platinum: { label: 'Platinum', color: 'bg-purple-900/20 text-purple-400 border-purple-900/30' },
+  syndicate:{ label: 'Syndicate',color: 'bg-blue-600/10 text-blue-500 border-blue-900/30' },
+};
+
+function MemberCard({ member, memberOrders, actionLoading, onAction, onDelete }) {
+  const [showResetPwd, setShowResetPwd] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const [editNotes, setEditNotes] = useState(false);
+  const [notesValue, setNotesValue] = useState(member.notes || '');
+  const [editPhone, setEditPhone] = useState(false);
+  const [phoneValue, setPhoneValue] = useState(member.phone || '');
+  const isActive = member.status === 'active';
+  const tier = member.tier || 'syndicate';
+  const tierCfg = TIER_CONFIG[tier] || TIER_CONFIG.syndicate;
+
+  return (
+    <div className="bg-[#0a0a0a] border border-gray-800 hover:border-blue-900/50 transition-colors">
+      {/* Header row */}
+      <div className="px-6 py-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <div className="shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-blue-900 to-blue-700 flex items-center justify-center text-[10px] font-black text-white">
+            {(member.name || member.email).charAt(0).toUpperCase()}
+          </div>
+          <div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <p className="text-white font-bold text-sm">{member.email}</p>
+              <span className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest border ${isActive ? 'bg-green-900/20 text-green-500 border-green-900/30' : 'bg-red-900/20 text-red-500 border-red-900/30'}`}>{member.status}</span>
+              <span className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest border ${tierCfg.color}`}>{tierCfg.label}</span>
+            </div>
+            {member.name && <p className="text-gray-500 text-[10px] font-black uppercase tracking-widest mt-0.5">{member.name}</p>}
+            <p className="text-gray-700 text-[10px] font-bold mt-0.5">
+              Joined {new Date(member.joinedAt).toLocaleDateString('en-MY', { day: 'numeric', month: 'short', year: 'numeric' })}
+              {member.lastLoginAt && ` · Last login ${new Date(member.lastLoginAt).toLocaleDateString('en-MY', { day: 'numeric', month: 'short' })}`}
+              {member.phone && ` · ${member.phone}`}
+            </p>
+          </div>
+        </div>
+        <div className="flex gap-2 shrink-0 flex-wrap">
+          <button onClick={() => setExpanded(v => !v)} className="flex items-center gap-1.5 border border-gray-700 text-gray-400 px-4 py-2 font-black text-[9px] uppercase tracking-widest hover:bg-[#111] hover:text-white transition-all">
+            {expanded ? <ChevronUp size={11} /> : <ChevronDown size={11} />} Details
+          </button>
+          <button
+            onClick={() => onAction(member.id, isActive ? 'suspend' : 'activate')}
+            disabled={actionLoading}
+            className={`flex items-center gap-1.5 px-4 py-2 font-black text-[9px] uppercase tracking-widest border transition-all disabled:opacity-50 ${isActive ? 'border-yellow-900/50 text-yellow-600 hover:bg-yellow-600 hover:text-white hover:border-yellow-600' : 'border-green-900/50 text-green-600 hover:bg-green-600 hover:text-white hover:border-green-600'}`}
+          >
+            {isActive ? <><UserX size={11} /> Suspend</> : <><UserCheck size={11} /> Activate</>}
+          </button>
+          <button
+            onClick={() => { if (!showResetPwd) { setShowResetPwd(true); return; } onAction(member.id, 'reset_password'); setShowResetPwd(false); }}
+            disabled={actionLoading}
+            className="flex items-center gap-1.5 border border-gray-700 text-gray-400 px-4 py-2 font-black text-[9px] uppercase tracking-widest hover:bg-[#111] hover:text-white transition-all disabled:opacity-50"
+          >
+            <Key size={11} /> {showResetPwd ? 'Confirm Reset' : 'Reset Pwd'}
+          </button>
+          {showResetPwd && (
+            <button onClick={() => setShowResetPwd(false)} className="flex items-center gap-1.5 border border-gray-800 text-gray-600 px-4 py-2 font-black text-[9px] uppercase tracking-widest hover:text-gray-400 transition-all">
+              <X size={11} /> Cancel
+            </button>
+          )}
+          <button onClick={() => onDelete(member.id)} disabled={actionLoading} className="flex items-center gap-1.5 border border-red-900/50 text-red-500 px-4 py-2 font-black text-[9px] uppercase tracking-widest hover:bg-red-600 hover:text-white hover:border-red-600 transition-all disabled:opacity-50">
+            <Trash2 size={11} /> Revoke
+          </button>
+        </div>
+      </div>
+
+      {/* Expanded panel */}
+      {expanded && (
+        <div className="border-t border-gray-800 bg-[#060606] px-6 py-5 space-y-6">
+          {/* Stats row */}
+          <div className="grid grid-cols-3 gap-4">
+            <div className="bg-[#0a0a0a] border border-gray-800 rounded-xl p-4 text-center">
+              <p className="text-gray-600 text-[9px] font-black uppercase tracking-widest mb-1">Total Spent</p>
+              <p className="text-white font-black text-lg">RM {(member.totalSpent || 0).toFixed(2)}</p>
+            </div>
+            <div className="bg-[#0a0a0a] border border-gray-800 rounded-xl p-4 text-center">
+              <p className="text-gray-600 text-[9px] font-black uppercase tracking-widest mb-1">Points</p>
+              <p className="text-white font-black text-lg">{member.points || 0}</p>
+            </div>
+            <div className="bg-[#0a0a0a] border border-gray-800 rounded-xl p-4 text-center">
+              <p className="text-gray-600 text-[9px] font-black uppercase tracking-widest mb-1">Orders</p>
+              <p className="text-white font-black text-lg">{memberOrders.length}</p>
+            </div>
+          </div>
+
+          {/* Tier + Phone row */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Tier selector */}
+            <div className="space-y-2">
+              <label className="text-[10px] text-gray-500 font-black uppercase tracking-widest flex items-center gap-2"><BarChart3 size={11} /> Membership Grade</label>
+              <select
+                defaultValue={tier}
+                onChange={async e => {
+                  const newTier = e.target.value;
+                  try {
+                    const res = await fetch('/api/members/', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: member.id, action: 'set_tier', tier: newTier }) });
+                    const data = await res.json();
+                    if (!data.success) alert('Failed: ' + data.error);
+                  } catch { alert('Error updating tier.'); }
+                }}
+                className="w-full bg-[#050505] border border-gray-800 text-white p-3 font-bold text-sm focus:outline-none focus:border-blue-600 transition-colors appearance-none"
+              >
+                {Object.entries(TIER_CONFIG).map(([key, cfg]) => (
+                  <option key={key} value={key}>{cfg.label}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Phone */}
+            <div className="space-y-2">
+              <label className="text-[10px] text-gray-500 font-black uppercase tracking-widest flex items-center gap-2"><Phone size={11} /> Phone</label>
+              {editPhone ? (
+                <div className="flex gap-2">
+                  <input type="text" value={phoneValue} onChange={e => setPhoneValue(e.target.value)} placeholder="+60 12-345 6789" className="flex-1 bg-[#050505] border border-blue-600 text-white p-3 font-bold text-sm focus:outline-none" />
+                  <button onClick={async () => { await onAction(member.id, 'update_phone', { phone: phoneValue }); setEditPhone(false); }} className="bg-blue-600 text-white px-4 font-black text-[9px] uppercase tracking-widest hover:bg-white hover:text-black transition-all">Save</button>
+                  <button onClick={() => { setPhoneValue(member.phone || ''); setEditPhone(false); }} className="border border-gray-700 text-gray-400 px-3 font-black text-[9px] uppercase tracking-widest hover:text-white transition-colors">✕</button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-3">
+                  <p className="text-gray-400 text-sm font-bold flex-1">{member.phone || <span className="text-gray-700 italic">Not set</span>}</p>
+                  <button onClick={() => setEditPhone(true)} className="text-gray-600 hover:text-blue-500 transition-colors"><Edit3 size={12} /></button>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Admin Notes */}
+          <div className="space-y-2">
+            <label className="text-[10px] text-gray-500 font-black uppercase tracking-widest flex items-center gap-2"><StickyNote size={11} /> Admin Notes</label>
+            {editNotes ? (
+              <div className="space-y-2">
+                <textarea rows={3} value={notesValue} onChange={e => setNotesValue(e.target.value)} placeholder="Internal notes — not visible to member" className="w-full bg-[#050505] border border-blue-600 text-white p-3 font-bold text-sm focus:outline-none resize-none" />
+                <div className="flex gap-2">
+                  <button onClick={async () => { await onAction(member.id, 'update_notes', { notes: notesValue }); setEditNotes(false); }} className="bg-blue-600 text-white px-6 py-2 font-black text-[9px] uppercase tracking-widest hover:bg-white hover:text-black transition-all">Save</button>
+                  <button onClick={() => { setNotesValue(member.notes || ''); setEditNotes(false); }} className="border border-gray-700 text-gray-400 px-4 py-2 font-black text-[9px] uppercase tracking-widest hover:text-white transition-colors">Cancel</button>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-start gap-3 group cursor-pointer" onClick={() => setEditNotes(true)}>
+                <p className="text-gray-500 text-sm flex-1 leading-relaxed">{member.notes || <span className="text-gray-700 italic">No notes — click to add</span>}</p>
+                <Edit3 size={12} className="text-gray-700 group-hover:text-blue-500 transition-colors mt-0.5 shrink-0" />
+              </div>
+            )}
+          </div>
+
+          {/* Transaction records */}
+          {memberOrders.length > 0 && (
+            <div className="space-y-2">
+              <label className="text-[10px] text-gray-500 font-black uppercase tracking-widest flex items-center gap-2"><ShoppingBag size={11} /> Transaction Records</label>
+              <div className="space-y-2">
+                {memberOrders.map(o => (
+                  <div key={o.id} className="bg-[#0a0a0a] border border-gray-800 px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div>
+                      <p className="text-blue-500 font-black text-[10px] uppercase tracking-widest">{o.id}</p>
+                      <p className="text-gray-500 text-[10px] mt-0.5">{new Date(o.createdAt).toLocaleDateString('en-MY', { day: 'numeric', month: 'short', year: 'numeric' })} · {o.items?.length} item{o.items?.length !== 1 ? 's' : ''}</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest border ${
+                        o.status === 'processing' ? 'bg-blue-900/40 text-blue-500 border-blue-900/50' :
+                        o.status === 'dispatched' ? 'bg-purple-900/40 text-purple-400 border-purple-900/50' :
+                        o.status === 'delivered' ? 'bg-green-900/40 text-green-500 border-green-900/50' :
+                        'bg-gray-800 text-gray-500 border-gray-700'
+                      }`}>{o.status}</span>
+                      <span className="text-white font-black text-sm">RM {o.grandTotal?.toFixed(2)}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function FeedbackCard({ feedback: fb, actionLoading, onUpdate, onDelete }) {
+  const [expanded, setExpanded] = useState(fb.status === 'new');
+  const [noteValue, setNoteValue] = useState(fb.adminNote || '');
+  const [editNote, setEditNote] = useState(false);
+
+  const statusColors = {
+    new: 'bg-blue-900/20 text-blue-500 border-blue-900/30',
+    read: 'bg-gray-800 text-gray-400 border-gray-700',
+    resolved: 'bg-green-900/20 text-green-500 border-green-900/30',
+  };
+  const typeColors = {
+    complaint: 'text-red-500',
+    suggestion: 'text-yellow-500',
+    product: 'text-purple-400',
+    service: 'text-blue-400',
+    general: 'text-gray-400',
+  };
+
+  return (
+    <div className="bg-[#0a0a0a] border border-gray-800 hover:border-blue-900/50 transition-colors">
+      <div className="px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-start gap-4">
+          <div className="shrink-0 w-9 h-9 rounded-full bg-gray-800 flex items-center justify-center text-[10px] font-black text-gray-400">
+            {fb.name.charAt(0).toUpperCase()}
+          </div>
+          <div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <p className="text-white font-bold text-sm">{fb.name}</p>
+              <span className="text-gray-500 text-[10px]">{fb.email}</span>
+              <span className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest border ${statusColors[fb.status]}`}>{fb.status}</span>
+              <span className={`text-[8px] font-black uppercase tracking-widest ${typeColors[fb.type]}`}>{fb.type}</span>
+              {fb.rating && (
+                <span className="flex items-center gap-0.5 text-yellow-500 text-[10px] font-black">
+                  <Star size={9} fill="currentColor" />{fb.rating}
+                </span>
+              )}
+            </div>
+            <p className="text-gray-600 text-[10px] mt-0.5">
+              {new Date(fb.createdAt).toLocaleDateString('en-MY', { day: 'numeric', month: 'short', year: 'numeric' })}
+              {fb.orderId && ` · Order ${fb.orderId}`}
+            </p>
+          </div>
+        </div>
+        <div className="flex gap-2 shrink-0 flex-wrap">
+          <button onClick={() => { setExpanded(v => !v); if (fb.status === 'new') onUpdate(fb.id, { status: 'read' }); }} className="flex items-center gap-1.5 border border-gray-700 text-gray-400 px-4 py-2 font-black text-[9px] uppercase tracking-widest hover:bg-[#111] hover:text-white transition-all">
+            {expanded ? <ChevronUp size={11} /> : <ChevronDown size={11} />} {expanded ? 'Hide' : 'View'}
+          </button>
+          {fb.status !== 'resolved' && (
+            <button disabled={actionLoading} onClick={() => onUpdate(fb.id, { status: 'resolved' })} className="flex items-center gap-1.5 border border-green-900/50 text-green-600 px-4 py-2 font-black text-[9px] uppercase tracking-widest hover:bg-green-600 hover:text-white hover:border-green-600 transition-all disabled:opacity-50">
+              <CheckCircle2 size={11} /> Resolve
+            </button>
+          )}
+          <button disabled={actionLoading} onClick={() => onDelete(fb.id)} className="flex items-center gap-1.5 border border-red-900/50 text-red-500 px-4 py-2 font-black text-[9px] uppercase tracking-widest hover:bg-red-600 hover:text-white hover:border-red-600 transition-all disabled:opacity-50">
+            <Trash2 size={11} /> Delete
+          </button>
+        </div>
+      </div>
+
+      {expanded && (
+        <div className="border-t border-gray-800 bg-[#060606] px-6 py-4 space-y-4">
+          <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap">{fb.message}</p>
+          <div className="space-y-2">
+            <label className="text-[10px] text-gray-600 font-black uppercase tracking-widest">Admin Note</label>
+            {editNote ? (
+              <div className="space-y-2">
+                <textarea rows={2} value={noteValue} onChange={e => setNoteValue(e.target.value)} placeholder="Internal note..." className="w-full bg-[#050505] border border-blue-600 text-white p-3 font-bold text-sm focus:outline-none resize-none" />
+                <div className="flex gap-2">
+                  <button onClick={async () => { await onUpdate(fb.id, { adminNote: noteValue }); setEditNote(false); }} className="bg-blue-600 text-white px-6 py-2 font-black text-[9px] uppercase tracking-widest hover:bg-white hover:text-black transition-all">Save</button>
+                  <button onClick={() => { setNoteValue(fb.adminNote || ''); setEditNote(false); }} className="border border-gray-700 text-gray-400 px-4 py-2 font-black text-[9px] uppercase tracking-widest hover:text-white transition-colors">Cancel</button>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-start gap-3 group cursor-pointer" onClick={() => setEditNote(true)}>
+                <p className="text-gray-600 text-sm flex-1">{fb.adminNote || <span className="text-gray-700 italic">No note — click to add</span>}</p>
+                <Edit3 size={12} className="text-gray-700 group-hover:text-blue-500 transition-colors mt-0.5 shrink-0" />
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 

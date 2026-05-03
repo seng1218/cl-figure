@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script>
+async function test() {
+  const fd = new FormData();
+  fd.append('id', '12');
+  fd.append('price', '88.8');
+  const res = await fetch('/api/products/', { method: 'PUT', headers: {'x-admin-key':'CL00'}, body: fd });
+  document.body.innerText = await res.text();
+}
+test();
+</script>
+</body>
+</html>

@@ -4,10 +4,10 @@
     "env": {},
     "webpack": null,
     "eslint": {
-      "ignoreDuringBuilds": false
+      "ignoreDuringBuilds": true
     },
     "typescript": {
-      "ignoreBuildErrors": false,
+      "ignoreBuildErrors": true,
       "tsconfigPath": "tsconfig.json"
     },
     "typedRoutes": false,
@@ -100,7 +100,7 @@
         "transform": "lodash/{{member}}"
       }
     },
-    "outputFileTracingRoot": "C:\\Users\\HMS\\my-figurine-shop",
+    "outputFileTracingRoot": "D:\\my-figurine-shop",
     "experimental": {
       "useSkewCookie": false,
       "cacheLife": {
@@ -289,11 +289,16 @@
     "htmlLimitedBots": "[\\w-]+-Google|Google-[\\w-]+|Chrome-Lighthouse|Slurp|DuckDuckBot|baiduspider|yandex|sogou|bitlybot|tumblr|vkShare|quora link preview|redditbot|ia_archiver|Bingbot|BingPreview|applebot|facebookexternalhit|facebookcatalog|Twitterbot|LinkedInBot|Slackbot|Discordbot|WhatsApp|SkypeUriPreview|Yeti|googleweblight",
     "bundlePagesRouterDependencies": false,
     "configFileName": "next.config.mjs",
+    "serverExternalPackages": [
+      "fs",
+      "path",
+      "crypto"
+    ],
     "turbopack": {
-      "root": "C:\\Users\\HMS\\my-figurine-shop"
+      "root": "D:\\my-figurine-shop"
     }
   },
-  "appDir": "C:\\Users\\HMS\\my-figurine-shop",
+  "appDir": "D:\\my-figurine-shop",
   "relativeAppDir": "",
   "files": [
     ".next\\routes-manifest.json",

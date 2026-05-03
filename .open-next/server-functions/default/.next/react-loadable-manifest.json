@@ -3,29 +3,57 @@
     "id": 11482,
     "files": [
       "static/chunks/bc98253f.d6fc8a0138855acd.js",
-      "static/chunks/199.829cec104a19a84e.js"
+      "static/chunks/4199.48d9467fae1d78f7.js"
     ]
   },
   "..\\node_modules\\jspdf\\dist\\jspdf.es.min.js -> dompurify": {
     "id": 82931,
     "files": [
-      "static/chunks/931.cc5826e66e59ec6f.js"
+      "static/chunks/2931.956b317f2f173510.js"
     ]
   },
   "..\\node_modules\\jspdf\\dist\\jspdf.es.min.js -> html2canvas": {
     "id": 54264,
-    "files": []
+    "files": [
+      "static/chunks/ad2866b8.e13a3cf75ccf0eb8.js"
+    ]
   },
   "..\\node_modules\\next\\dist\\client\\index.js -> ../pages/_app": {
     "id": 45139,
     "files": [
-      "static/chunks/139.8d54880d25bc452f.js"
+      "static/chunks/5139.e4ff9cc3669129ed.js"
     ]
   },
   "..\\node_modules\\next\\dist\\client\\index.js -> ../pages/_error": {
     "id": 31646,
     "files": [
-      "static/chunks/646.c2c67a3e35c59670.js"
+      "static/chunks/1646.a93085a0445ba909.js"
+    ]
+  },
+  "app\\checkout\\success\\page.js -> canvas-confetti": {
+    "id": 71708,
+    "files": [
+      "static/chunks/1708.8277489492265ef1.js"
+    ]
+  },
+  "app\\checkout\\success\\page.js -> html2canvas": {
+    "id": 54264,
+    "files": [
+      "static/chunks/ad2866b8.e13a3cf75ccf0eb8.js"
+    ]
+  },
+  "app\\checkout\\success\\page.js -> jspdf": {
+    "id": 55172,
+    "files": [
+      "static/chunks/2f0b94e8.3186a98eb4c9012b.js",
+      "static/chunks/164f4fb6.540588a7465e92b9.js",
+      "static/chunks/6241.6c62f1d1123f6016.js"
+    ]
+  },
+  "app\\join\\page.js -> canvas-confetti": {
+    "id": 71708,
+    "files": [
+      "static/chunks/1708.8277489492265ef1.js"
     ]
   }
 }

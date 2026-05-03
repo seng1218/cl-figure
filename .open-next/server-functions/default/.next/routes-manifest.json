@@ -25,7 +25,38 @@
       "regex": "^(?:/((?!\\.well-known(?:/.*)?)(?:[^/]+/)*[^/\\.]+))$"
     }
   ],
-  "headers": [],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=()"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: blob:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https:; frame-src 'none'; object-src 'none'; base-uri 'self'"
+        },
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=31536000; includeSubDomains; preload"
+        }
+      ],
+      "regex": "^(?:/(.*))(?:/)?$"
+    }
+  ],
   "rewrites": {
     "beforeFiles": [],
     "afterFiles": [],
@@ -55,16 +86,16 @@
       "namedRegex": "^/_not\\-found(?:/)?$"
     },
     {
-      "page": "/admin",
-      "regex": "^/admin(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/admin(?:/)?$"
-    },
-    {
       "page": "/checkout",
       "regex": "^/checkout(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/checkout(?:/)?$"
+    },
+    {
+      "page": "/checkout/success",
+      "regex": "^/checkout/success(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/checkout/success(?:/)?$"
     },
     {
       "page": "/favicon.ico",
@@ -73,16 +104,58 @@
       "namedRegex": "^/favicon\\.ico(?:/)?$"
     },
     {
+      "page": "/join",
+      "regex": "^/join(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/join(?:/)?$"
+    },
+    {
+      "page": "/member",
+      "regex": "^/member(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/member(?:/)?$"
+    },
+    {
+      "page": "/member/login",
+      "regex": "^/member/login(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/member/login(?:/)?$"
+    },
+    {
+      "page": "/return-policy",
+      "regex": "^/return\\-policy(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/return\\-policy(?:/)?$"
+    },
+    {
+      "page": "/robots.txt",
+      "regex": "^/robots\\.txt(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/robots\\.txt(?:/)?$"
+    },
+    {
       "page": "/shop",
       "regex": "^/shop(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/shop(?:/)?$"
     },
     {
+      "page": "/sitemap.xml",
+      "regex": "^/sitemap\\.xml(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/sitemap\\.xml(?:/)?$"
+    },
+    {
       "page": "/vault",
       "regex": "^/vault(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/vault(?:/)?$"
+    },
+    {
+      "page": "/vault-ops",
+      "regex": "^/vault\\-ops(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/vault\\-ops(?:/)?$"
     }
   ],
   "dataRoutes": [],

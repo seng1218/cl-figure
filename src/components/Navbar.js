@@ -74,6 +74,9 @@ export default function Navbar() {
             <Link href="/join" className="text-[10px] uppercase font-black tracking-[0.2em] hover:text-blue-500 transition-colors text-blue-600">
               Join
             </Link>
+            <Link href="/member/login" className="text-[10px] uppercase font-black tracking-[0.2em] hover:text-white transition-colors border border-gray-700 hover:border-blue-600 px-4 py-2 rounded-full hover:bg-blue-600/10">
+              Member
+            </Link>
           </div>
 
           <div className="flex items-center gap-4 md:gap-6">
@@ -192,6 +195,13 @@ export default function Navbar() {
                 className="text-4xl font-black text-blue-600 uppercase italic tracking-tighter hover:text-blue-400 transition-colors"
               >
                 Join Syndicate
+              </Link>
+              <Link
+                href="/member/login"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="text-4xl font-black text-gray-400 uppercase italic tracking-tighter hover:text-white transition-colors"
+              >
+                Member Portal
               </Link>
               <div className="w-16 h-px bg-gray-800 my-4" />
               <Link
