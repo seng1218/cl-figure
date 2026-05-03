@@ -135,10 +135,10 @@ export default function Home() {
                 </div>
               </div>
 
-              <Link href={`/product/${grailProduct.id}`} className="order-1 lg:order-2 relative aspect-[4/5] md:aspect-square rounded-[3rem] overflow-hidden bg-[#111] border border-gray-800 group cursor-pointer block">
+              <Link href={`/product/${grailProduct.id}`} className="order-1 lg:order-2 relative aspect-[4/5] md:aspect-square rounded-2xl overflow-hidden bg-[#111] border border-gray-800 group cursor-pointer block">
                 <img
                   src={grailProduct.image}
-                  className="w-full h-full object-cover brightness-90 contrast-110 group-hover:scale-105 group-hover:brightness-100 transition-all duration-[2s] ease-out glitch-hover"
+                  className="w-full h-full object-cover brightness-90 contrast-110 group-hover:scale-105 group-hover:brightness-100 transition-all duration-[2s] ease-out"
                   alt={grailProduct.name}
                 />
               </Link>
@@ -159,7 +159,7 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-9">
             {recentDrops.map((item, index) => (
               <ProductCards
                 key={item.id}
@@ -194,7 +194,7 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.2 }}
-                className={`bg-[#0a0a0a] border border-gray-800 rounded-[2.5rem] hover:border-blue-600 transition-all group
+                className={`bg-[#0a0a0a] border border-gray-800 rounded-2xl hover:border-blue-600 transition-all group
                   ${idx === 0 ? 'md:col-span-2 p-10 md:p-14' : 'p-10 md:p-12'}
                   ${idx === 2 ? 'md:col-start-2 md:col-span-2' : ''}
                 `}
@@ -219,7 +219,7 @@ export default function Home() {
         </section>
 
         {/* 6. The Syndicate Waitlist */}
-        <section id="syndicate" className="bg-[#111] max-w-5xl mx-auto px-6 py-24 md:py-32 text-center rounded-[3rem] border border-gray-800 relative group overflow-hidden mt-16">
+        <section id="syndicate" className="bg-[#111] max-w-5xl mx-auto px-6 py-24 md:py-32 text-center rounded-2xl border border-gray-800 relative group overflow-hidden mt-16">
           <div className="absolute inset-0 bg-blue-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 z-0 pointer-events-none mix-blend-screen" />
           <div className="relative z-10">
             <h2 className="text-4xl md:text-6xl font-black text-white italic tracking-tighter mb-6 relative inline-block">

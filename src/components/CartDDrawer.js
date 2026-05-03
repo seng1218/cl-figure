@@ -49,7 +49,7 @@ export default function CartDrawer({ isOpen, onClose }) {
               ) : (
                 cart.map((item) => (
                   <div key={item.id} className="flex gap-6 group">
-                    <div className="w-24 aspect-[3/4] rounded-2xl overflow-hidden bg-gray-50 border border-gray-100 flex-shrink-0">
+                    <div className="w-24 aspect-[3/4] overflow-hidden bg-gray-50 border border-gray-100 flex-shrink-0">
                       <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                     </div>
                     <div className="flex-grow py-1 flex flex-col justify-between">
@@ -81,7 +81,7 @@ export default function CartDrawer({ isOpen, onClose }) {
                 </div>
                 <Link 
                   href="/checkout" 
-                  className="w-full bg-gray-900 text-white py-6 rounded-3xl font-black text-xs uppercase tracking-[0.3em] flex items-center justify-center gap-3 hover:bg-blue-600 transition-all shadow-xl"
+                  className="w-full bg-gray-900 text-white py-6 font-black text-xs uppercase tracking-[0.3em] flex items-center justify-center gap-3 hover:bg-blue-600 transition-all shadow-xl"
                   onClick={onClose}
                 >
                   Secure Checkout <ArrowRight size={16} />

@@ -44,7 +44,7 @@ export default function ProductCard({ item, index, onAdd, alwaysColor = false })
       transition={{ delay: (index % 3) * 0.1, duration: 0.6, ease: "easeOut" }}
       className="group break-inside-avoid mb-8"
     >
-      <Link href={`/product/${item.id}`} className={`block relative ${aspectClass} overflow-hidden bg-[#111] border border-[#222] glitch-hover`}>
+      <Link href={`/product/${item.id}`} className={`block relative ${aspectClass} overflow-hidden bg-[#111] border border-[#222]`}>
         <Image
           src={item.image}
           fill
@@ -55,6 +55,12 @@ export default function ProductCard({ item, index, onAdd, alwaysColor = false })
               : 'grayscale brightness-75 contrast-125 group-hover:grayscale-0 group-hover:brightness-100'
           }`}
           alt={item.name}
+        />
+
+        {/* Warm ambient glow — bridges cold UI with warm figure tones */}
+        <div
+          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none z-[1]"
+          style={{ background: 'radial-gradient(ellipse at 50% 70%, rgba(251,146,60,0.08) 0%, rgba(244,114,182,0.05) 50%, transparent 75%)' }}
         />
 
         {/* Gradient overlay — pill CTA slides up from bottom */}

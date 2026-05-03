@@ -46,15 +46,6 @@ export default function JoinPage() {
       if (data.success) {
         setStatus('success');
         if (data.count) setMemberCount(data.count);
-        const end = Date.now() + 2500;
-        const colors = ['#2563eb', '#fff', '#60a5fa'];
-        import('canvas-confetti').then(({ default: confetti }) => {
-          (function frame() {
-            confetti({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0 }, colors });
-            confetti({ particleCount: 3, angle: 120, spread: 55, origin: { x: 1 }, colors });
-            if (Date.now() < end) requestAnimationFrame(frame);
-          }());
-        });
       } else if (res.status === 409) {
         setStatus('duplicate');
       } else {
@@ -183,7 +174,7 @@ export default function JoinPage() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.15, ease: 'easeOut' }}
           >
-            <div className="bg-[#0a0a0a] border border-gray-800 rounded-[2.5rem] p-10 md:p-14 relative overflow-hidden shadow-[0_40px_80px_rgba(0,0,0,0.8)]">
+            <div className="bg-[#0a0a0a] border border-gray-800 rounded-2xl p-10 md:p-14 relative overflow-hidden shadow-[0_40px_80px_rgba(0,0,0,0.8)]">
               {/* Ambient corner glow */}
               <div className="absolute top-0 right-0 w-48 h-48 bg-blue-600/5 blur-[60px] rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none" />
 
@@ -195,8 +186,16 @@ export default function JoinPage() {
                     animate={{ opacity: 1, scale: 1 }}
                     className="text-center py-8 space-y-6"
                   >
-                    <div className="w-20 h-20 rounded-full bg-green-900/20 border border-green-900/40 flex items-center justify-center mx-auto shadow-[0_0_40px_rgba(34,197,94,0.15)]">
-                      <CheckCircle2 size={40} className="text-green-500" strokeWidth={1} />
+                    <div className="relative w-20 h-20 mx-auto">
+                      <motion.div
+                        initial={{ scale: 1, opacity: 0.5 }}
+                        animate={{ scale: 3, opacity: 0 }}
+                        transition={{ duration: 2, ease: 'easeOut' }}
+                        className="absolute inset-0 rounded-full border border-green-500/40"
+                      />
+                      <div className="w-20 h-20 rounded-full bg-green-900/20 border border-green-900/40 flex items-center justify-center shadow-[0_0_40px_rgba(34,197,94,0.15)]">
+                        <CheckCircle2 size={40} className="text-green-500" strokeWidth={1} />
+                      </div>
                     </div>
                     <div>
                       <h2 className="text-4xl font-black text-white italic tracking-tighter">ACCESS GRANTED.</h2>

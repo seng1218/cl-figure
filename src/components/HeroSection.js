@@ -12,7 +12,7 @@ export default function HeroSection({ onExplore }) {
   const sliderX = useTransform(scrollY, [0, 1000], [0, -1000]);
 
   return (
-    <section className="relative h-[90vh] w-full overflow-hidden bg-[#050505] flex items-center justify-center pt-20">
+    <section className="relative min-h-screen w-full overflow-hidden bg-[#050505] flex items-center justify-center pt-20">
 
       {/* BACKGROUND VISUAL WITH PARALLAX */}
       <div className="absolute inset-0 z-0 bg-[#050505]">
@@ -62,14 +62,14 @@ export default function HeroSection({ onExplore }) {
           transition={{ delay: 0.2, duration: 0.8, ease: "easeOut" }}
           className="text-7xl md:text-[12rem] font-black text-white tracking-tighter mb-8 italic leading-none drop-shadow-2xl"
         >
-          {site?.name || 'Vault 6 Studios'}<span className="text-blue-600 animate-pulse">.</span>
+          {site?.name || 'Vault 6 Studios'}<span className="text-blue-600">.</span>
         </motion.h1>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
-          className="flex flex-col items-center justify-center gap-6 mt-12"
+          className="flex flex-col items-center justify-center gap-6 mt-16"
         >
           <motion.button
             whileHover={{ scale: 1.05 }}
