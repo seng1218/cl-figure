@@ -21,7 +21,7 @@ export const CMS_DEFAULTS = {
     syndicateDescription: 'The highest-tier drops go fast. Submit your email to get early access to new drops before they go public.',
   },
   brands: ['FuRyu', 'Banpresto', 'Taito', 'Bear Panda', 'Alter', 'Animester'],
-  contact: { whatsapp: '' },
+  contact: { whatsapp: '', email: '', address: '' },
   site: { name: 'Vault 6 Studios', tagline: 'by Crafted Legacies' },
   ethos: {
     heading: 'OUR ETHOS.',

@@ -1088,6 +1088,8 @@ export default function AdminDashboard() {
                 {/* Contact Info */}
                 <CMSSection title="Contact Info" onSave={() => saveCMSSection('contact', cms.contact)} saving={cmsSaving.contact} status={cmsStatus.contact}>
                   <CMSField label="WhatsApp Number (e.g. +60123456789)" value={cms.contact?.whatsapp || ''} onChange={v => setCms(p => ({ ...p, contact: { ...p.contact, whatsapp: v } }))} />
+                  <CMSField label="Email Address" value={cms.contact?.email || ''} onChange={v => setCms(p => ({ ...p, contact: { ...p.contact, email: v } }))} />
+                  <CMSField label="Business Address" value={cms.contact?.address || ''} onChange={v => setCms(p => ({ ...p, contact: { ...p.contact, address: v } }))} />
                 </CMSSection>
                 
                 {/* Vault Ethos */}

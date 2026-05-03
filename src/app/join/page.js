@@ -17,6 +17,7 @@ export default function JoinPage() {
   const [errorMsg, setErrorMsg] = useState('');
   const [memberCount, setMemberCount] = useState(null);
   const [website, setWebsite] = useState(''); // Honeypot
+  const [consentChecked, setConsentChecked] = useState(false);
   const spotlightRef = useRef(null);
 
   useEffect(() => {
@@ -278,9 +279,26 @@ export default function JoinPage() {
                         )}
                       </AnimatePresence>
 
+                      <label className="flex items-start gap-3 cursor-pointer mt-4">
+                        <input
+                          type="checkbox"
+                          required
+                          checked={consentChecked}
+                          onChange={(e) => setConsentChecked(e.target.checked)}
+                          className="mt-0.5 shrink-0 w-4 h-4 accent-blue-600"
+                        />
+                        <span className="text-gray-500 text-[9px] font-bold uppercase tracking-widest leading-relaxed">
+                          I agree to receive marketing emails from Vault 6 Studios. I have read and accept the{' '}
+                          <Link href="/privacy-policy" className="text-blue-600 hover:text-white transition-colors">
+                            Privacy Policy
+                          </Link>
+                          . I can unsubscribe at any time.
+                        </span>
+                      </label>
+
                       <button
                         type="submit"
-                        disabled={status === 'loading'}
+                        disabled={status === 'loading' || !consentChecked}
                         className="w-full bg-white text-black py-5 font-black text-[10px] uppercase tracking-[0.4em] flex items-center justify-center gap-3 hover:bg-blue-600 hover:text-white hover:shadow-[0_0_40px_rgba(37,99,235,0.4)] transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed mt-4"
                       >
                         {status === 'loading' ? (
