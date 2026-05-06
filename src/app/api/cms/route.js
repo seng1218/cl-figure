@@ -2,37 +2,10 @@ import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 import { isAuthorized } from '@/lib/adminAuth';
+import { getCFEnv } from '@/lib/inventory';
+import CMS_DEFAULTS_BASE from '@/lib/cms-defaults';
 
-async function getCFEnv() {
-  try {
-    const { getCloudflareContext } = await import('@opennextjs/cloudflare');
-    const ctx = await getCloudflareContext({ async: true });
-    return ctx.env;
-  } catch {
-    return null;
-  }
-}
-
-export const CMS_DEFAULTS = {
-  announcement: { enabled: false, text: '', link: '', type: 'info' },
-  hero: { tagline: 'Established 2023', ctaLabel: 'Enter Vault' },
-  home: {
-    syndicateHeading: 'JOIN THE SYNDICATE.',
-    syndicateDescription: 'The highest-tier drops go fast. Submit your email to get early access to new drops before they go public.',
-  },
-  brands: ['FuRyu', 'Banpresto', 'Taito', 'Bear Panda', 'Alter', 'Animester'],
-  contact: { whatsapp: '', email: '', address: '' },
-  site: { name: 'Vault 6 Studios', tagline: 'by Crafted Legacies' },
-  ethos: {
-    heading: 'OUR ETHOS.',
-    subheading: 'UNCOMPROMISING STANDARDS.',
-    values: [
-      { title: 'CURATION', desc: 'Every piece is hand-selected. If it isn\'t S-tier, it doesn\'t enter the Vault.' },
-      { title: 'AUTHENTICITY', desc: 'Direct sourcing and multi-stage verification. Zero bootlegs, zero exceptions.' },
-      { title: 'INTEGRITY', desc: 'Accurate condition reporting. What you see in the Archive is what reaches your hands.' }
-    ]
-  }
-};
+export const CMS_DEFAULTS = CMS_DEFAULTS_BASE;
 
 async function readCMS(cfEnv) {
   let stored = {};
