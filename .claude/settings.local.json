@@ -34,7 +34,19 @@
       "Bash(git -C D:/my-figurine-shop commit -m ' *)",
       "Bash(git *)",
       "Skill(update-config)",
-      "Bash(npx opennextjs-cloudflare *)"
+      "Bash(npx opennextjs-cloudflare *)",
+      "Bash(node -e ' *)",
+      "Bash(npx wrangler *)",
+      "Bash(taskkill /F /IM node.exe)",
+      "Bash(powershell -Command \"Remove-Item -Recurse -Force '.open-next' -ErrorAction SilentlyContinue\")",
+      "Bash(powershell -Command ' *)",
+      "Bash(powershell *)",
+      "Bash(node *)",
+      "Bash(npx opennextjs-cloudflare@latest build)",
+      "Bash(awk '{if \\(NF\\) print \"  \" $0}')",
+      "Bash(npx *)",
+      "Bash(grep -r \"vault6studios\" src/ --include=\"*.js\" -l)",
+      "Bash(grep -r \"vault6studios\" wrangler.jsonc)"
     ]
   },
   "disabledMcpjsonServers": [
