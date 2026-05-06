@@ -1,7 +1,6 @@
 "use client";
 import { useState, useRef, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { allProducts } from '@/lib/products';
 import { useCart } from '@/context/CartContext';
 import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from 'framer-motion';
 import Toast from '@/components/Toast';
@@ -19,7 +18,7 @@ import {
 import Link from 'next/link';
 import ProductCards from '@/components/ProductCards';
 
-export default function ProductDetail() {
+export default function ProductDetail({ initialProduct = null }) {
   const { id } = useParams();
   const router = useRouter();
   const { addToCart } = useCart();
@@ -30,17 +29,17 @@ export default function ProductDetail() {
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
 
-  const seedProduct = allProducts.find(p => p.id.toString() === id) || null;
-  const [product, setProduct] = useState(seedProduct);
-  // true while live fetch is in flight (only relevant when product not in seed)
-  const [fetchDone, setFetchDone] = useState(!!seedProduct);
+  const [product, setProduct] = useState(initialProduct);
+  const [fetchDone, setFetchDone] = useState(!!initialProduct);
+  const [allLive, setAllLive] = useState([]);
 
-  // Seed data is build-time only; fetch live inventory to pick up products added after deploy
+  // Fetch live inventory to get up-to-date stock count and related products
   useEffect(() => {
     fetch('/api/products/', { cache: 'no-store' })
       .then(r => r.json())
       .then(data => {
         if (Array.isArray(data)) {
+          setAllLive(data);
           const live = data.find(p => p.id.toString() === id);
           if (live) setProduct(live);
         }
@@ -49,7 +48,7 @@ export default function ProductDetail() {
       .finally(() => setFetchDone(true));
   }, [id]);
 
-  const relatedProducts = (allProducts || [])
+  const relatedProducts = allLive
     .filter((p) =>
       String(p.id) !== String(id) &&
       (p.series === product?.series || p.category === product?.category)

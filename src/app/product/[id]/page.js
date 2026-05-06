@@ -1,5 +1,8 @@
 import { allProducts } from '@/lib/products';
+import { getCFEnv, readInventory } from '@/lib/inventory';
 import ProductClient from './ProductClient';
+
+export const dynamicParams = true;
 
 export function generateStaticParams() {
   return allProducts.map((product) => ({
@@ -9,7 +12,9 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }) {
   const { id } = await params;
-  const product = allProducts.find(p => p.id.toString() === id);
+  const cfEnv = await getCFEnv();
+  const inventory = await readInventory(cfEnv);
+  const product = inventory.find(p => p.id.toString() === id);
   if (!product) {
     return { title: 'Item Not Found' };
   }
@@ -36,7 +41,9 @@ export async function generateMetadata({ params }) {
 
 export default async function ProductPage({ params }) {
   const { id } = await params;
-  const product = allProducts.find(p => p.id.toString() === id);
+  const cfEnv = await getCFEnv();
+  const inventory = await readInventory(cfEnv);
+  const product = inventory.find(p => p.id.toString() === id) || null;
 
   const jsonLd = product ? {
     '@context': 'https://schema.org',
@@ -63,7 +70,7 @@ export default async function ProductPage({ params }) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       )}
-      <ProductClient />
+      <ProductClient initialProduct={product} />
     </>
   );
 }

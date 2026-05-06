@@ -1,22 +1,11 @@
 import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
-import seedInventory from '@/data/inventory.json';
 import { isAuthorized } from '@/lib/adminAuth';
+import { getCFEnv, readInventory, writeInventory } from '@/lib/inventory';
 
 const ALLOWED_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
-
-// Returns Cloudflare env bindings when running on Workers, null in local dev
-async function getCFEnv() {
-  try {
-    const { getCloudflareContext } = await import('@opennextjs/cloudflare');
-    const ctx = await getCloudflareContext({ async: true });
-    return ctx.env;
-  } catch {
-    return null;
-  }
-}
 
 // Upload an image file — R2 on Cloudflare, local /public/uploads in dev
 async function saveFile(file, cfEnv) {
@@ -43,32 +32,6 @@ async function saveFile(file, cfEnv) {
   return `/uploads/${filename}`;
 }
 
-// Read inventory — KV on Cloudflare, local JSON file in dev, static seed as fallback
-async function readInventory(cfEnv) {
-  if (cfEnv?.INVENTORY_KV) {
-    const raw = await cfEnv.INVENTORY_KV.get('inventory');
-    if (raw !== null) return JSON.parse(raw);
-    // KV empty on first deploy — seed from bundled JSON
-    await cfEnv.INVENTORY_KV.put('inventory', JSON.stringify(seedInventory));
-    return [...seedInventory];
-  }
-  try {
-    const filePath = path.join(process.cwd(), 'src/data/inventory.json');
-    return JSON.parse(fs.readFileSync(filePath, 'utf8'));
-  } catch {
-    return [...seedInventory];
-  }
-}
-
-// Write inventory — KV on Cloudflare, local JSON file in dev
-async function writeInventory(inventory, cfEnv) {
-  if (cfEnv?.INVENTORY_KV) {
-    await cfEnv.INVENTORY_KV.put('inventory', JSON.stringify(inventory));
-    return;
-  }
-  const filePath = path.join(process.cwd(), 'src/data/inventory.json');
-  fs.writeFileSync(filePath, JSON.stringify(inventory, null, 2));
-}
 
 export const dynamic = 'force-dynamic';
 
