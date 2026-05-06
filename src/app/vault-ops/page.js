@@ -400,8 +400,8 @@ export default function AdminDashboard() {
 
         {/* QUICK-NAV */}
         <nav className="sticky top-0 z-50 -mx-6 lg:-mx-12 px-6 lg:px-12 mb-10">
-          <div className="bg-[#0a0a0a]/95 backdrop-blur-md border-b border-gray-800 py-2.5 overflow-x-auto" style={{scrollbarWidth:'none',msOverflowStyle:'none'}}>
-            <div className="flex items-center gap-0.5 min-w-max">
+          <div className="bg-[#0a0a0a]/95 backdrop-blur-md border-b border-gray-800 py-2.5">
+            <div className="flex items-center gap-0.5 flex-wrap">
               <a href="#section-form" className="flex items-center gap-1.5 px-4 py-2 text-gray-500 hover:text-white hover:bg-[#111] rounded-full transition-all font-black text-[9px] uppercase tracking-widest whitespace-nowrap"><PlusCircle size={11} className="text-blue-500" />Add / Edit</a>
               <a href="#section-inventory" className="flex items-center gap-1.5 px-4 py-2 text-gray-500 hover:text-white hover:bg-[#111] rounded-full transition-all font-black text-[9px] uppercase tracking-widest whitespace-nowrap"><Database size={11} className="text-blue-500" />Inventory ({inventory.filter(i => i.category !== '3D Print Kit').length})</a>
               <a href="#section-fabricator" className="flex items-center gap-1.5 px-4 py-2 text-gray-500 hover:text-white hover:bg-[#111] rounded-full transition-all font-black text-[9px] uppercase tracking-widest whitespace-nowrap"><Tag size={11} className="text-orange-500" />3D Kits ({inventory.filter(i => i.category === '3D Print Kit').length})</a>
