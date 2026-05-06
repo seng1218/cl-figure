@@ -86,6 +86,12 @@
       "namedRegex": "^/_not\\-found(?:/)?$"
     },
     {
+      "page": "/about",
+      "regex": "^/about(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/about(?:/)?$"
+    },
+    {
       "page": "/checkout",
       "regex": "^/checkout(?:/)?$",
       "routeKeys": {},
@@ -96,6 +102,12 @@
       "regex": "^/checkout/success(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/checkout/success(?:/)?$"
+    },
+    {
+      "page": "/contact",
+      "regex": "^/contact(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/contact(?:/)?$"
     },
     {
       "page": "/favicon.ico",
@@ -122,6 +134,24 @@
       "namedRegex": "^/member/login(?:/)?$"
     },
     {
+      "page": "/model-kits",
+      "regex": "^/model\\-kits(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/model\\-kits(?:/)?$"
+    },
+    {
+      "page": "/payment-policy",
+      "regex": "^/payment\\-policy(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/payment\\-policy(?:/)?$"
+    },
+    {
+      "page": "/privacy-policy",
+      "regex": "^/privacy\\-policy(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/privacy\\-policy(?:/)?$"
+    },
+    {
       "page": "/return-policy",
       "regex": "^/return\\-policy(?:/)?$",
       "routeKeys": {},
@@ -134,6 +164,12 @@
       "namedRegex": "^/robots\\.txt(?:/)?$"
     },
     {
+      "page": "/shipping",
+      "regex": "^/shipping(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/shipping(?:/)?$"
+    },
+    {
       "page": "/shop",
       "regex": "^/shop(?:/)?$",
       "routeKeys": {},
@@ -144,6 +180,12 @@
       "regex": "^/sitemap\\.xml(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/sitemap\\.xml(?:/)?$"
+    },
+    {
+      "page": "/terms",
+      "regex": "^/terms(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/terms(?:/)?$"
     },
     {
       "page": "/vault",

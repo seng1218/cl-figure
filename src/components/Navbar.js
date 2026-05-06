@@ -71,6 +71,14 @@ export default function Navbar() {
             <Link href="/#tracking" className="text-[10px] uppercase font-black tracking-[0.2em] hover:text-white transition-colors">
               Tracking
             </Link>
+            <Link href="/model-kits" className="text-[10px] uppercase font-black tracking-[0.2em] hover:text-orange-400 transition-colors text-gray-600 flex items-center gap-1.5">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-500 opacity-75" />
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-orange-500" />
+              </span>
+              3D Kits
+              <span className="text-[7px] font-black uppercase tracking-wider text-orange-500/70 border border-orange-500/30 px-1 py-0.5 rounded">Soon</span>
+            </Link>
             <Link href="/join" className="text-[10px] uppercase font-black tracking-[0.2em] hover:text-blue-500 transition-colors text-blue-600">
               Join
             </Link>
@@ -188,6 +196,16 @@ export default function Navbar() {
                 className="text-4xl font-black text-white uppercase italic tracking-tighter hover:text-blue-500 transition-colors"
               >
                 Tracking
+              </Link>
+              <Link
+                href="/model-kits"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="text-4xl font-black text-gray-600 uppercase italic tracking-tighter hover:text-orange-400 transition-colors flex flex-col items-center gap-1"
+              >
+                3D Kits
+                <span className="text-[9px] font-black uppercase tracking-[0.4em] text-orange-500/60 border border-orange-500/20 px-2 py-0.5">
+                  Coming Soon
+                </span>
               </Link>
               <Link
                 href="/join"

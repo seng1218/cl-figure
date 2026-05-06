@@ -6,7 +6,7 @@ import { getMemberIdFromSession, getMemberSessionToken } from '@/lib/memberAuth'
 
 const FREE_SHIPPING_THRESHOLD = 200;
 const SHIPPING_FEE = 10;
-const HITPAY_BASE = 'https://api.hit-pay.com/v1';
+const CURLEC_BASE = 'https://api.curlec.com/v1';
 
 async function getCFEnv() {
   try {
@@ -218,35 +218,44 @@ export async function POST(req) {
     const origin = req.headers.get('origin') || req.headers.get('host') || '';
     const baseUrl = origin.startsWith('http') ? origin : `https://${origin}`;
 
-    const hitpayRes = await fetch(`${HITPAY_BASE}/payment-requests`, {
+    const keyId = process.env.RAZORPAY_KEY_ID;
+    const keySecret = process.env.RAZORPAY_KEY_SECRET;
+    const authHeader = `Basic ${Buffer.from(`${keyId}:${keySecret}`).toString('base64')}`;
+
+    const curlecRes = await fetch(`${CURLEC_BASE}/payment_links`, {
       method: 'POST',
       headers: {
-        'X-BUSINESS-API-KEY': process.env.HITPAY_API_KEY,
+        'Authorization': authHeader,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        amount: grandTotal.toFixed(2),
+        amount: Math.round(grandTotal * 100), // in sen (100 sen = 1 MYR)
         currency: 'MYR',
-        name: shipping.fullName,
-        phone: shipping.phone,
-        redirect_url: `${baseUrl}/checkout/success`,
-        webhook: `${baseUrl}/api/payment/webhook`,
-        reference_number: orderId,
+        description: `Vault 6 Studios Order ${orderId}`,
+        customer: {
+          name: shipping.fullName,
+          contact: shipping.phone,
+        },
+        notify: { sms: false, email: false },
+        reminder_enable: false,
+        callback_url: `${baseUrl}/checkout/success`,
+        callback_method: 'get',
+        reference_id: orderId,
       }),
     });
 
-    if (!hitpayRes.ok) {
-      // HitPay call failed — rollback stock and order
+    if (!curlecRes.ok) {
+      // Razorpay Curlec call failed — rollback stock and order
       await writeInventory(JSON.parse(inventorySnapshot), cfEnv).catch(() => {});
       const remainingOrders = orders.filter(o => o.id !== orderId);
       await writeOrders(remainingOrders, cfEnv).catch(() => {});
-      const errText = await hitpayRes.text().catch(() => '');
-      console.error('HitPay API error:', hitpayRes.status, errText);
+      const errText = await curlecRes.text().catch(() => '');
+      console.error('Razorpay Curlec API error:', curlecRes.status, errText);
       return NextResponse.json({ success: false, error: 'Payment gateway unavailable. Try again.' }, { status: 502 });
     }
 
-    const hitpayData = await hitpayRes.json();
-    return NextResponse.json({ success: true, orderId, url: hitpayData.url });
+    const curlecData = await curlecRes.json();
+    return NextResponse.json({ success: true, orderId, url: curlecData.short_url });
   } catch (error) {
     console.error('POST /api/payment/create error:', error);
     return NextResponse.json({ success: false, error: 'Failed to initiate payment.' }, { status: 500 });

@@ -128,7 +128,7 @@ export default function ReturnPolicyPage() {
 
           <Section title="10. Contact">
             <p>
-              For all return and refund enquiries, reach us via WhatsApp. Contact details are available in the footer of this site.
+              For all return and refund enquiries, please visit our <Link href="/contact" className="text-blue-500 hover:text-white transition-colors">Contact Us</Link> page.
             </p>
             <p className="text-gray-500 text-xs">
               Vault 6 Studios operates as a private seller of authentic Japanese collectible figures, registered and operating within Malaysia.

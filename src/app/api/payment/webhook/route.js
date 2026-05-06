@@ -55,55 +55,53 @@ async function writeOrders(orders, cfEnv) {
   fs.writeFileSync(path.join(process.cwd(), 'src/data/orders.json'), JSON.stringify(orders, null, 2));
 }
 
-// HitPay webhook verification:
-// Sort all fields (except 'hmac') alphabetically, join as "key=value" pairs with "|",
-// compute HMAC-SHA256 using the HitPay API key as the secret.
-// Docs: https://hit-pay.com/docs.html#webhook-validation
-function verifyHitPayHmac(data, apiKey) {
-  const { hmac, ...rest } = data;
-  if (!hmac) return false;
-  const message = Object.keys(rest)
-    .sort()
-    .map(k => `${k}=${rest[k]}`)
-    .join('|');
-  const expected = crypto.createHmac('sha256', apiKey).update(message).digest('hex');
-  // timingSafeEqual requires equal-length buffers
-  if (hmac.length !== expected.length) return false;
-  return crypto.timingSafeEqual(Buffer.from(hmac), Buffer.from(expected));
+// Razorpay Curlec webhook verification:
+// HMAC-SHA256 of the raw request body using RAZORPAY_WEBHOOK_SECRET.
+// Signature is sent in the X-Razorpay-Signature header.
+function verifyRazorpaySignature(rawBody, signature, webhookSecret) {
+  if (!signature) return false;
+  const expected = crypto.createHmac('sha256', webhookSecret).update(rawBody).digest('hex');
+  if (signature.length !== expected.length) return false;
+  return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected));
 }
 
 export async function POST(req) {
   try {
-    const apiKey = process.env.HITPAY_API_KEY;
-    if (!apiKey) {
-      console.error('HitPay webhook: HITPAY_API_KEY not configured');
+    const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
+    if (!webhookSecret) {
+      console.error('Razorpay Curlec webhook: RAZORPAY_WEBHOOK_SECRET not configured');
       return NextResponse.json({ ok: false }, { status: 500 });
     }
 
-    // HitPay sends application/x-www-form-urlencoded
-    const text = await req.text();
-    const params = new URLSearchParams(text);
-    const data = Object.fromEntries(params.entries());
+    // Razorpay Curlec sends application/json
+    const rawBody = await req.text();
+    const signature = req.headers.get('x-razorpay-signature') || '';
 
-    if (!verifyHitPayHmac(data, apiKey)) {
-      console.error('HitPay webhook: HMAC verification failed');
+    if (!verifyRazorpaySignature(rawBody, signature, webhookSecret)) {
+      console.error('Razorpay Curlec webhook: signature verification failed');
       return NextResponse.json({ ok: false }, { status: 401 });
     }
 
-    const { reference_number, status, payment_id } = data;
-    if (!reference_number) {
+    const data = JSON.parse(rawBody);
+    const event = data.event;
+    const paymentLink = data.payload?.payment_link?.entity;
+    const paymentEntity = data.payload?.payment?.entity;
+    const orderId = paymentLink?.reference_id;
+    const paymentId = paymentEntity?.id;
+
+    if (!orderId) {
       return NextResponse.json({ ok: true });
     }
 
     const cfEnv = await getCFEnv();
     const orders = await readOrders(cfEnv);
-    const idx = orders.findIndex(o => o.id === reference_number);
+    const idx = orders.findIndex(o => o.id === orderId);
 
     if (idx !== -1) {
-      if (status === 'completed') {
+      if (event === 'payment_link.paid') {
         orders[idx].status = 'processing';
         orders[idx].paidAt = new Date().toISOString();
-        if (payment_id) orders[idx].hitpayPaymentId = payment_id;
+        if (paymentId) orders[idx].paymentId = paymentId;
 
         // Credit member points and totalSpent
         const order = orders[idx];
@@ -121,17 +119,17 @@ export async function POST(req) {
             // Non-fatal: member stats may lag
           }
         }
-      } else if (status === 'failed') {
+      } else if (event === 'payment_link.cancelled' || event === 'payment_link.expired') {
         orders[idx].status = 'payment_failed';
       }
       await writeOrders(orders, cfEnv);
     } else {
-      console.warn(`HitPay webhook: order ${reference_number} not found`);
+      console.warn(`Razorpay Curlec webhook: order ${orderId} not found`);
     }
 
     return NextResponse.json({ ok: true });
   } catch (error) {
-    console.error('HitPay webhook error:', error);
+    console.error('Razorpay Curlec webhook error:', error);
     return NextResponse.json({ ok: false }, { status: 500 });
   }
 }

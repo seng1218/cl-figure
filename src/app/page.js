@@ -99,13 +99,13 @@ export default function Home() {
             {[...Array(4)].map((_, i) => (
               <div key={i} className="flex items-center gap-12 min-w-max px-12">
                 <span className="text-[10px] font-black uppercase tracking-[0.4em] text-blue-500">SYNDICATE</span>
-                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/60">847 OPERATIVES ACTIVE</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/60">847 MEMBERS ACTIVE</span>
                 <span className="text-blue-900">·</span>
                 <span className="text-[10px] font-black uppercase tracking-[0.4em] text-blue-500">NEXT DROP</span>
-                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/60">CLASSIFIED</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/60">WEEKLY</span>
                 <span className="text-blue-900">·</span>
                 <span className="text-[10px] font-black uppercase tracking-[0.4em] text-blue-500">ORIGIN</span>
-                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/60">100% VERIFIED</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/60">EACH PIECE VERIFIED</span>
                 <span className="text-blue-900">·</span>
                 <span className="text-[10px] font-black uppercase tracking-[0.4em] text-blue-500">VAULT STATUS</span>
                 <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/60">OPERATIONAL</span>
@@ -120,9 +120,12 @@ export default function Home() {
           <section className="max-w-7xl mx-auto px-6 py-32 border-b border-gray-900">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
               <div className="order-2 lg:order-1 space-y-8">
-                <span className="text-blue-600 font-black text-[10px] uppercase tracking-[0.5em] flex items-center gap-4">
-                  <Activity size={14} className="animate-pulse" /> The Grail
-                </span>
+                <div>
+                  <span className="text-blue-600 font-black text-[10px] uppercase tracking-[0.5em] flex items-center gap-4">
+                    <Activity size={14} className="animate-pulse" /> The Grail
+                  </span>
+                  <p className="text-gray-600 text-[9px] font-black uppercase tracking-[0.3em] mt-1">Top pick this cycle</p>
+                </div>
                 <h2 className="text-5xl md:text-7xl font-black text-white italic tracking-tighter leading-none">
                   {grailProduct.name}
                 </h2>
@@ -222,10 +225,12 @@ export default function Home() {
         <section id="syndicate" className="bg-[#111] max-w-5xl mx-auto px-6 py-24 md:py-32 text-center rounded-2xl border border-gray-800 relative group overflow-hidden mt-16">
           <div className="absolute inset-0 bg-blue-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 z-0 pointer-events-none mix-blend-screen" />
           <div className="relative z-10">
-            <h2 className="text-4xl md:text-6xl font-black text-white italic tracking-tighter mb-6 relative inline-block">
-              {cmsHome?.syndicateHeading || 'JOIN THE SYNDICATE.'}
-              <span className="absolute -top-6 -right-10 text-[10px] bg-blue-600 text-white px-3 py-1 rounded-full font-black uppercase tracking-widest not-italic">Secured</span>
-            </h2>
+            <div className="mb-6">
+              <span className="inline-block text-[10px] bg-blue-600 text-white px-3 py-1 rounded-full font-black uppercase tracking-widest mb-4">Secured</span>
+              <h2 className="text-4xl md:text-6xl font-black text-white italic tracking-tighter leading-none">
+                {cmsHome?.syndicateHeading || 'JOIN THE SYNDICATE.'}
+              </h2>
+            </div>
             <p className="text-gray-500 text-sm md:text-base mb-12 max-w-lg mx-auto leading-relaxed">
               {cmsHome?.syndicateDescription || 'The highest-tier drops go fast. Submit your email to get early access to new drops before they go public.'}
             </p>

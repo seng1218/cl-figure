@@ -7,8 +7,8 @@ import Link from 'next/link';
 
 function SuccessContent() {
   const searchParams = useSearchParams();
-  const orderId = searchParams.get('reference_number');
-  const hitpayStatus = searchParams.get('status');
+  const orderId = searchParams.get('razorpay_payment_link_reference_id');
+  const paymentStatus = searchParams.get('razorpay_payment_link_status');
 
   const [tracking, setTracking] = useState(null);
   const [shipping, setShipping] = useState(null);
@@ -19,7 +19,7 @@ function SuccessContent() {
   const certificateRef = useRef(null);
 
   useEffect(() => {
-    // Restore display data from sessionStorage (saved before HitPay redirect)
+    // Restore display data from sessionStorage (saved before Razorpay Curlec redirect)
     try {
       const s = sessionStorage.getItem('v6_shipping');
       const t = sessionStorage.getItem('v6_total');
@@ -75,7 +75,7 @@ function SuccessContent() {
   };
 
   // Payment failed state
-  if (hitpayStatus && hitpayStatus !== 'completed') {
+  if (paymentStatus && paymentStatus !== 'paid') {
     return (
       <div className="min-h-screen bg-[#fafafa] flex items-center justify-center p-6 text-center pt-20">
         <div className="max-w-md w-full space-y-6">

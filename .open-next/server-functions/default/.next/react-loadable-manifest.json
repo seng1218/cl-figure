@@ -49,11 +49,5 @@
       "static/chunks/164f4fb6.540588a7465e92b9.js",
       "static/chunks/6241.6c62f1d1123f6016.js"
     ]
-  },
-  "app\\join\\page.js -> canvas-confetti": {
-    "id": 71708,
-    "files": [
-      "static/chunks/1708.8277489492265ef1.js"
-    ]
   }
 }

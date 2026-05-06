@@ -91,7 +91,7 @@ export default function ProductCard({ item, index, onAdd, alwaysColor = false })
           <PreorderCountdown deadline={item.preorderDeadline} />
         )}
         <div className="flex items-center justify-between border-t border-gray-900 pt-3">
-          <span className="text-[9px] font-black text-gray-500 uppercase tracking-[0.2em]">Value</span>
+          <span className="text-[9px] font-black text-gray-500 uppercase tracking-[0.2em]">Price</span>
           <span className="text-base font-black text-white italic">RM {item.price.toFixed(2)}</span>
         </div>
       </Link>

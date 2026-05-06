@@ -16,7 +16,7 @@ const CMS_DEFAULTS = {
     subheading: 'UNCOMPROMISING STANDARDS.',
     values: [
       { title: 'CURATION', desc: "Every piece is hand-selected. If it isn't S-tier, it doesn't enter the Vault." },
-      { title: 'AUTHENTICITY', desc: 'Direct sourcing and multi-stage verification. Zero bootlegs, zero exceptions.' },
+      { title: 'AUTHENTICITY', desc: 'Direct sourcing and multi-stage verification. Every authenticity grade disclosed — no exceptions.' },
       { title: 'INTEGRITY', desc: 'Accurate condition reporting. What you see in the Archive is what reaches your hands.' }
     ]
   }

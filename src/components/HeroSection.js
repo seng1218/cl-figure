@@ -36,11 +36,11 @@ export default function HeroSection({ onExplore }) {
       {/* Infinite Scrolling Provocative Marquee */}
       <div className="absolute top-1/2 left-0 -translate-y-1/2 w-full overflow-hidden whitespace-nowrap z-0 pointer-events-none opacity-20 hidden md:block">
         <motion.div style={{ x: sliderX, WebkitTextStroke: '2px rgba(255,255,255,0.7)' }} className="flex gap-8 items-center text-[12vw] font-black uppercase italic leading-none text-transparent">
-          <span>UNRIVALED.</span>
+          <span>CURATED.</span>
           <span>EXCLUSIVE.</span>
           <span>S-TIER.</span>
           <span>ARCHIVED.</span>
-          <span>UNRIVALED.</span>
+          <span>CURATED.</span>
           <span>EXCLUSIVE.</span>
           <span>S-TIER.</span>
         </motion.div>
@@ -65,11 +65,20 @@ export default function HeroSection({ onExplore }) {
           {site?.name || 'Vault 6 Studios'}<span className="text-blue-600">.</span>
         </motion.h1>
 
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="text-gray-400 text-sm md:text-base font-medium max-w-sm mx-auto leading-relaxed mt-6"
+        >
+          Authenticated Japanese collectible figures — curated for serious collectors.
+        </motion.p>
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
-          className="flex flex-col items-center justify-center gap-6 mt-16"
+          className="flex flex-col items-center justify-center gap-6 mt-10"
         >
           <motion.button
             whileHover={{ scale: 1.05 }}

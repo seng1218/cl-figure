@@ -29,8 +29,11 @@
     }
   ]
   // Secrets (set via: wrangler secret put SECRET_NAME):
-  //   ADMIN_SECRET    — hashed admin passkey for /vault-ops
-  //   R2_PUBLIC_URL   — public CDN URL for your R2 bucket images
-  //   RESEND_API_KEY  — (optional) Resend.com key for welcome emails
-  //   NEXT_PUBLIC_WHATSAPP — set as var below if non-sensitive
+  //   ADMIN_SECRET           — hashed admin passkey for /vault-ops
+  //   R2_PUBLIC_URL          — public CDN URL for your R2 bucket images
+  //   RESEND_API_KEY         — (optional) Resend.com key for welcome emails
+  //   NEXT_PUBLIC_WHATSAPP   — set as var below if non-sensitive
+  //   RAZORPAY_KEY_ID        — Razorpay Curlec API key ID
+  //   RAZORPAY_KEY_SECRET    — Razorpay Curlec API key secret
+  //   RAZORPAY_WEBHOOK_SECRET — Razorpay Curlec webhook signing secret
 }

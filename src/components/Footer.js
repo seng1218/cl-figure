@@ -14,11 +14,20 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-6 flex flex-col items-center justify-center gap-4">
 
         <div className="flex items-center flex-wrap justify-center gap-6">
+          <Link href="/about" className="text-gray-700 hover:text-gray-400 font-black text-[10px] uppercase tracking-[0.3em] transition-colors">
+            About Us
+          </Link>
+          <Link href="/contact" className="text-gray-700 hover:text-gray-400 font-black text-[10px] uppercase tracking-[0.3em] transition-colors">
+            Contact Us
+          </Link>
           <Link href="/privacy-policy" className="text-gray-700 hover:text-gray-400 font-black text-[10px] uppercase tracking-[0.3em] transition-colors">
             Privacy Policy
           </Link>
           <Link href="/terms" className="text-gray-700 hover:text-gray-400 font-black text-[10px] uppercase tracking-[0.3em] transition-colors">
             Terms &amp; Conditions
+          </Link>
+          <Link href="/payment-policy" className="text-gray-700 hover:text-gray-400 font-black text-[10px] uppercase tracking-[0.3em] transition-colors">
+            Payment Policy
           </Link>
           <Link href="/shipping" className="text-gray-700 hover:text-gray-400 font-black text-[10px] uppercase tracking-[0.3em] transition-colors">
             Shipping

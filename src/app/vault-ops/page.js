@@ -4,6 +4,9 @@ import { motion } from 'framer-motion';
 import { Lock, Unlock, Database, PlusCircle, CheckCircle2, AlertTriangle, Edit3, Trash2, X, Users, UserX, UserCheck, Key, Eye, EyeOff, Ticket, MessageSquare, Star, ChevronDown, ChevronUp, Phone, StickyNote, BarChart3, Tag, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
 
+const FIGURINE_DEFAULTS = { name: "", manufacturer: "", series: "", price: "", stock: "1", scale: "1/7", category: "Ready Stock", dispatchCondition: "10/10 MISB (Mint in Sealed Box)", sealIntegrity: "Intact / Untampered", productSpecs: "ABS, PVC", authenticity: "Verified Authentic", description: "" };
+const KIT_DEFAULTS = { name: "", manufacturer: "", series: "", price: "", stock: "1", scale: "1/7", category: "3D Print Kit", dispatchCondition: `Kit Form — Unassembled`, sealIntegrity: `N/A — Kit Format`, productSpecs: "PLA / Resin", authenticity: "Merchant Licensed", description: "" };
+
 export default function AdminDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isVerifying, setIsVerifying] = useState(true);
@@ -36,22 +39,11 @@ export default function AdminDashboard() {
   const [feedbacks, setFeedbacks] = useState([]);
   const [showFeedbacks, setShowFeedbacks] = useState(false);
   const [feedbackActionLoading, setFeedbackActionLoading] = useState({});
+  const [kitFormMode, setKitFormMode] = useState(false);
+  const [showKitSection, setShowKitSection] = useState(false);
 
   // Form State
-  const [formData, setFormData] = useState({
-    name: "",
-    manufacturer: "",
-    series: "",
-    price: "",
-    stock: "1",
-    scale: "1/7",
-    category: "Ready Stock",
-    dispatchCondition: "10/10 MISB (Mint in Sealed Box)",
-    sealIntegrity: "Intact / Untampered",
-    productSpecs: "ABS, PVC",
-    authenticity: "Verified Authentic",
-    description: ""
-  });
+  const [formData, setFormData] = useState(FIGURINE_DEFAULTS);
   const [imageFile, setImageFile] = useState(null);
   const [additionalImages, setAdditionalImages] = useState([]);
 
@@ -250,9 +242,7 @@ export default function AdminDashboard() {
       if (resData.success) {
         setSuccessStatus(true);
         // Reset form completely
-        setFormData({
-          name: "", manufacturer: "", series: "", price: "", stock: "1", scale: "1/7", category: "Ready Stock", dispatchCondition: "10/10 MISB (Mint in Sealed Box)", sealIntegrity: "Intact / Untampered", productSpecs: "ABS, PVC", authenticity: "Verified Authentic", description: ""
-        });
+        setFormData(kitFormMode ? KIT_DEFAULTS : FIGURINE_DEFAULTS);
         setImageFile(null);
         setAdditionalImages([]);
         setEditingId(null);
@@ -276,6 +266,7 @@ export default function AdminDashboard() {
   const handleEdit = (item) => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
     setEditingId(item.id);
+    setKitFormMode(item.category === '3D Print Kit');
     setImageFile(null);
     setAdditionalImages([]);
     // Reset file inputs visually
@@ -302,15 +293,27 @@ export default function AdminDashboard() {
 
   const cancelEdit = () => {
     setEditingId(null);
-    setFormData({
-      name: "", manufacturer: "", series: "", price: "", stock: "1", scale: "1/7", category: "Ready Stock", dispatchCondition: "10/10 MISB (Mint in Sealed Box)", sealIntegrity: "Intact / Untampered", productSpecs: "ABS, PVC", authenticity: "Verified Authentic", description: ""
-    });
+    setKitFormMode(false);
+    setFormData(FIGURINE_DEFAULTS);
     setImageFile(null);
     setAdditionalImages([]);
     const fileInput = document.getElementById('image-upload');
     if (fileInput) fileInput.value = '';
     const extraInput = document.getElementById('extra-images-upload');
     if (extraInput) extraInput.value = '';
+  };
+
+  const enterKitMode = () => {
+    setKitFormMode(true);
+    setEditingId(null);
+    setFormData(KIT_DEFAULTS);
+    setImageFile(null);
+    setAdditionalImages([]);
+    const fi = document.getElementById('image-upload');
+    if (fi) fi.value = '';
+    const ei = document.getElementById('extra-images-upload');
+    if (ei) ei.value = '';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleDelete = async (id) => {
@@ -380,7 +383,7 @@ export default function AdminDashboard() {
   }
 
   return (
-    <main className="min-h-screen bg-[#050505] p-6 lg:p-12 relative overflow-x-hidden">
+    <main className="min-h-screen bg-[#050505] p-6 lg:p-12 relative overflow-x-clip">
       <div className="max-w-4xl mx-auto relative z-10">
         <div className="flex justify-between items-end border-b border-gray-800 pb-8 mb-12">
           <div>
@@ -395,9 +398,36 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-[#111] border border-gray-800 rounded-[2rem] p-8 md:p-12 shadow-2xl space-y-8">
+        {/* QUICK-NAV */}
+        <nav className="sticky top-0 z-50 -mx-6 lg:-mx-12 px-6 lg:px-12 mb-10">
+          <div className="bg-[#0a0a0a]/95 backdrop-blur-md border-b border-gray-800 py-2.5 overflow-x-auto" style={{scrollbarWidth:'none',msOverflowStyle:'none'}}>
+            <div className="flex items-center gap-0.5 min-w-max">
+              <a href="#section-form" className="flex items-center gap-1.5 px-4 py-2 text-gray-500 hover:text-white hover:bg-[#111] rounded-full transition-all font-black text-[9px] uppercase tracking-widest whitespace-nowrap"><PlusCircle size={11} className="text-blue-500" />Add / Edit</a>
+              <a href="#section-inventory" className="flex items-center gap-1.5 px-4 py-2 text-gray-500 hover:text-white hover:bg-[#111] rounded-full transition-all font-black text-[9px] uppercase tracking-widest whitespace-nowrap"><Database size={11} className="text-blue-500" />Inventory ({inventory.filter(i => i.category !== '3D Print Kit').length})</a>
+              <a href="#section-fabricator" className="flex items-center gap-1.5 px-4 py-2 text-gray-500 hover:text-white hover:bg-[#111] rounded-full transition-all font-black text-[9px] uppercase tracking-widest whitespace-nowrap"><Tag size={11} className="text-orange-500" />3D Kits ({inventory.filter(i => i.category === '3D Print Kit').length})</a>
+              <a href="#section-subscribers" className="flex items-center gap-1.5 px-4 py-2 text-gray-500 hover:text-white hover:bg-[#111] rounded-full transition-all font-black text-[9px] uppercase tracking-widest whitespace-nowrap"><Users size={11} className="text-blue-500" />Subscribers ({subscribers.length})</a>
+              <a href="#section-members" className="flex items-center gap-1.5 px-4 py-2 text-gray-500 hover:text-white hover:bg-[#111] rounded-full transition-all font-black text-[9px] uppercase tracking-widest whitespace-nowrap"><UserCheck size={11} className="text-blue-500" />Members ({members.length})</a>
+              <a href="#section-vouchers" className="flex items-center gap-1.5 px-4 py-2 text-gray-500 hover:text-white hover:bg-[#111] rounded-full transition-all font-black text-[9px] uppercase tracking-widest whitespace-nowrap"><Ticket size={11} className="text-blue-500" />Vouchers ({vouchers.length})</a>
+              <a href="#section-feedbacks" className="flex items-center gap-1.5 px-4 py-2 text-gray-500 hover:text-white hover:bg-[#111] rounded-full transition-all font-black text-[9px] uppercase tracking-widest whitespace-nowrap"><MessageSquare size={11} className="text-blue-500" />Feedbacks ({feedbacks.length}{feedbacks.filter(f => f.status === 'new').length > 0 ? ', ' + feedbacks.filter(f => f.status === 'new').length + ' new' : ''})</a>
+              <a href="#section-orders" className="flex items-center gap-1.5 px-4 py-2 text-gray-500 hover:text-white hover:bg-[#111] rounded-full transition-all font-black text-[9px] uppercase tracking-widest whitespace-nowrap"><ShoppingBag size={11} className="text-blue-500" />Orders ({orders.length})</a>
+              <a href="#section-content" className="flex items-center gap-1.5 px-4 py-2 text-gray-500 hover:text-white hover:bg-[#111] rounded-full transition-all font-black text-[9px] uppercase tracking-widest whitespace-nowrap"><BarChart3 size={11} className="text-blue-500" />Content</a>
+            </div>
+          </div>
+        </nav>
+
+        <form id="section-form" onSubmit={handleSubmit} className="bg-[#111] border border-gray-800 rounded-[2rem] p-8 md:p-12 shadow-2xl space-y-8">
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {kitFormMode && (
+              <div className="md:col-span-2 bg-orange-900/10 border border-orange-500/30 px-6 py-3 flex items-center justify-between">
+                <span className="text-orange-500 font-black text-[9px] uppercase tracking-[0.4em] flex items-center gap-2">
+                  <Tag size={11} /> Kit Mode Active — Category Locked to 3D Print Kit
+                </span>
+                <button type="button" onClick={cancelEdit} className="text-gray-600 hover:text-white text-[9px] font-black uppercase tracking-widest transition-colors">
+                  Exit Kit Mode ×
+                </button>
+              </div>
+            )}
             {/* Artifact Name */}
             <div className="space-y-2">
               <label className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Artifact Name</label>
@@ -437,9 +467,10 @@ export default function AdminDashboard() {
             {/* Category */}
             <div className="space-y-2">
               <label className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Category</label>
-              <select name="category" value={formData.category} onChange={handleInputChange} className="w-full bg-[#0a0a0a] border border-gray-800 text-white p-4 font-bold focus:outline-none focus:border-blue-600 transition-colors appearance-none">
+              <select name="category" value={formData.category} onChange={handleInputChange} disabled={kitFormMode} className={`w-full bg-[#0a0a0a] border text-white p-4 font-bold focus:outline-none focus:border-blue-600 transition-colors appearance-none ${kitFormMode ? 'border-orange-500/30 opacity-60 cursor-not-allowed' : 'border-gray-800'}`}>
                 <option value="Ready Stock">Ready Stock</option>
                 <option value="Pre-order">Pre-order</option>
+                <option value="3D Print Kit">3D Print Kit</option>
               </select>
             </div>
 
@@ -457,6 +488,9 @@ export default function AdminDashboard() {
                 <option value="3/10 Damaged (Broken parts or heavy scuffs)">3/10 Damaged (Broken parts or heavy scuffs)</option>
                 <option value="2/10 Heavy Damage (Major broken pieces, missing core parts)">2/10 Heavy Damage (Major broken pieces, missing core parts)</option>
                 <option value="1/10 Battle Scars (Salvaged parts / severe damage)">1/10 Battle Scars (Salvaged parts / severe damage)</option>
+                <option value="Kit Form — Unassembled">Kit Form — Unassembled (All parts packed)</option>
+                <option value="Partially Assembled">Partially Assembled</option>
+                <option value="Display-Ready (Assembled)">Display-Ready (Fully Assembled)</option>
               </select>
             </div>
 
@@ -467,6 +501,7 @@ export default function AdminDashboard() {
                 <option value="Intact / Untampered">Intact / Untampered</option>
                 <option value="Tampered for Inspection Only">Tampered for Inspection Only</option>
                 <option value="Tampered for Display">Tampered for Display</option>
+                <option value="N/A — Kit Format">N/A — Kit Format</option>
               </select>
             </div>
 
@@ -483,6 +518,7 @@ export default function AdminDashboard() {
                 <option value="Verified Authentic">Verified Authentic</option>
                 <option value="Authentic but Unverified">Authentic but Unverified</option>
                 <option value="Bootleg">Bootleg</option>
+                <option value="Merchant Licensed">Merchant Licensed</option>
               </select>
             </div>
 
@@ -538,7 +574,7 @@ export default function AdminDashboard() {
               ) : successStatus ? (
                 <><CheckCircle2 size={16} /> Artifact {editingId ? 'Updated' : 'Archived'}</>
               ) : (
-                <><PlusCircle size={16} /> {editingId ? 'Update Artifact' : 'Deploy to Vault'}</>
+                <><PlusCircle size={16} /> {editingId ? (kitFormMode ? 'Update Kit' : 'Update Artifact') : (kitFormMode ? 'Deploy Kit' : 'Deploy to Vault')}</>
               )}
             </button>
 
@@ -558,7 +594,7 @@ export default function AdminDashboard() {
         </form>
 
         {/* INVENTORY ROSTER */}
-        <div className="mt-20">
+        <div id="section-inventory" className="mt-20 scroll-mt-12">
           <h2 className="text-2xl font-black text-white italic tracking-tighter border-b border-gray-800 pb-4 mb-6">VAULT INVENTORY ({inventory.length})</h2>
           <div className="space-y-4">
             {inventory.map((item) => (
@@ -569,6 +605,9 @@ export default function AdminDashboard() {
                     <span className="text-blue-600 font-black text-[9px] uppercase tracking-widest block">{item.series}</span>
                     <h3 className="text-lg font-black text-white italic tracking-tight">{item.name}</h3>
                     <p className="text-gray-500 text-[10px] font-bold">RM {item.price.toFixed(2)} // ID: {item.id}</p>
+                    {item.category && item.category !== 'Ready Stock' && (
+                      <span className={`text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded mt-1 inline-block border ${item.category === '3D Print Kit' ? 'bg-orange-900/20 text-orange-500 border-orange-900/30' : 'bg-blue-900/20 text-blue-400 border-blue-900/30'}`}>{item.category}</span>
+                    )}
                   </div>
                 </div>
 
@@ -594,8 +633,72 @@ export default function AdminDashboard() {
           </div>
         </div>
 
+        {/* 3D FABRICATOR DIVISION */}
+        <div id="section-fabricator" className="mt-20 scroll-mt-12">
+          <button
+            onClick={() => setShowKitSection(v => !v)}
+            className="w-full flex justify-between items-center border-b border-orange-900/40 pb-4 mb-6 group"
+          >
+            <h2 className="text-2xl font-black text-white italic tracking-tighter group-hover:text-orange-500 transition-colors flex items-center gap-3">
+              <Tag size={20} className="text-orange-500" />
+              3D FABRICATOR DIVISION ({inventory.filter(i => i.category === '3D Print Kit').length})
+            </h2>
+            <span className="text-gray-600 font-black text-[10px] uppercase tracking-widest">{showKitSection ? 'Collapse ▲' : 'Expand ▼'}</span>
+          </button>
+
+          {showKitSection && (
+            <div className="space-y-6">
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={enterKitMode}
+                  className="bg-orange-500 text-black px-8 py-3 font-black text-[10px] uppercase tracking-[0.3em] hover:bg-orange-400 transition-colors flex items-center gap-2"
+                >
+                  <PlusCircle size={14} /> Add New Kit
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                {inventory.filter(i => i.category === '3D Print Kit').length === 0 ? (
+                  <p className="text-gray-600 text-xs italic font-bold">No 3D Print Kits in vault yet. Click &quot;Add New Kit&quot; to get started.</p>
+                ) : inventory.filter(i => i.category === '3D Print Kit').map((item) => (
+                  <div key={item.id} className="bg-[#0a0a0a] border border-orange-900/20 p-4 md:p-6 flex flex-col md:flex-row items-center justify-between gap-6 hover:border-orange-500/30 transition-colors">
+                    <div className="flex items-center gap-6 w-full md:w-auto">
+                      <img src={item.image} alt={item.name} className="w-16 h-16 object-cover rounded-md brightness-75 sepia" />
+                      <div>
+                        <span className="text-orange-500 font-black text-[9px] uppercase tracking-widest block">{item.series}</span>
+                        <h3 className="text-lg font-black text-white italic tracking-tight">{item.name}</h3>
+                        <p className="text-gray-500 text-[10px] font-bold">RM {item.price.toFixed(2)} // Stock: {item.stock} // ID: {item.id}</p>
+                        <div className="flex items-center gap-2 mt-1 flex-wrap">
+                          <span className="text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded border bg-orange-900/20 text-orange-500 border-orange-900/30">{item.dispatchCondition}</span>
+                          <span className="text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded border bg-green-900/20 text-green-600 border-green-900/30">{item.authenticity}</span>
+                          {item.stock <= 0 && <span className="text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded border bg-red-900/20 text-red-500 border-red-900/30">Out of Stock</span>}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex gap-4 w-full md:w-auto shrink-0">
+                      <button
+                        onClick={() => handleEdit(item)}
+                        className="flex-1 md:flex-none border border-orange-900/40 text-white px-6 py-3 font-black text-[10px] uppercase tracking-widest hover:bg-orange-500 hover:border-orange-500 hover:text-black transition-all flex justify-center items-center gap-2"
+                      >
+                        <Edit3 size={14} /> Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(item.id)}
+                        className="flex-1 md:flex-none border border-red-900/50 text-red-500 px-6 py-3 font-black text-[10px] uppercase tracking-widest hover:bg-red-600 hover:text-white hover:border-red-600 transition-all flex justify-center items-center gap-2"
+                      >
+                        <Trash2 size={14} /> Delete
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
         {/* SYNDICATE SUBSCRIBERS */}
-        <div className="mt-20">
+        <div id="section-subscribers" className="mt-20 scroll-mt-12">
           <button
             onClick={() => setShowSubscribers(v => !v)}
             className="w-full flex justify-between items-center border-b border-gray-800 pb-4 mb-6 group"
@@ -627,7 +730,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* SYNDICATE MEMBERS */}
-        <div className="mt-20">
+        <div id="section-members" className="mt-20 scroll-mt-12">
           <button
             onClick={() => setShowMembers(v => !v)}
             className="w-full flex justify-between items-center border-b border-gray-800 pb-4 mb-6 group"
@@ -777,7 +880,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* VOUCHER CONTROL */}
-        <div className="mt-20">
+        <div id="section-vouchers" className="mt-20 scroll-mt-12">
           <button
             onClick={() => setShowVouchers(v => !v)}
             className="w-full flex justify-between items-center border-b border-gray-800 pb-4 mb-6 group"
@@ -942,7 +1045,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* FEEDBACK INTEL */}
-        <div className="mt-20">
+        <div id="section-feedbacks" className="mt-20 scroll-mt-12">
           <button
             onClick={() => setShowFeedbacks(v => !v)}
             className="w-full flex justify-between items-center border-b border-gray-800 pb-4 mb-6 group"
@@ -992,7 +1095,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* ORDER DEPLOYMENTS */}
-        <div className="mt-20">
+        <div id="section-orders" className="mt-20 scroll-mt-12">
           <button
             onClick={() => setShowOrders(v => !v)}
             className="w-full flex justify-between items-center border-b border-gray-800 pb-4 mb-6 group"
@@ -1017,7 +1120,7 @@ export default function AdminDashboard() {
 
         {/* CONTENT CONTROL */}
         {cms && (
-          <div className="mt-20">
+          <div id="section-content" className="mt-20 scroll-mt-12">
             <button
               onClick={() => setShowContent(v => !v)}
               className="w-full flex justify-between items-center border-b border-gray-800 pb-4 mb-6 group"
