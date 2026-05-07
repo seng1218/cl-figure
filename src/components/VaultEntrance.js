@@ -114,17 +114,17 @@ export default function VaultEntrance({ isOpen, onComplete }) {
               </svg>
 
               {/* Outer Rotating Dashed Ring 1 */}
-              <motion.div 
-                animate={{ rotate: scanState === 'scanning' ? 360 : 0 }}
-                transition={{ duration: scanState === 'scanning' ? 2 : 10, repeat: Infinity, ease: "linear" }}
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: scanState === 'scanning' ? 2 : 18, repeat: Infinity, ease: "linear", repeatType: "loop" }}
                 className="absolute inset-0 rounded-full border-blue-500/30 border-dashed z-0 opacity-50"
                 style={{ borderWidth: '4px' }}
               />
 
               {/* Outer Rotating Dashed Ring 2 */}
-              <motion.div 
-                animate={{ rotate: scanState === 'scanning' ? -360 : 0 }}
-                transition={{ duration: scanState === 'scanning' ? 3 : 15, repeat: Infinity, ease: "linear" }}
+              <motion.div
+                animate={{ rotate: -360 }}
+                transition={{ duration: scanState === 'scanning' ? 3 : 26, repeat: Infinity, ease: "linear", repeatType: "loop" }}
                 className="absolute -inset-6 rounded-full border-gray-600/30 border-dashed z-0 opacity-40"
                 style={{ borderWidth: '2px' }}
               />
@@ -134,7 +134,7 @@ export default function VaultEntrance({ isOpen, onComplete }) {
                 <motion.div 
                   initial={{ top: '25%' }}
                   animate={{ top: '75%' }}
-                  transition={{ duration: 1, repeat: Infinity, repeatType: 'reverse', ease: 'linear' }}
+                  transition={{ duration: 1, repeat: Infinity, repeatType: 'reverse', ease: 'easeInOut' }}
                   className="absolute left-10 right-10 h-1 bg-blue-500/80 shadow-[0_0_20px_rgba(37,99,235,1)] z-30 rounded-full blur-[1px]"
                 />
               )}

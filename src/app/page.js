@@ -4,7 +4,8 @@ import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { useCMS } from '@/context/CMSContext';
 import HeroSection from '@/components/HeroSection';
-import ProductCards from '@/components/ProductCards';
+import HorizontalShowcase from '@/components/HorizontalShowcase';
+import GSAPTextReveal from '@/components/GSAPTextReveal';
 import VaultEntrance from '@/components/VaultEntrance';
 import Toast from '@/components/Toast';
 import TrackingModule from '@/components/TrackingModule';
@@ -29,6 +30,16 @@ export default function Home() {
       .then(data => { if (Array.isArray(data)) setProducts(data); else setProductsError(true); })
       .catch(() => setProductsError(true));
   }, []);
+
+  // Cross-page hash nav: scroll to #tracking after GSAP spacer is in DOM
+  useEffect(() => {
+    if (!products.length) return;
+    if (window.location.hash !== '#tracking') return;
+    const t = setTimeout(() => {
+      document.getElementById('tracking')?.scrollIntoView({ behavior: 'smooth' });
+    }, 450);
+    return () => clearTimeout(t);
+  }, [products.length]);
 
   const spotlightRef = useRef(null);
 
@@ -149,41 +160,26 @@ export default function Home() {
           </section>
         )}
 
-        {/* 4. Recent Drops Grid */}
-        <section className="max-w-7xl mx-auto px-6 py-32 border-b border-gray-900">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-6">
-            <div>
-              <h2 className="text-5xl md:text-6xl font-black text-white tracking-tighter italic leading-none">RECENT DROPS.</h2>
-              <p className="text-gray-500 text-[10px] font-black uppercase tracking-[0.4em] mt-4">Highly curated. Zero filler.</p>
-            </div>
-            {/* We fake a link to "/shop" since they KIV'd the dedicated page */}
-            <Link href="/shop" className="text-blue-500 hover:text-white text-[10px] font-black uppercase tracking-[0.3em] transition-colors border-b border-blue-500/30 hover:border-white pb-1 flex items-center gap-2">
-              Browse Collection <ArrowRight size={12} />
-            </Link>
-          </div>
+        {/* 5. Recent Drops — Horizontal Showcase */}
+        {recentDrops.length > 0 && (
+          <HorizontalShowcase
+            products={recentDrops}
+            title="Recent Drops"
+            subtitle="Highly curated. Zero filler."
+          />
+        )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-9">
-            {recentDrops.map((item, index) => (
-              <ProductCards
-                key={item.id}
-                item={item}
-                index={index}
-                onAdd={() => handleAddToVault(item)}
-                alwaysColor={true}
-              />
-            ))}
-          </div>
-        </section>
-
-        {/* 5. Our Ethos */}
+        {/* 6. Our Ethos */}
         <section id="ethos" className="max-w-7xl mx-auto px-6 py-32 border-b border-gray-900 overflow-hidden">
           <div className="flex flex-col items-center text-center mb-20">
             <span className="text-blue-600 font-black text-[10px] uppercase tracking-[0.5em] mb-4">
               Vault Standards
             </span>
-            <h2 className="text-5xl md:text-7xl font-black text-white italic tracking-tighter leading-none mb-6">
-              {ethos?.heading || 'OUR ETHOS.'}
-            </h2>
+            <GSAPTextReveal
+              key={ethos?.heading || 'OUR ETHOS.'}
+              text={ethos?.heading || 'OUR ETHOS.'}
+              className="text-5xl md:text-7xl font-black text-white italic tracking-tighter leading-none mb-6"
+            />
             <p className="text-gray-500 text-[10px] md:text-xs font-black uppercase tracking-[0.4em]">
               {ethos?.subheading || 'UNCOMPROMISING STANDARDS.'}
             </p>
@@ -193,10 +189,10 @@ export default function Home() {
             {(Array.isArray(ethos?.values) ? ethos.values : []).map((value, idx) => (
               <motion.div
                 key={idx}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: idx * 0.2 }}
+                transition={{ delay: idx * 0.08, duration: 0.45, ease: "easeOut" }}
                 className={`bg-[#0a0a0a] border border-gray-800 rounded-2xl hover:border-blue-600 transition-all group
                   ${idx === 0 ? 'md:col-span-2 p-10 md:p-14' : 'p-10 md:p-12'}
                   ${idx === 2 ? 'md:col-start-2 md:col-span-2' : ''}
@@ -216,12 +212,12 @@ export default function Home() {
           </div>
         </section>
 
-        {/* 6. Artifact Tracking Module */}
+        {/* 7. Artifact Tracking Module */}
         <section id="tracking" className="bg-transparent py-32 relative overflow-hidden px-6">
           <TrackingModule />
         </section>
 
-        {/* 6. The Syndicate Waitlist */}
+        {/* 8. The Syndicate Waitlist */}
         <section id="syndicate" className="bg-[#111] max-w-5xl mx-auto px-6 py-24 md:py-32 text-center rounded-2xl border border-gray-800 relative group overflow-hidden mt-16">
           <div className="absolute inset-0 bg-blue-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 z-0 pointer-events-none mix-blend-screen" />
           <div className="relative z-10">

@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -35,27 +35,35 @@ function PreorderCountdown({ deadline }) {
 export default function ProductCard({ item, index, onAdd, alwaysColor = false }) {
   const heights = ['aspect-[3/4]', 'aspect-[4/5]', 'aspect-square', 'aspect-[2/3]'];
   const aspectClass = heights[index % heights.length];
+  const [imgLoaded, setImgLoaded] = useState(false);
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 50 }}
+      initial={{ opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ delay: (index % 3) * 0.1, duration: 0.6, ease: "easeOut" }}
+      transition={{ delay: (index % 3) * 0.1, duration: 0.45, ease: "easeOut" }}
       className="group break-inside-avoid mb-8"
     >
       <Link href={`/product/${item.id}`} className={`block relative ${aspectClass} overflow-hidden bg-[#111] border border-[#222]`}>
-        <Image
-          src={item.image}
-          fill
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          className={`object-cover transition-all duration-[1.5s] ease-out group-hover:scale-110 ${
-            alwaysColor
-              ? 'brightness-90 contrast-110'
-              : 'grayscale brightness-75 contrast-125 group-hover:grayscale-0 group-hover:brightness-100'
-          }`}
-          alt={item.name}
-        />
+        <motion.div
+          className="absolute inset-0"
+          animate={{ opacity: imgLoaded ? 1 : 0 }}
+          transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+        >
+          <Image
+            src={item.image}
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            className={`object-cover transition-all duration-[1.5s] ease-out group-hover:scale-110 ${
+              alwaysColor
+                ? 'brightness-90 contrast-110'
+                : 'grayscale brightness-75 contrast-125 group-hover:grayscale-0 group-hover:brightness-100'
+            }`}
+            alt={item.name}
+            onLoad={() => setImgLoaded(true)}
+          />
+        </motion.div>
 
         {/* Warm ambient glow — bridges cold UI with warm figure tones */}
         <div

@@ -81,8 +81,6 @@ export default function HeroSection({ onExplore }) {
           className="flex flex-col items-center justify-center gap-6 mt-10"
         >
           <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
             onClick={onExplore}
             className="group relative bg-white text-black px-12 py-6 font-black text-xs uppercase tracking-[0.4em] flex items-center gap-4 hover:bg-blue-600 hover:text-white transition-all overflow-hidden shadow-2xl"
           >
