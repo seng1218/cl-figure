@@ -10,8 +10,10 @@ import VaultEntrance from '@/components/VaultEntrance';
 import Toast from '@/components/Toast';
 import TrackingModule from '@/components/TrackingModule';
 import LiveActivityToast from '@/components/LiveActivityToast';
+import ProductCards from '@/components/ProductCards';
+import NotifyDropModal from '@/components/NotifyDropModal';
 import { Lock, ArrowRight, Activity, ShieldCheck, Cpu } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 
 export default function Home() {
@@ -23,6 +25,7 @@ export default function Home() {
   const [isVaultOpen, setIsVaultOpen] = useState(false);
   const [products, setProducts] = useState([]);
   const [productsError, setProductsError] = useState(false);
+  const [notifyProduct, setNotifyProduct] = useState(null);
 
   useEffect(() => {
     fetch('/api/products/', { cache: 'no-store' })
@@ -68,8 +71,10 @@ export default function Home() {
   };
 
 
-  const grailProduct = products[0];
-  const recentDrops = products.slice(1, 4);
+  const regularProducts = products.filter(p => !p.comingSoon);
+  const comingSoonProducts = products.filter(p => p.comingSoon);
+  const grailProduct = regularProducts[0];
+  const recentDrops = regularProducts.slice(1, 4);
 
   if (productsError) {
     return (
@@ -156,6 +161,41 @@ export default function Home() {
                   alt={grailProduct.name}
                 />
               </Link>
+            </div>
+          </section>
+        )}
+
+        {/* 4. Incoming Drops — Coming Soon */}
+        {comingSoonProducts.length > 0 && (
+          <section className="max-w-7xl mx-auto px-6 py-24 border-b border-gray-900">
+            <div className="flex items-center justify-between mb-12">
+              <div>
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="h-1.5 w-1.5 rounded-full bg-blue-500 animate-pulse shadow-[0_0_8px_rgba(37,99,235,0.9)]" />
+                  <span className="text-blue-600 font-black text-[10px] uppercase tracking-[0.5em]">Incoming</span>
+                </div>
+                <h2 className="text-4xl md:text-6xl font-black text-white italic tracking-tighter leading-none">
+                  CLASSIFIED DROPS.
+                </h2>
+              </div>
+              <Link
+                href="/shop"
+                className="hidden md:flex items-center gap-2 text-gray-500 hover:text-white transition-colors font-black text-[9px] uppercase tracking-[0.3em] group"
+              >
+                View All <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-9">
+              {comingSoonProducts.slice(0, 3).map((item, index) => (
+                <ProductCards
+                  key={item.id}
+                  item={item}
+                  index={index}
+                  onAdd={() => {}}
+                  onNotify={setNotifyProduct}
+                  alwaysColor={true}
+                />
+              ))}
             </div>
           </section>
         )}
@@ -247,6 +287,15 @@ export default function Home() {
         onClose={() => setShowToast(false)}
       />
       <LiveActivityToast products={products} />
+
+      <AnimatePresence>
+        {notifyProduct && (
+          <NotifyDropModal
+            product={notifyProduct}
+            onClose={() => setNotifyProduct(null)}
+          />
+        )}
+      </AnimatePresence>
     </main>
   );
 }
