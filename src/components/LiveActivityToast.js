@@ -46,7 +46,7 @@ export default function LiveActivityToast({ products = [] }) {
             animate={{ opacity: 1, x: 0, scale: 1 }}
             exit={{ opacity: 0, x: -20, scale: 0.95 }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="bg-[#0a0a0a] border border-gray-800 rounded-2xl p-4 flex items-center gap-3 shadow-2xl max-w-[280px]"
+            className="bg-black/60 backdrop-blur-xl border border-white/[0.09] rounded-2xl p-4 flex items-center gap-3 shadow-[0_8px_32px_rgba(0,0,0,0.7),inset_0_1px_0_rgba(255,255,255,0.06),0_0_0_1px_rgba(37,99,235,0.06)] max-w-[280px]"
           >
             <div className="w-8 h-8 bg-blue-600/20 rounded-full flex items-center justify-center shrink-0">
               <ShieldCheck size={14} className="text-blue-500" />

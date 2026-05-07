@@ -306,7 +306,7 @@ export default function ProductDetail({ initialProduct = null }) {
             </div>
 
             {/* Authenticity Registry */}
-            <div className="bg-[#111] rounded-3xl border border-gray-800 p-6 md:p-8 relative overflow-hidden group">
+            <div className="bg-[#0d0d0d]/80 rounded-3xl border border-blue-500/[0.12] p-6 md:p-8 relative overflow-hidden group shadow-[inset_0_0_60px_rgba(37,99,235,0.04),0_0_0_1px_rgba(37,99,235,0.06)]">
               <div className="absolute -top-6 -right-6 p-4 text-blue-600/5 group-hover:text-blue-600/10 transition-colors duration-500 pointer-events-none">
                 <ShieldCheck size={180} />
               </div>

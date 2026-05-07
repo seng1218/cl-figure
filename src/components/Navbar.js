@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingBag, ArrowRight, Menu, X, Search } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
@@ -13,6 +14,16 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const { cart } = useCart();
   const { site } = useCMS();
+  const pathname = usePathname();
+
+  const handleTrackingClick = (e, closeMobile = false) => {
+    if (closeMobile) setIsMobileMenuOpen(false);
+    if (pathname === '/') {
+      e.preventDefault();
+      document.getElementById('tracking')?.scrollIntoView({ behavior: 'smooth' });
+    }
+    // cross-page: let Link navigate; page.js handles delayed scroll after GSAP spacer
+  };
   const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   useEffect(() => {
@@ -46,7 +57,7 @@ export default function Navbar() {
         <div
           className={`mx-auto flex justify-between items-center transition-all duration-700 rounded-full px-8 pointer-events-auto
             ${isScrolled
-              ? 'max-w-4xl h-16 bg-[#0a0a0a]/80 backdrop-blur-2xl border border-gray-800 shadow-[0_20px_50px_rgba(0,0,0,0.8)]'
+              ? 'max-w-4xl h-16 bg-[#050505]/70 backdrop-blur-2xl border border-white/[0.07] shadow-[0_20px_50px_rgba(0,0,0,0.8),inset_0_1px_0_rgba(255,255,255,0.05)]'
               : 'max-w-7xl h-20 bg-transparent border-transparent'
             }`}
         >
@@ -68,7 +79,7 @@ export default function Navbar() {
             <Link href="/shop" className="text-[10px] uppercase font-black tracking-[0.2em] hover:text-white transition-colors">
               Collection
             </Link>
-            <Link href="/#tracking" className="text-[10px] uppercase font-black tracking-[0.2em] hover:text-white transition-colors">
+            <Link href="/#tracking" onClick={(e) => handleTrackingClick(e, false)} className="text-[10px] uppercase font-black tracking-[0.2em] hover:text-white transition-colors">
               Tracking
             </Link>
             <Link href="/model-kits" className="text-[10px] uppercase font-black tracking-[0.2em] hover:text-orange-400 transition-colors text-gray-600 flex items-center gap-1.5">
@@ -192,7 +203,7 @@ export default function Navbar() {
               </Link>
               <Link
                 href="/#tracking"
-                onClick={() => setIsMobileMenuOpen(false)}
+                onClick={(e) => handleTrackingClick(e, true)}
                 className="text-4xl font-black text-white uppercase italic tracking-tighter hover:text-blue-500 transition-colors"
               >
                 Tracking

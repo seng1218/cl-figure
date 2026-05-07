@@ -56,11 +56,11 @@ export default function VaultEntrance({ isOpen, onComplete }) {
             }} 
           />
 
-          <motion.div 
+          <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="relative z-10 flex flex-col items-center gap-12"
+            className="relative z-10 flex flex-col items-center gap-12 bg-white/[0.02] border border-white/[0.06] rounded-[2.5rem] px-14 py-14 shadow-[0_0_80px_rgba(37,99,235,0.06),inset_0_1px_0_rgba(255,255,255,0.07)]"
           >
             {/* The Scanner Mechanism */}
             <div 

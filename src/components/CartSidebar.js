@@ -26,10 +26,10 @@ export default function CartSidebar({ isOpen, onClose }) {
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed right-0 top-0 h-full w-full max-w-md bg-[#050505] border-l border-gray-800 shadow-[0_0_50px_rgba(0,0,0,0.8)] z-[9999] flex flex-col"
+            className="fixed right-0 top-0 h-full w-full max-w-md bg-[#050505]/75 backdrop-blur-2xl border-l border-white/[0.07] shadow-[0_0_60px_rgba(0,0,0,0.9),inset_1px_0_0_rgba(255,255,255,0.04)] z-[9999] flex flex-col"
           >
             {/* Header */}
-            <div className="p-6 border-b border-gray-800 flex justify-between items-center text-white">
+            <div className="p-6 border-b border-white/[0.06] flex justify-between items-center text-white">
               <h2 className="text-xl font-black flex items-center gap-2 italic tracking-tighter">
                 <ShoppingBag size={20} /> YOUR CART
               </h2>
@@ -72,7 +72,7 @@ export default function CartSidebar({ isOpen, onClose }) {
             </div>
 
             {/* Footer / Checkout Button */}
-            <div className="p-8 border-t border-gray-800 bg-[#0a0a0a]">
+            <div className="p-8 border-t border-white/[0.06] bg-[#080808]/60 backdrop-blur-sm">
               <div className="flex justify-between items-center mb-6 text-white">
                 <span className="text-gray-500 font-black uppercase text-[10px] tracking-[0.2em]">Net Value</span>
                 <span className="text-2xl font-black italic">RM {(cartTotal || 0).toFixed(2)}</span>
