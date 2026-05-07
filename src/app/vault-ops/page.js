@@ -4,8 +4,8 @@ import { motion } from 'framer-motion';
 import { Lock, Unlock, Database, PlusCircle, CheckCircle2, AlertTriangle, Edit3, Trash2, X, Users, UserX, UserCheck, Key, Eye, EyeOff, Ticket, MessageSquare, Star, ChevronDown, ChevronUp, Phone, StickyNote, BarChart3, Tag, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
 
-const FIGURINE_DEFAULTS = { name: "", manufacturer: "", series: "", price: "", stock: "1", scale: "1/7", category: "Ready Stock", dispatchCondition: "10/10 MISB (Mint in Sealed Box)", sealIntegrity: "Intact / Untampered", productSpecs: "ABS, PVC", authenticity: "Verified Authentic", description: "" };
-const KIT_DEFAULTS = { name: "", manufacturer: "", series: "", price: "", stock: "1", scale: "1/7", category: "3D Print Kit", dispatchCondition: `Kit Form — Unassembled`, sealIntegrity: `N/A — Kit Format`, productSpecs: "PLA / Resin", authenticity: "Merchant Licensed", description: "" };
+const FIGURINE_DEFAULTS = { name: "", manufacturer: "", series: "", price: "", stock: "1", scale: "1/7", category: "Ready Stock", dispatchCondition: "10/10 MISB (Mint in Sealed Box)", sealIntegrity: "Intact / Untampered", productSpecs: "ABS, PVC", authenticity: "Verified Authentic", description: "", comingSoon: false, releaseDate: "" };
+const KIT_DEFAULTS = { name: "", manufacturer: "", series: "", price: "", stock: "1", scale: "1/7", category: "3D Print Kit", dispatchCondition: `Kit Form — Unassembled`, sealIntegrity: `N/A — Kit Format`, productSpecs: "PLA / Resin", authenticity: "Merchant Licensed", description: "", comingSoon: false, releaseDate: "" };
 
 export default function AdminDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -287,7 +287,9 @@ export default function AdminDashboard() {
       sealIntegrity: item.sealIntegrity || "Intact / Untampered",
       productSpecs: item.productSpecs || "ABS, PVC",
       authenticity: item.authenticity || "Verified Authentic",
-      description: item.description
+      description: item.description,
+      comingSoon: item.comingSoon || false,
+      releaseDate: item.releaseDate || "",
     });
   };
 
@@ -474,6 +476,34 @@ export default function AdminDashboard() {
               </select>
             </div>
 
+            {/* Coming Soon toggle */}
+            <div className="space-y-2">
+              <label className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Coming Soon</label>
+              <label className="flex items-center gap-3 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={formData.comingSoon}
+                  onChange={e => setFormData(prev => ({ ...prev, comingSoon: e.target.checked, releaseDate: e.target.checked ? prev.releaseDate : "" }))}
+                  className="w-4 h-4 accent-blue-600"
+                />
+                <span className="text-white font-bold text-sm">Mark as coming soon (hides price, shows notify CTA)</span>
+              </label>
+            </div>
+
+            {/* Release Date — only shown when comingSoon */}
+            {formData.comingSoon && (
+              <div className="space-y-2">
+                <label className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Release Date <span className="text-gray-600 normal-case ml-1">(Optional)</span></label>
+                <input
+                  type="date"
+                  name="releaseDate"
+                  value={formData.releaseDate}
+                  onChange={handleInputChange}
+                  className="w-full bg-[#0a0a0a] border border-blue-900/40 text-white p-4 font-bold focus:outline-none focus:border-blue-600 transition-colors"
+                />
+              </div>
+            )}
+
             {/* Dispatch Condition */}
             <div className="space-y-2">
               <label className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Dispatch Condition</label>
@@ -605,9 +635,17 @@ export default function AdminDashboard() {
                     <span className="text-blue-600 font-black text-[9px] uppercase tracking-widest block">{item.series}</span>
                     <h3 className="text-lg font-black text-white italic tracking-tight">{item.name}</h3>
                     <p className="text-gray-500 text-[10px] font-bold">RM {item.price.toFixed(2)} // ID: {item.id}</p>
-                    {item.category && item.category !== 'Ready Stock' && (
-                      <span className={`text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded mt-1 inline-block border ${item.category === '3D Print Kit' ? 'bg-orange-900/20 text-orange-500 border-orange-900/30' : 'bg-blue-900/20 text-blue-400 border-blue-900/30'}`}>{item.category}</span>
-                    )}
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {item.category && item.category !== 'Ready Stock' && (
+                        <span className={`text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded inline-block border ${item.category === '3D Print Kit' ? 'bg-orange-900/20 text-orange-500 border-orange-900/30' : 'bg-blue-900/20 text-blue-400 border-blue-900/30'}`}>{item.category}</span>
+                      )}
+                      {item.comingSoon && (
+                        <span className="text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded inline-block border bg-indigo-900/20 text-indigo-400 border-indigo-900/30 flex items-center gap-1">
+                          <span className="inline-block w-1 h-1 rounded-full bg-indigo-400 animate-pulse" />
+                          Incoming
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
 

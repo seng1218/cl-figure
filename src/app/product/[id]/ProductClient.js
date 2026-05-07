@@ -13,10 +13,201 @@ import {
   ChevronRight,
   ArrowRight,
   Loader2,
-  Lock
+  Lock,
+  Bell,
+  CheckCircle2,
+  AlertTriangle,
 } from 'lucide-react';
 import Link from 'next/link';
 import ProductCards from '@/components/ProductCards';
+
+function DropCountdown({ deadline }) {
+  const [timeLeft, setTimeLeft] = useState(null);
+  useEffect(() => {
+    const calc = () => {
+      const diff = new Date(deadline) - Date.now();
+      if (diff <= 0) return setTimeLeft(null);
+      setTimeLeft({ d: Math.floor(diff / 86400000), h: Math.floor((diff % 86400000) / 3600000), m: Math.floor((diff % 3600000) / 60000) });
+    };
+    calc();
+    const id = setInterval(calc, 60000);
+    return () => clearInterval(id);
+  }, [deadline]);
+  if (!timeLeft) return <p className="text-white font-black italic tracking-tighter text-2xl">T B A</p>;
+  return (
+    <div className="flex items-center gap-3">
+      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-500">Drops in</span>
+      <span className="text-xl font-mono font-black text-blue-400">{timeLeft.d}d {timeLeft.h}h {timeLeft.m}m</span>
+    </div>
+  );
+}
+
+function ComingSoonProductPage({ product }) {
+  const [email, setEmail] = useState('');
+  const [website, setWebsite] = useState('');
+  const [status, setStatus] = useState('idle');
+  const [errorMsg, setErrorMsg] = useState('');
+
+  const handleNotify = async (e) => {
+    e.preventDefault();
+    setStatus('loading');
+    try {
+      const res = await fetch('/api/notify-drop/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, productId: product.id, productName: product.name, website }),
+      });
+      const data = await res.json();
+      if (res.status === 409) { setStatus('duplicate'); return; }
+      if (!data.success) { setErrorMsg(data.error || 'Failed.'); setStatus('error'); return; }
+      setStatus('success');
+    } catch {
+      setErrorMsg('Connection error.'); setStatus('error');
+    }
+  };
+
+  return (
+    <main className="min-h-screen bg-[#050505] pt-32 pb-24 px-6 relative overflow-hidden">
+      <div className="max-w-7xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="flex items-center gap-4 mb-12 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400"
+        >
+          <Link href="/" className="hover:text-white transition-colors">Vault</Link>
+          <ChevronRight size={12} />
+          <Link href="/shop" className="hover:text-white transition-colors">Collection</Link>
+          <ChevronRight size={12} />
+          <span className="text-blue-600">Classified</span>
+        </motion.div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-start">
+          {/* LEFT: Classified image */}
+          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="sticky top-32 relative">
+            <div className="absolute inset-0 bg-blue-500/10 blur-[100px] rounded-full scale-110 -z-10 animate-pulse" />
+            <div className="aspect-[4/5] rounded-[3rem] bg-[#111] border border-blue-900/30 shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative overflow-hidden">
+              <img
+                src={product.images?.[0] || product.image}
+                className="w-full h-full object-cover blur-2xl brightness-[0.3] scale-110 saturate-50"
+                alt="Classified"
+              />
+              {/* Scanlines */}
+              <div
+                className="absolute inset-0 opacity-20 pointer-events-none z-[1]"
+                style={{ background: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.3) 2px, rgba(0,0,0,0.3) 4px)' }}
+              />
+              <div className="absolute inset-0 bg-black/40 z-[2]" />
+              {/* Light sweep */}
+              <motion.div
+                animate={{ x: ['-150%', '250%'] }}
+                transition={{ duration: 4, repeat: Infinity, ease: 'linear', repeatDelay: 3 }}
+                className="absolute inset-y-0 w-1/4 bg-gradient-to-r from-transparent via-blue-400/[0.06] to-transparent skew-x-12 z-[3] pointer-events-none"
+              />
+              {/* CLASSIFIED badge */}
+              <div className="absolute top-8 left-8 z-[4] bg-black/80 backdrop-blur-md px-6 py-2 rounded-full border border-blue-900/50 flex items-center gap-2">
+                <div className="h-1.5 w-1.5 rounded-full bg-blue-500 animate-pulse shadow-[0_0_8px_rgba(37,99,235,0.9)]" />
+                <span className="text-[9px] font-black uppercase tracking-[0.3em] text-blue-400">Classified</span>
+              </div>
+              {/* Lock */}
+              <div className="absolute inset-0 z-[4] flex items-center justify-center pointer-events-none">
+                <div className="relative">
+                  <div className="absolute inset-0 blur-3xl bg-blue-600/15 rounded-full scale-[3]" />
+                  <Lock size={48} className="text-blue-500/30 relative" />
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* RIGHT: Intel panel */}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="space-y-10">
+            <section>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="h-1.5 w-1.5 rounded-full bg-blue-500 animate-pulse shadow-[0_0_8px_rgba(37,99,235,0.9)]" />
+                <span className="text-blue-600 font-black text-[9px] uppercase tracking-[0.4em]">Incoming Drop</span>
+              </div>
+              <h1 className="text-6xl font-black text-white tracking-tighter mb-4 italic">{product.name}</h1>
+              <p className="text-gray-500 font-black text-[10px] uppercase tracking-[0.3em]">{product.series}</p>
+            </section>
+
+            {/* Release window */}
+            <div className="bg-[#0d0d0d]/80 rounded-3xl border border-blue-500/[0.12] p-6 shadow-[inset_0_0_60px_rgba(37,99,235,0.04)]">
+              <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-3">Release Window</p>
+              {product.releaseDate
+                ? <DropCountdown deadline={product.releaseDate} />
+                : <p className="text-white font-black italic tracking-tighter text-2xl">T B A</p>
+              }
+            </div>
+
+            {/* Redacted intel */}
+            <div className="space-y-3">
+              <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">Intel</p>
+              <div className="space-y-2.5">
+                {[100, 83, 67, 100, 75].map((w, i) => (
+                  <div key={i} className="h-2.5 bg-gray-800/80 rounded" style={{ width: `${w}%` }} />
+                ))}
+              </div>
+              <p className="text-gray-700 text-[9px] font-black uppercase tracking-widest mt-3">[ Intel Classified — Clearance Required ]</p>
+            </div>
+
+            {/* Notify form */}
+            <div className="bg-[#0d0d0d]/80 rounded-3xl border border-blue-500/[0.12] p-6 md:p-8 shadow-[inset_0_0_60px_rgba(37,99,235,0.04)]">
+              <div className="flex items-center gap-3 mb-2">
+                <Bell size={14} className="text-blue-500" />
+                <h3 className="text-[10px] font-black text-white uppercase tracking-[0.3em]">Get Drop Notification</h3>
+              </div>
+              <p className="text-gray-500 text-sm leading-relaxed mb-6">One email. The moment this drops.</p>
+
+              {status === 'success' ? (
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-center py-4">
+                  <CheckCircle2 size={28} className="text-green-500 mx-auto mb-3" />
+                  <p className="text-white font-black uppercase tracking-widest text-sm">You're on the list.</p>
+                  <p className="text-gray-500 text-[10px] uppercase tracking-widest mt-2">Drop confirmed.</p>
+                </motion.div>
+              ) : (
+                <form onSubmit={handleNotify} className="space-y-4">
+                  <input type="text" name="website" value={website} onChange={e => setWebsite(e.target.value)} className="hidden" tabIndex={-1} autoComplete="off" />
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    required
+                    placeholder="your@email.com"
+                    className="w-full bg-[#050505] border border-gray-800 text-white p-4 font-bold focus:outline-none focus:border-blue-600 transition-colors text-sm rounded-2xl"
+                  />
+                  {status === 'duplicate' && (
+                    <p className="text-orange-400 text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+                      <AlertTriangle size={12} /> Already registered.
+                    </p>
+                  )}
+                  {status === 'error' && (
+                    <p className="text-red-500 text-[10px] font-black uppercase tracking-widest">{errorMsg}</p>
+                  )}
+                  <button
+                    type="submit"
+                    disabled={status === 'loading'}
+                    className="w-full py-5 rounded-3xl bg-white text-black font-black text-xs uppercase tracking-[0.3em] hover:bg-blue-600 hover:text-white transition-all duration-300 flex items-center justify-center gap-3 disabled:opacity-50 shadow-xl"
+                  >
+                    {status === 'loading'
+                      ? <span className="animate-pulse">Registering...</span>
+                      : <><Bell size={18} /> Notify Me On Drop</>
+                    }
+                  </button>
+                </form>
+              )}
+            </div>
+
+            <div className="pt-10 border-t border-gray-800 flex items-center gap-6 opacity-30">
+              <div className="flex items-center gap-2">
+                <Lock size={14} />
+                <span className="text-[10px] font-black uppercase tracking-widest">Details Encrypted</span>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </main>
+  );
+}
 
 export default function ProductDetail({ initialProduct = null }) {
   const { id } = useParams();
@@ -51,6 +242,7 @@ export default function ProductDetail({ initialProduct = null }) {
   const relatedProducts = allLive
     .filter((p) =>
       String(p.id) !== String(id) &&
+      !p.comingSoon &&
       (p.series === product?.series || p.category === product?.category)
     )
     .slice(0, 3);
@@ -168,6 +360,10 @@ export default function ProductDetail({ initialProduct = null }) {
         </div>
       </div>
     );
+  }
+
+  if (product.comingSoon) {
+    return <ComingSoonProductPage product={product} />;
   }
 
   return (

@@ -84,7 +84,9 @@ export async function POST(req) {
       sealIntegrity: formData.get('sealIntegrity') || "Intact / Untampered",
       productSpecs: formData.get('productSpecs') || "ABS, PVC",
       authenticity: formData.get('authenticity') || "Verified Authentic",
-      description: formData.get('description') || ""
+      description: formData.get('description') || "",
+      comingSoon: formData.get('comingSoon') === 'true',
+      releaseDate: formData.get('releaseDate') || null,
     };
 
     inventory.unshift(newItem);
@@ -142,7 +144,9 @@ export async function PUT(req) {
       sealIntegrity: formData.get('sealIntegrity') || inventory[index].sealIntegrity || "Intact / Untampered",
       productSpecs: formData.get('productSpecs') || inventory[index].productSpecs || "ABS, PVC",
       authenticity: formData.get('authenticity') || inventory[index].authenticity || "Verified Authentic",
-      description: formData.get('description') || inventory[index].description
+      description: formData.get('description') || inventory[index].description,
+      comingSoon: formData.get('comingSoon') === 'true',
+      releaseDate: formData.get('releaseDate') || null,
     };
 
     inventory[index] = updatedItem;

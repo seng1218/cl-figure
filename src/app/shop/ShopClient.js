@@ -6,7 +6,8 @@ import SearchBar from '@/components/SearchBar';
 import ProductCards from '@/components/ProductCards';
 import Toast from '@/components/Toast';
 import LiveActivityToast from '@/components/LiveActivityToast';
-import { motion } from 'framer-motion';
+import NotifyDropModal from '@/components/NotifyDropModal';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function ShopClient() {
   const { addToCart } = useCart();
@@ -18,6 +19,7 @@ export default function ShopClient() {
   const [selectedSeries, setSelectedSeries] = useState("All");
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
+  const [notifyProduct, setNotifyProduct] = useState(null);
 
   useEffect(() => {
     fetch('/api/products/', { cache: 'no-store' })
@@ -66,10 +68,10 @@ export default function ShopClient() {
     return matchesSearch && matchesSeries;
   });
 
+  // Sort: in-stock first, out-of-stock second, coming-soon last
   const sortedProducts = [...filteredProducts].sort((a, b) => {
-    const aOut = a.stock <= 0 ? 1 : 0;
-    const bOut = b.stock <= 0 ? 1 : 0;
-    return aOut - bOut;
+    const score = (p) => p.comingSoon ? 2 : (p.stock <= 0 ? 1 : 0);
+    return score(a) - score(b);
   });
 
   return (
@@ -113,6 +115,7 @@ export default function ShopClient() {
               item={item}
               index={index}
               onAdd={() => handleAddToVault(item)}
+              onNotify={setNotifyProduct}
               alwaysColor={true}
             />
           ))}
@@ -130,6 +133,15 @@ export default function ShopClient() {
         onClose={() => setShowToast(false)}
       />
       <LiveActivityToast products={products} />
+
+      <AnimatePresence>
+        {notifyProduct && (
+          <NotifyDropModal
+            product={notifyProduct}
+            onClose={() => setNotifyProduct(null)}
+          />
+        )}
+      </AnimatePresence>
     </main>
   );
 }
