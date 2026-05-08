@@ -3,6 +3,9 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { useCMS } from '@/context/CMSContext';
 import Image from 'next/image';
+import dynamic from 'next/dynamic';
+
+const VaultAtmosphere = dynamic(() => import('./VaultAtmosphere'), { ssr: false });
 
 export default function HeroSection({ onExplore }) {
   const { scrollY } = useScroll();
@@ -25,12 +28,17 @@ export default function HeroSection({ onExplore }) {
             alt="Vault Artifact"
             fill
             priority
-            className="object-cover object-top opacity-20 scale-110 mix-blend-luminosity grayscale contrast-125"
+            className="object-cover object-top opacity-10 scale-110 mix-blend-luminosity grayscale contrast-125"
           />
         </motion.div>
         {/* Provocative harsh dark fade */}
         <div className="absolute inset-0 bg-gradient-to-b from-[#050505] via-transparent to-[#050505]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#050505_100%)]" />
+      </div>
+
+      {/* 3D VAULT ATMOSPHERE */}
+      <div className="absolute inset-0 z-[1] pointer-events-none">
+        <VaultAtmosphere />
       </div>
 
       {/* Infinite Scrolling Provocative Marquee */}
