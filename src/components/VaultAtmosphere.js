@@ -1,83 +1,102 @@
 "use client";
-import { useRef, useMemo } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { Float } from '@react-three/drei';
+import { useRef, useEffect } from 'react';
 
-function Relic({ position, scale = 1, speed = 1, wireframe = false, color = '#1d4ed8', detail = 0 }) {
-  const mesh = useRef();
-  useFrame(() => {
-    mesh.current.rotation.x += 0.003 * speed;
-    mesh.current.rotation.y += 0.005 * speed;
-  });
-  return (
-    <Float speed={speed * 0.4} rotationIntensity={0.3} floatIntensity={0.6}>
-      <mesh ref={mesh} position={position} scale={scale}>
-        <icosahedronGeometry args={[1, detail]} />
-        {wireframe
-          ? <meshBasicMaterial color={color} wireframe transparent opacity={0.25} />
-          : <meshStandardMaterial color={color} metalness={0.85} roughness={0.1} transparent opacity={0.55} />
-        }
-      </mesh>
-    </Float>
-  );
+const BLUE = '59, 130, 246';
+
+function initParticles(w, h) {
+  return Array.from({ length: 55 }, () => ({
+    x: Math.random() * w,
+    y: Math.random() * h,
+    vx: (Math.random() - 0.5) * 0.28,
+    vy: (Math.random() - 0.5) * 0.18,
+    r: Math.random() * 1.8 + 0.4,
+    a: Math.random() * 0.35 + 0.07,
+  }));
 }
 
-function Particles() {
-  const ref = useRef();
-  const positions = useMemo(() => {
-    const arr = new Float32Array(180 * 3);
-    for (let i = 0; i < 180; i++) {
-      arr[i * 3]     = (Math.random() - 0.5) * 22;
-      arr[i * 3 + 1] = (Math.random() - 0.5) * 14;
-      arr[i * 3 + 2] = (Math.random() - 0.5) * 8;
-    }
-    return arr;
-  }, []);
-
-  useFrame((state) => {
-    ref.current.rotation.y = state.clock.elapsedTime * 0.008;
-  });
-
-  return (
-    <points ref={ref}>
-      <bufferGeometry>
-        <bufferAttribute attach="attributes-position" count={180} array={positions} itemSize={3} />
-      </bufferGeometry>
-      <pointsMaterial size={0.025} color="#3b82f6" transparent opacity={0.35} sizeAttenuation />
-    </points>
-  );
+function initShapes(w, h) {
+  return Array.from({ length: 6 }, () => ({
+    x: Math.random() * w,
+    y: Math.random() * h,
+    radius: Math.random() * 65 + 28,
+    sides: [5, 6, 8][Math.floor(Math.random() * 3)],
+    rot: Math.random() * Math.PI * 2,
+    rotV: (Math.random() - 0.5) * 0.004,
+    vy: (Math.random() - 0.5) * 0.14,
+    a: Math.random() * 0.09 + 0.025,
+  }));
 }
 
-function Scene() {
-  return (
-    <>
-      <ambientLight intensity={0.08} />
-      <pointLight position={[4, 6, 4]}   intensity={1.8}  color="#3b82f6" />
-      <pointLight position={[-6, -4, -3]} intensity={0.7}  color="#1e40af" />
-      <pointLight position={[0, -6, 6]}   intensity={0.4}  color="#60a5fa" />
-
-      <Relic position={[-3.5, 1.2, -4]}  scale={1.1}  speed={0.7}                       />
-      <Relic position={[3.8, -0.8, -3.5]} scale={0.75} speed={1.4} wireframe             />
-      <Relic position={[0.2, 2.2, -7]}   scale={1.8}  speed={0.35} color="#1e3a8a"       />
-      <Relic position={[-5.5, -1.8, -5]} scale={0.45} speed={2.1}  wireframe color="#60a5fa" />
-      <Relic position={[6.2, 0.4, -6]}   scale={0.9}  speed={0.55} color="#1d4ed8"       />
-      <Relic position={[-1.5, -2.5, -3]} scale={0.35} speed={3}    wireframe color="#93c5fd" />
-
-      <Particles />
-
-      <gridHelper args={[40, 25, '#0c1a2e', '#0c1a2e']} position={[0, -5.5, 0]} />
-    </>
-  );
+function drawPoly(ctx, x, y, radius, sides, rot, a) {
+  ctx.beginPath();
+  for (let i = 0; i < sides; i++) {
+    const angle = (i / sides) * Math.PI * 2 + rot;
+    const px = x + Math.cos(angle) * radius;
+    const py = y + Math.sin(angle) * radius;
+    i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+  }
+  ctx.closePath();
+  ctx.strokeStyle = `rgba(${BLUE}, ${a})`;
+  ctx.lineWidth = 1;
+  ctx.stroke();
 }
 
 export default function VaultAtmosphere() {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    let w, h, particles, shapes;
+
+    const resize = () => {
+      w = canvas.offsetWidth;
+      h = canvas.offsetHeight;
+      canvas.width = w;
+      canvas.height = h;
+      particles = initParticles(w, h);
+      shapes = initShapes(w, h);
+    };
+    resize();
+
+    const ro = new ResizeObserver(resize);
+    ro.observe(canvas);
+
+    let animId;
+    const tick = () => {
+      ctx.clearRect(0, 0, w, h);
+
+      for (const p of particles) {
+        p.x = (p.x + p.vx + w) % w;
+        p.y = (p.y + p.vy + h) % h;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${BLUE}, ${p.a})`;
+        ctx.fill();
+      }
+
+      for (const s of shapes) {
+        s.rot += s.rotV;
+        s.y = ((s.y + s.vy + s.radius + h) % (h + s.radius * 2)) - s.radius;
+        drawPoly(ctx, s.x, s.y, s.radius, s.sides, s.rot, s.a);
+      }
+
+      animId = requestAnimationFrame(tick);
+    };
+    tick();
+
+    return () => {
+      ro.disconnect();
+      cancelAnimationFrame(animId);
+    };
+  }, []);
+
   return (
-    <Canvas
-      camera={{ position: [0, 0, 6], fov: 70 }}
-      gl={{ alpha: true, antialias: true, powerPreference: 'low-power' }}
-      dpr={[1, 1.5]}
-    >
-      <Scene />
-    </Canvas>
+    <canvas
+      ref={canvasRef}
+      className="absolute inset-0 w-full h-full"
+    />
   );
 }

@@ -4,9 +4,6 @@ import { useParams, useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from 'framer-motion';
 import Toast from '@/components/Toast';
-import dynamic from 'next/dynamic';
-
-const ProductViewer3D = dynamic(() => import('@/components/ProductViewer3D'), { ssr: false });
 import {
   Plus,
   ShieldCheck,
@@ -222,7 +219,6 @@ export default function ProductDetail({ initialProduct = null }) {
   const [activeTab, setActiveTab] = useState('overview'); // overview, specs
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
-  const [view3D, setView3D] = useState(false);
 
   const [product, setProduct] = useState(initialProduct);
   const [fetchDone, setFetchDone] = useState(!!initialProduct);
@@ -395,78 +391,56 @@ export default function ProductDetail({ initialProduct = null }) {
             {/* Dynamic Ambient Aura */}
             <div className="absolute inset-0 bg-blue-500/10 blur-[100px] rounded-full scale-110 -z-10 animate-pulse" />
 
-            {/* 3D / Image toggle — only shown when model exists */}
-            {product.modelUrl && (
-              <div className="flex gap-2 mb-4">
-                <button
-                  onClick={() => setView3D(false)}
-                  className={`flex-1 py-2 rounded-2xl text-[9px] font-black uppercase tracking-[0.25em] transition-all border ${!view3D ? 'bg-white text-black border-white' : 'bg-transparent text-gray-500 border-gray-800 hover:border-gray-600'}`}
-                >
-                  Gallery
-                </button>
-                <button
-                  onClick={() => setView3D(true)}
-                  className={`flex-1 py-2 rounded-2xl text-[9px] font-black uppercase tracking-[0.25em] transition-all border flex items-center justify-center gap-2 ${view3D ? 'bg-blue-600 text-white border-blue-600' : 'bg-transparent text-gray-500 border-gray-800 hover:border-gray-600'}`}
-                >
-                  <div className={`h-1.5 w-1.5 rounded-full ${view3D ? 'bg-white animate-pulse' : 'bg-gray-600'}`} />
-                  3D View
-                </button>
-              </div>
-            )}
+            {(() => {
+              const images = product.images?.length ? product.images : [product.image];
+              return (
+                <>
+                  <motion.div
+                    ref={imageRef}
+                    onMouseMove={handleMouseMove}
+                    onMouseLeave={handleMouseLeave}
+                    style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
+                    animate={{ y: [0, -10, 0] }}
+                    transition={{ y: { repeat: Infinity, duration: 4, ease: "easeInOut" } }}
+                    className="aspect-[4/5] rounded-[3rem] bg-[#111] border border-gray-800 shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative cursor-pointer"
+                  >
+                    <motion.div
+                      className="w-full h-full rounded-[3rem] overflow-hidden absolute inset-0"
+                      onClick={() => setLightboxOpen(true)}
+                    >
+                      <motion.img
+                        key={selectedIdx}
+                        src={images[selectedIdx]}
+                        style={{ transform: "translateZ(30px) scale(1.05)" }}
+                        className="w-full h-full object-cover origin-center cursor-zoom-in"
+                        alt={product.name}
+                      />
+                    </motion.div>
 
-            {view3D && product.modelUrl
-              ? <ProductViewer3D modelUrl={product.modelUrl} />
-              : (() => {
-                  const images = product.images?.length ? product.images : [product.image];
-                  return (
-                    <>
-                      <motion.div
-                        ref={imageRef}
-                        onMouseMove={handleMouseMove}
-                        onMouseLeave={handleMouseLeave}
-                        style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-                        animate={{ y: [0, -10, 0] }}
-                        transition={{ y: { repeat: Infinity, duration: 4, ease: "easeInOut" } }}
-                        className="aspect-[4/5] rounded-[3rem] bg-[#111] border border-gray-800 shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative cursor-pointer"
-                      >
-                        <motion.div
-                          className="w-full h-full rounded-[3rem] overflow-hidden absolute inset-0"
-                          onClick={() => setLightboxOpen(true)}
+                    <div
+                      style={{ transform: "translateZ(80px)" }}
+                      className="absolute top-8 left-8 bg-black/80 backdrop-blur-md text-white px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest shadow-2xl pointer-events-none"
+                    >
+                      Curated
+                    </div>
+                  </motion.div>
+
+                  {images.length > 1 && (
+                    <div className="flex gap-3 mt-4 overflow-x-auto pb-1">
+                      {images.map((src, i) => (
+                        <button
+                          key={i}
+                          onClick={() => setSelectedIdx(i)}
+                          className={`shrink-0 w-16 h-16 rounded-2xl overflow-hidden border-2 transition-all ${i === selectedIdx ? 'border-blue-500 opacity-100' : 'border-gray-800 opacity-50 hover:opacity-80'}`}
                         >
-                          <motion.img
-                            key={selectedIdx}
-                            src={images[selectedIdx]}
-                            style={{ transform: "translateZ(30px) scale(1.05)" }}
-                            className="w-full h-full object-cover origin-center cursor-zoom-in"
-                            alt={product.name}
-                          />
-                        </motion.div>
-
-                        <div
-                          style={{ transform: "translateZ(80px)" }}
-                          className="absolute top-8 left-8 bg-black/80 backdrop-blur-md text-white px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest shadow-2xl pointer-events-none"
-                        >
-                          Curated
-                        </div>
-                      </motion.div>
-
-                      {images.length > 1 && (
-                        <div className="flex gap-3 mt-4 overflow-x-auto pb-1">
-                          {images.map((src, i) => (
-                            <button
-                              key={i}
-                              onClick={() => setSelectedIdx(i)}
-                              className={`shrink-0 w-16 h-16 rounded-2xl overflow-hidden border-2 transition-all ${i === selectedIdx ? 'border-blue-500 opacity-100' : 'border-gray-800 opacity-50 hover:opacity-80'}`}
-                            >
-                              <img src={src} alt={`${product.name} view ${i + 1}`} className="w-full h-full object-cover" />
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                    </>
-                  );
-                })()
-            }
+                          <img src={src} alt={`${product.name} view ${i + 1}`} className="w-full h-full object-cover" />
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </>
+              );
+            })()}
           </motion.div>
 
           {/* RIGHT: Product Intel */}
