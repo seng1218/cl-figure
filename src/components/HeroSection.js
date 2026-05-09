@@ -20,28 +20,23 @@ export default function HeroSection({ onExplore }) {
   const marqueeRef = useRef(null);
 
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     const ctx = gsap.context(() => {
+      const targets = [headlineRef.current, metaRef.current, ctaRef.current].filter(Boolean);
+
+      if (prefersReduced || targets.length === 0) return;
+
+      // Set hidden before first paint (runs synchronously in useEffect before next frame)
+      gsap.set(headlineRef.current, { opacity: 0, y: 60 });
+      gsap.set(metaRef.current, { opacity: 0, y: 20 });
+      gsap.set(ctaRef.current, { opacity: 0, y: 20 });
+
       // ── Entrance timeline
-      const tl = gsap.timeline({ delay: 0.3 });
-      tl.fromTo(
-        headlineRef.current,
-        { y: 60, opacity: 0 },
-        { y: 0, opacity: 1, duration: 1.1, ease: "power4.out" }
-      )
-        .fromTo(
-          metaRef.current,
-          { y: 20, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" },
-          "-=0.5"
-        )
-        .fromTo(
-          ctaRef.current,
-          { y: 20, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" },
-          "-=0.5"
-        );
+      const tl = gsap.timeline({ delay: 0.25 });
+      tl.to(headlineRef.current, { y: 0, opacity: 1, duration: 1.1, ease: "power4.out" })
+        .to(metaRef.current, { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" }, "-=0.5")
+        .to(ctaRef.current, { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" }, "-=0.5");
 
       // ── Background parallax
       if (imageRef.current) {
@@ -72,7 +67,7 @@ export default function HeroSection({ onExplore }) {
       }
 
       // ── Text fade-out on scroll
-      gsap.to([headlineRef.current, metaRef.current, ctaRef.current], {
+      gsap.to(targets, {
         opacity: 0,
         y: -40,
         ease: "none",
@@ -105,7 +100,6 @@ export default function HeroSection({ onExplore }) {
           sizes="100vw"
           data-cursor-target
         />
-        {/* Atmospheric gradients */}
         <div
           className="absolute inset-0"
           style={{ background: "linear-gradient(to top, #050505 0%, rgba(5,5,5,0.5) 40%, rgba(5,5,5,0.08) 100%)" }}
@@ -126,7 +120,15 @@ export default function HeroSection({ onExplore }) {
         <div
           ref={marqueeRef}
           className="flex gap-8 items-center will-change-transform"
-          style={{ WebkitTextStroke: "2px rgba(255,255,255,0.7)", fontSize: "12vw", fontWeight: 900, fontStyle: "italic", lineHeight: 1, textTransform: "uppercase", color: "transparent" }}
+          style={{
+            WebkitTextStroke: "2px rgba(255,255,255,0.7)",
+            fontSize: "12vw",
+            fontWeight: 900,
+            fontStyle: "italic",
+            lineHeight: 1,
+            textTransform: "uppercase",
+            color: "transparent",
+          }}
         >
           <span>CURATED.</span>
           <span>EXCLUSIVE.</span>
@@ -140,34 +142,30 @@ export default function HeroSection({ onExplore }) {
 
       {/* Hero content — bottom left */}
       <div className="relative z-10 px-6 md:px-16 pb-16 md:pb-24 max-w-4xl">
-        {/* Drop label */}
         <p
           className="text-[10px] tracking-[0.5em] uppercase mb-5 font-black"
-          style={{ color: "var(--v6-accent)", fontFamily: "var(--font-body)" }}
+          style={{ color: "var(--v6-accent)" }}
         >
           {hero?.tagline || "Established 2023"}
         </p>
 
-        {/* Brand name headline */}
         <h1
           ref={headlineRef}
-          className="font-black italic tracking-tighter leading-none mb-6 text-white opacity-0"
+          className="font-black italic tracking-tighter leading-none mb-6 text-white"
           style={{ fontSize: "clamp(3.5rem, 9vw, 8rem)" }}
         >
           {site?.name || "Vault 6 Studios"}
           <span style={{ color: "var(--v6-accent)" }}>.</span>
         </h1>
 
-        {/* Meta */}
         <p
           ref={metaRef}
-          className="text-gray-400 text-sm font-medium max-w-sm leading-relaxed mb-8 opacity-0"
+          className="text-gray-400 text-sm font-medium max-w-sm leading-relaxed mb-8"
         >
           Authenticated Japanese collectible figures — curated for serious collectors.
         </p>
 
-        {/* CTA row */}
-        <div ref={ctaRef} className="flex flex-wrap items-center gap-6 opacity-0">
+        <div ref={ctaRef} className="flex flex-wrap items-center gap-6">
           <button
             onClick={onExplore}
             className="group flex items-center gap-3 px-8 py-4 text-[10px] tracking-[0.35em] uppercase font-black transition-all duration-300"

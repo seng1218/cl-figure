@@ -46,7 +46,22 @@
       "Bash(awk '{if \\(NF\\) print \"  \" $0}')",
       "Bash(npx *)",
       "Bash(grep -r \"vault6studios\" src/ --include=\"*.js\" -l)",
-      "Bash(grep -r \"vault6studios\" wrangler.jsonc)"
+      "Bash(grep -r \"vault6studios\" wrangler.jsonc)",
+      "Bash(python3 -c \"import json,sys; data=json.load\\(sys.stdin\\); [print\\(f'id={d[\\\\\"id\\\\\"]} name={d[\\\\\"name\\\\\"][:30]}'\\) for d in data[:10]]\")",
+      "Bash(python3 *)",
+      "Bash(python *)",
+      "Bash(PYTHONIOENCODING=utf-8 python *)",
+      "Bash(grep -n \"import\" src/app/product/\\\\\\\\[id\\\\\\\\]/ProductClient.js)",
+      "Bash(npm ls *)",
+      "Bash(npm audit *)",
+      "Bash(cat wrangler.toml)",
+      "Bash(cat wrangler.json)",
+      "Bash(gzip -c .open-next/server-functions/default/handler.mjs)",
+      "Bash(kill %1)",
+      "Bash(taskkill /PID 19644 /F)",
+      "PowerShell(Stop-Process *)",
+      "Bash(curl -s http://localhost:3000)",
+      "Bash(echo \"exit: $?\")"
     ]
   },
   "disabledMcpjsonServers": [
@@ -108,5 +123,8 @@
   "statusLine": {
     "type": "command",
     "command": "python .claude/scripts/context-monitor.py"
+  },
+  "enabledPlugins": {
+    "ruflo-core@ruflo": true
   }
 }

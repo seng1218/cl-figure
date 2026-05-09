@@ -40,12 +40,12 @@ function SuccessContent() {
   }, [orderId]);
 
   useEffect(() => {
-    const end = Date.now() + 3000;
-    const colors = ['#2563eb', '#fbbf24', '#ffffff'];
+    const end = Date.now() + 3500;
+    const colors = ['#CA8A04', '#FFD700', '#ffffff', '#1C1917'];
     import('canvas-confetti').then(({ default: confetti }) => {
       (function frame() {
-        confetti({ particleCount: 2, angle: 60, spread: 55, origin: { x: 0 }, colors });
-        confetti({ particleCount: 2, angle: 120, spread: 55, origin: { x: 1 }, colors });
+        confetti({ particleCount: 3, angle: 60, spread: 65, origin: { x: 0 }, colors });
+        confetti({ particleCount: 3, angle: 120, spread: 65, origin: { x: 1 }, colors });
         if (Date.now() < end) requestAnimationFrame(frame);
       }());
     }).catch(() => {});

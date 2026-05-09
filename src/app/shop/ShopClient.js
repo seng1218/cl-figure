@@ -42,12 +42,9 @@ export default function ShopClient() {
   // Heading entrance
   useEffect(() => {
     if (!headingRef.current) return;
+    gsap.set(headingRef.current, { opacity: 0, y: 30 });
     const ctx = gsap.context(() => {
-      gsap.fromTo(
-        headingRef.current,
-        { y: 30, opacity: 0 },
-        { y: 0, opacity: 1, duration: 1, ease: "power3.out", delay: 0.2 }
-      );
+      gsap.to(headingRef.current, { y: 0, opacity: 1, duration: 1, ease: "power3.out", delay: 0.2 });
     });
     return () => ctx.revert();
   }, []);
@@ -99,7 +96,7 @@ export default function ShopClient() {
 
       <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-16">
         {/* Section header */}
-        <div ref={headingRef} className="mb-20 opacity-0">
+        <div ref={headingRef} className="mb-20">
           <p
             className="text-[9px] tracking-[0.5em] uppercase font-black mb-3"
             style={{ color: "var(--v6-accent)" }}

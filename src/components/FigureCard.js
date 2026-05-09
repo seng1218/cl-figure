@@ -27,21 +27,31 @@ export default function FigureCard({
     const el = cardRef.current;
     if (!el) return;
 
-    ScrollTrigger.create({
+    // Set initial hidden state via GSAP (not CSS) so SSR renders visible
+    gsap.set(el, {
+      clipPath: "polygon(0 0, 0 0, 0 100%, 0 100%)",
+      opacity: 0,
+    });
+
+    const st = ScrollTrigger.create({
       trigger: el,
-      start: "top 88%",
+      start: "top 92%",
       onEnter: () => {
         gsap.delayedCall(animationDelay, () => {
-          el.classList.add(styles.revealed);
+          gsap.to(el, {
+            clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
+            opacity: 1,
+            duration: 0.85,
+            ease: "power3.out",
+          });
         });
       },
       once: true,
     });
 
     return () => {
-      ScrollTrigger.getAll().forEach((st) => {
-        if (st.trigger === el) st.kill();
-      });
+      st.kill();
+      gsap.killTweensOf(el);
     };
   }, [animationDelay]);
 

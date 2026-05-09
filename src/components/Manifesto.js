@@ -29,21 +29,20 @@ export default function Manifesto() {
         },
       });
 
-      gsap.fromTo(
-        bodyRef.current,
-        { y: 25, opacity: 0 },
-        {
+      if (bodyRef.current) {
+        gsap.set(bodyRef.current, { opacity: 0, y: 25 });
+        gsap.to(bodyRef.current, {
           y: 0,
           opacity: 1,
           duration: 1,
           ease: "power3.out",
           scrollTrigger: {
             trigger: bodyRef.current,
-            start: "top 85%",
+            start: "top 92%",
             once: true,
           },
-        }
-      );
+        });
+      }
     }, sectionRef);
 
     return () => ctx.revert();
@@ -72,7 +71,7 @@ export default function Manifesto() {
       </div>
 
       {/* Body copy */}
-      <div ref={bodyRef} className="px-6 md:px-16 max-w-lg opacity-0">
+      <div ref={bodyRef} className="px-6 md:px-16 max-w-lg">
         <p
           className="text-sm leading-relaxed"
           style={{ color: "var(--v6-text-secondary)", fontWeight: 400 }}

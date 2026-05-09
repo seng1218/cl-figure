@@ -19,23 +19,24 @@ export default function BrandStrip() {
   const itemRefs = useRef([]);
 
   useEffect(() => {
+    const items = itemRefs.current.filter(Boolean);
+    if (!items.length) return;
+
+    gsap.set(items, { opacity: 0, y: 15 });
+
     const ctx = gsap.context(() => {
-      gsap.fromTo(
-        itemRefs.current,
-        { y: 15, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.7,
-          ease: "power3.out",
-          stagger: 0.07,
-          scrollTrigger: {
-            trigger: wrapRef.current,
-            start: "top 88%",
-            once: true,
-          },
-        }
-      );
+      gsap.to(items, {
+        y: 0,
+        opacity: 1,
+        duration: 0.7,
+        ease: "power3.out",
+        stagger: 0.07,
+        scrollTrigger: {
+          trigger: wrapRef.current,
+          start: "top 92%",
+          once: true,
+        },
+      });
     });
     return () => ctx.revert();
   }, []);
@@ -58,7 +59,7 @@ export default function BrandStrip() {
           <div
             key={brand.name}
             ref={(el) => { if (el) itemRefs.current[i] = el; }}
-            className="flex flex-col opacity-0"
+            className="flex flex-col"
           >
             <span
               className="text-[11px] tracking-[0.25em] uppercase transition-colors duration-300 cursor-default"

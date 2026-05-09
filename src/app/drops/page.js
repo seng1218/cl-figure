@@ -32,30 +32,24 @@ export default function DropsPage() {
 
   useEffect(() => {
     if (!headingRef.current) return;
+    gsap.set(headingRef.current, { opacity: 0, y: 50 });
     const ctx = gsap.context(() => {
-      gsap.fromTo(
-        headingRef.current,
-        { y: 50, opacity: 0 },
-        { y: 0, opacity: 1, duration: 1.1, ease: "power4.out", delay: 0.2 }
-      );
+      gsap.to(headingRef.current, { y: 0, opacity: 1, duration: 1.1, ease: "power4.out", delay: 0.2 });
     });
     return () => ctx.revert();
   }, []);
 
   useEffect(() => {
     if (!captureRef.current) return;
+    gsap.set(captureRef.current, { opacity: 0, y: 30 });
     const ctx = gsap.context(() => {
-      gsap.fromTo(
-        captureRef.current,
-        { y: 30, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.9,
-          ease: "power3.out",
-          scrollTrigger: { trigger: captureRef.current, start: "top 85%", once: true },
-        }
-      );
+      gsap.to(captureRef.current, {
+        y: 0,
+        opacity: 1,
+        duration: 0.9,
+        ease: "power3.out",
+        scrollTrigger: { trigger: captureRef.current, start: "top 92%", once: true },
+      });
     });
     return () => ctx.revert();
   }, []);
@@ -84,7 +78,7 @@ export default function DropsPage() {
       <div className="max-w-7xl mx-auto px-6 md:px-16">
 
         {/* Header */}
-        <div ref={headingRef} className="mb-16 opacity-0">
+        <div ref={headingRef} className="mb-16">
           <p
             className="text-[10px] tracking-[0.5em] uppercase font-black mb-4 flex items-center gap-2"
             style={{ color: "var(--v6-accent)" }}
@@ -130,7 +124,7 @@ export default function DropsPage() {
         {/* Email capture */}
         <div
           ref={captureRef}
-          className="opacity-0 max-w-xl mx-auto text-center py-16 px-8"
+          className="max-w-xl mx-auto text-center py-16 px-8"
           style={{ border: "1px solid var(--v6-border)", background: "var(--v6-surface)" }}
         >
           <Bell size={24} className="mx-auto mb-4 text-blue-500" />
