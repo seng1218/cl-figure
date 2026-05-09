@@ -62,7 +62,6 @@ export default function Navbar() {
         <div className="hidden md:flex items-center gap-8">
           {[
             { label: 'Collection', href: '/shop' },
-            { label: 'Drops', href: '/drops' },
             { label: 'Tracking', href: '/#tracking', special: true },
             { label: 'Join', href: '/join' },
             { label: 'Member', href: '/member/login' },
@@ -76,6 +75,10 @@ export default function Navbar() {
               {label}
             </Link>
           ))}
+          <span className="flex items-center gap-1.5 text-[10px] tracking-[0.28em] uppercase text-white/20 cursor-default select-none">
+            3D Kits
+            <span className="text-[7px] tracking-[0.15em] uppercase bg-white/10 text-white/30 px-1.5 py-0.5">Soon</span>
+          </span>
         </div>
 
         {/* Right: search + cart + mobile toggle */}
@@ -147,7 +150,6 @@ export default function Navbar() {
             <div className="flex flex-col items-center gap-9 text-center">
               {[
                 { label: 'Collection', href: '/shop' },
-                { label: 'Drops', href: '/drops' },
                 { label: 'Tracking', href: '/#tracking', special: true },
                 { label: 'Join Syndicate', href: '/join' },
                 { label: 'Member Portal', href: '/member/login' },
@@ -161,6 +163,10 @@ export default function Navbar() {
                   {label}
                 </Link>
               ))}
+              <span className="text-3xl font-black uppercase italic tracking-tighter text-white/20 cursor-default select-none flex items-center gap-3">
+                3D Kits
+                <span className="text-sm font-black tracking-widest uppercase bg-white/10 text-white/30 px-2 py-1">Soon</span>
+              </span>
               <div className="w-8 h-px bg-white/10 my-2" />
               <Link
                 href="/checkout"
