@@ -57,9 +57,10 @@ export default function Navbar() {
         <div
           className={`mx-auto flex justify-between items-center transition-all duration-700 rounded-full px-8 pointer-events-auto
             ${isScrolled
-              ? 'max-w-4xl h-16 bg-[#050505]/70 backdrop-blur-2xl border border-white/[0.07] shadow-[0_20px_50px_rgba(0,0,0,0.8),inset_0_1px_0_rgba(255,255,255,0.05)]'
+              ? 'max-w-4xl h-16 bg-[#050505]/80 backdrop-blur-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8),inset_0_1px_0_rgba(255,255,255,0.04)]'
               : 'max-w-7xl h-20 bg-transparent border-transparent'
             }`}
+          style={isScrolled ? { border: '1px solid var(--v6-border)' } : {}}
         >
           {/* LOGO WITH CONTRAST FIX */}
           <Link href="/" className="flex flex-col leading-none">
@@ -78,6 +79,13 @@ export default function Navbar() {
           <div className={`hidden md:flex items-center gap-8 ${isScrolled ? 'text-gray-400' : 'text-gray-200 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]'}`}>
             <Link href="/shop" className="text-[10px] uppercase font-black tracking-[0.2em] hover:text-white transition-colors">
               Collection
+            </Link>
+            <Link href="/drops" className="text-[10px] uppercase font-black tracking-[0.2em] hover:text-white transition-colors flex items-center gap-1.5">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-500 opacity-75" />
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-blue-500" />
+              </span>
+              Drops
             </Link>
             <Link href="/#tracking" onClick={(e) => handleTrackingClick(e, false)} className="text-[10px] uppercase font-black tracking-[0.2em] hover:text-white transition-colors">
               Tracking
@@ -200,6 +208,17 @@ export default function Navbar() {
                 className="text-4xl font-black text-white uppercase italic tracking-tighter hover:text-blue-500 transition-colors"
               >
                 Collection
+              </Link>
+              <Link
+                href="/drops"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="text-4xl font-black text-blue-500 uppercase italic tracking-tighter hover:text-blue-400 transition-colors flex items-center gap-3"
+              >
+                Drops
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-500 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500" />
+                </span>
               </Link>
               <Link
                 href="/#tracking"

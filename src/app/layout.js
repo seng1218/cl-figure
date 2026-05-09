@@ -2,6 +2,11 @@ import Navbar from "@/components/Navbar";
 import CommsPortal from "@/components/CommsPortal";
 import Footer from "@/components/Footer";
 import AnnouncementBanner from "@/components/AnnouncementBanner";
+import PageTransition from "@/components/PageTransition";
+import ScrollProgress from "@/components/ScrollProgress";
+import GSAPCleanup from "@/components/GSAPCleanup";
+import CustomCursor from "@/components/CustomCursor";
+import SmoothScroll from "@/components/SmoothScroll";
 import { CartProvider } from "@/context/CartContext";
 import { CMSProvider } from "@/context/CMSContext";
 import AdminShortcut from "@/components/AdminShortcut";
@@ -42,13 +47,17 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className="overscroll-none flex flex-col min-h-screen">
+        <CustomCursor />
+        <SmoothScroll />
         <CMSProvider>
           <CartProvider>
+            <ScrollProgress />
+            <GSAPCleanup />
             <AdminShortcut />
             <AnnouncementBanner />
             <Navbar />
             <main className="pt-20 flex-grow">
-              {children}
+              <PageTransition>{children}</PageTransition>
             </main>
             <Footer />
             <CommsPortal />

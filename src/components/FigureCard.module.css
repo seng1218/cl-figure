@@ -1,0 +1,79 @@
+/* ── Clip-path manga panel reveal ── */
+.card {
+  clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
+  opacity: 0;
+  will-change: clip-path, opacity;
+}
+
+.card.revealed {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  opacity: 1;
+  transition:
+    clip-path 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.4s ease;
+}
+
+/* ── Image zoom on hover ── */
+.imageWrap {
+  overflow: hidden;
+  position: relative;
+  aspect-ratio: 2 / 3;
+  width: 100%;
+}
+
+.image {
+  transition: transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.card:hover .image {
+  transform: scale(1.04);
+}
+
+/* ── Blue line under name on hover ── */
+.nameLine {
+  position: relative;
+  display: inline-block;
+}
+
+.nameLine::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0%;
+  height: 1px;
+  background: var(--v6-accent);
+  transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.card:hover .nameLine::after {
+  width: 100%;
+}
+
+/* ── Add to Vault button slide up on hover ── */
+.vaultBtn {
+  transform: translateY(8px);
+  opacity: 0;
+  transition: transform 0.35s var(--v6-ease), opacity 0.3s ease;
+}
+
+.card:hover .vaultBtn {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* ── Coming soon blur sweep ── */
+.lightSweep {
+  position: absolute;
+  inset-block: 0;
+  width: 25%;
+  background: linear-gradient(to right, transparent, rgba(37, 99, 235, 0.06), transparent);
+  transform: skewX(12deg);
+  pointer-events: none;
+  animation: sweepAcross 4s linear infinite 1.5s;
+}
+
+@keyframes sweepAcross {
+  0%   { left: -30%; }
+  100% { left: 130%; }
+}

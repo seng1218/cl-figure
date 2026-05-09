@@ -7,6 +7,8 @@ import HeroSection from '@/components/HeroSection';
 import HorizontalShowcase from '@/components/HorizontalShowcase';
 import GSAPTextReveal from '@/components/GSAPTextReveal';
 import VaultEntrance from '@/components/VaultEntrance';
+import BrandStrip from '@/components/BrandStrip';
+import Manifesto from '@/components/Manifesto';
 import Toast from '@/components/Toast';
 import TrackingModule from '@/components/TrackingModule';
 import LiveActivityToast from '@/components/LiveActivityToast';
@@ -107,7 +109,10 @@ export default function Home() {
         {/* 2. Hero Section */}
         <HeroSection onExplore={() => setIsVaultOpen(true)} />
 
-        {/* 2.5 Intel Feed Marquee */}
+        {/* 2.5 Authenticated Brands Strip */}
+        <BrandStrip />
+
+        {/* 2.6 Intel Feed Marquee */}
         <section className="py-5 border-b border-gray-900 bg-[#020202] overflow-hidden whitespace-nowrap relative">
           <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[#020202] to-transparent z-10 pointer-events-none" />
           <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#020202] to-transparent z-10 pointer-events-none" />
@@ -256,6 +261,9 @@ export default function Home() {
         <section id="tracking" className="bg-transparent py-32 relative overflow-hidden px-6">
           <TrackingModule />
         </section>
+
+        {/* 7.5 Manifesto */}
+        <Manifesto />
 
         {/* 8. The Syndicate Waitlist */}
         <section id="syndicate" className="bg-[#111] max-w-5xl mx-auto px-6 py-24 md:py-32 text-center rounded-2xl border border-gray-800 relative group overflow-hidden mt-16">

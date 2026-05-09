@@ -1,49 +1,133 @@
 "use client";
-import { motion, useScroll, useTransform } from 'framer-motion';
-import { ArrowRight } from 'lucide-react';
-import { useCMS } from '@/context/CMSContext';
-import Image from 'next/image';
-import dynamic from 'next/dynamic';
+import { useRef, useEffect } from "react";
+import Image from "next/image";
+import dynamic from "next/dynamic";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useCMS } from "@/context/CMSContext";
 
-const VaultAtmosphere = dynamic(() => import('./VaultAtmosphere'), { ssr: false });
+const VaultAtmosphere = dynamic(() => import("./VaultAtmosphere"), { ssr: false });
+
+gsap.registerPlugin(ScrollTrigger);
 
 export default function HeroSection({ onExplore }) {
-  const { scrollY } = useScroll();
   const { hero, site } = useCMS();
+  const sectionRef = useRef(null);
+  const imageRef = useRef(null);
+  const headlineRef = useRef(null);
+  const metaRef = useRef(null);
+  const ctaRef = useRef(null);
+  const marqueeRef = useRef(null);
 
-  // Parallax for marquee
-  const sliderX = useTransform(scrollY, [0, 1000], [0, -1000]);
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const ctx = gsap.context(() => {
+      // ── Entrance timeline
+      const tl = gsap.timeline({ delay: 0.3 });
+      tl.fromTo(
+        headlineRef.current,
+        { y: 60, opacity: 0 },
+        { y: 0, opacity: 1, duration: 1.1, ease: "power4.out" }
+      )
+        .fromTo(
+          metaRef.current,
+          { y: 20, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" },
+          "-=0.5"
+        )
+        .fromTo(
+          ctaRef.current,
+          { y: 20, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" },
+          "-=0.5"
+        );
+
+      // ── Background parallax
+      if (imageRef.current) {
+        gsap.to(imageRef.current, {
+          yPercent: 20,
+          ease: "none",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top top",
+            end: "bottom top",
+            scrub: true,
+          },
+        });
+      }
+
+      // ── Marquee counter-scroll drift
+      if (marqueeRef.current) {
+        gsap.to(marqueeRef.current, {
+          xPercent: -12,
+          ease: "none",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top top",
+            end: "bottom top",
+            scrub: 2,
+          },
+        });
+      }
+
+      // ── Text fade-out on scroll
+      gsap.to([headlineRef.current, metaRef.current, ctaRef.current], {
+        opacity: 0,
+        y: -40,
+        ease: "none",
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "20% top",
+          end: "60% top",
+          scrub: true,
+        },
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
 
   return (
-    <section className="relative min-h-screen w-full overflow-hidden bg-[#050505] flex items-center justify-center pt-20">
-
-      {/* BACKGROUND VISUAL WITH PARALLAX */}
-      <div className="absolute inset-0 z-0 bg-[#050505]">
-        <motion.div
-          style={{ y: useTransform(scrollY, [0, 1000], [0, 300]) }}
+    <section
+      ref={sectionRef}
+      className="relative w-full overflow-hidden flex items-end bg-[#050505]"
+      style={{ height: "100svh", minHeight: "600px" }}
+    >
+      {/* Full-bleed background image */}
+      <div ref={imageRef} className="absolute inset-0 z-0 will-change-transform">
+        <Image
+          src="/banner.png"
+          alt="Vault Artifact"
+          fill
+          priority
+          className="object-cover object-top brightness-50 contrast-110"
+          sizes="100vw"
+          data-cursor-target
+        />
+        {/* Atmospheric gradients */}
+        <div
           className="absolute inset-0"
-        >
-          <Image
-            src="/banner.png"
-            alt="Vault Artifact"
-            fill
-            priority
-            className="object-cover object-top opacity-10 scale-110 mix-blend-luminosity grayscale contrast-125"
-          />
-        </motion.div>
-        {/* Provocative harsh dark fade */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#050505] via-transparent to-[#050505]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#050505_100%)]" />
+          style={{ background: "linear-gradient(to top, #050505 0%, rgba(5,5,5,0.5) 40%, rgba(5,5,5,0.08) 100%)" }}
+        />
+        <div
+          className="absolute inset-0"
+          style={{ background: "linear-gradient(to right, rgba(5,5,5,0.75) 0%, transparent 60%)" }}
+        />
       </div>
 
-      {/* 3D VAULT ATMOSPHERE */}
+      {/* VaultAtmosphere overlay */}
       <div className="absolute inset-0 z-[1] pointer-events-none">
         <VaultAtmosphere />
       </div>
 
-      {/* Infinite Scrolling Provocative Marquee */}
-      <div className="absolute top-1/2 left-0 -translate-y-1/2 w-full overflow-hidden whitespace-nowrap z-0 pointer-events-none opacity-20 hidden md:block">
-        <motion.div style={{ x: sliderX, WebkitTextStroke: '2px rgba(255,255,255,0.7)' }} className="flex gap-8 items-center text-[12vw] font-black uppercase italic leading-none text-transparent">
+      {/* Large marquee text — drifts on scroll */}
+      <div className="absolute top-1/2 left-0 -translate-y-1/2 w-full overflow-hidden whitespace-nowrap z-0 pointer-events-none opacity-[0.07] hidden md:block">
+        <div
+          ref={marqueeRef}
+          className="flex gap-8 items-center will-change-transform"
+          style={{ WebkitTextStroke: "2px rgba(255,255,255,0.7)", fontSize: "12vw", fontWeight: 900, fontStyle: "italic", lineHeight: 1, textTransform: "uppercase", color: "transparent" }}
+        >
           <span>CURATED.</span>
           <span>EXCLUSIVE.</span>
           <span>S-TIER.</span>
@@ -51,56 +135,79 @@ export default function HeroSection({ onExplore }) {
           <span>CURATED.</span>
           <span>EXCLUSIVE.</span>
           <span>S-TIER.</span>
-        </motion.div>
+        </div>
       </div>
 
-      {/* HERO CONTENT */}
-      <div className="relative z-10 text-center px-6 mix-blend-exclusion">
-        <motion.span
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-white font-black text-[10px] md:text-xs tracking-[1em] uppercase mb-8 block opacity-80"
+      {/* Hero content — bottom left */}
+      <div className="relative z-10 px-6 md:px-16 pb-16 md:pb-24 max-w-4xl">
+        {/* Drop label */}
+        <p
+          className="text-[10px] tracking-[0.5em] uppercase mb-5 font-black"
+          style={{ color: "var(--v6-accent)", fontFamily: "var(--font-body)" }}
         >
-          {hero?.tagline || 'Established 2023'}
-        </motion.span>
+          {hero?.tagline || "Established 2023"}
+        </p>
 
-        <motion.h1
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.2, duration: 0.8, ease: "easeOut" }}
-          className="text-7xl md:text-[12rem] font-black text-white tracking-tighter mb-8 italic leading-none drop-shadow-2xl"
+        {/* Brand name headline */}
+        <h1
+          ref={headlineRef}
+          className="font-black italic tracking-tighter leading-none mb-6 text-white opacity-0"
+          style={{ fontSize: "clamp(3.5rem, 9vw, 8rem)" }}
         >
-          {site?.name || 'Vault 6 Studios'}<span className="text-blue-600">.</span>
-        </motion.h1>
+          {site?.name || "Vault 6 Studios"}
+          <span style={{ color: "var(--v6-accent)" }}>.</span>
+        </h1>
 
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="text-gray-400 text-sm md:text-base font-medium max-w-sm mx-auto leading-relaxed mt-6"
+        {/* Meta */}
+        <p
+          ref={metaRef}
+          className="text-gray-400 text-sm font-medium max-w-sm leading-relaxed mb-8 opacity-0"
         >
           Authenticated Japanese collectible figures — curated for serious collectors.
-        </motion.p>
+        </p>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-          className="flex flex-col items-center justify-center gap-6 mt-10"
-        >
-          <motion.button
+        {/* CTA row */}
+        <div ref={ctaRef} className="flex flex-wrap items-center gap-6 opacity-0">
+          <button
             onClick={onExplore}
-            className="group relative bg-white text-black px-12 py-6 font-black text-xs uppercase tracking-[0.4em] flex items-center gap-4 hover:bg-blue-600 hover:text-white transition-all overflow-hidden shadow-2xl"
+            className="group flex items-center gap-3 px-8 py-4 text-[10px] tracking-[0.35em] uppercase font-black transition-all duration-300"
+            style={{ border: "1px solid var(--v6-accent)", color: "var(--v6-accent)" }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "var(--v6-accent)";
+              e.currentTarget.style.color = "#050505";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "transparent";
+              e.currentTarget.style.color = "var(--v6-accent)";
+            }}
           >
-            <div className="absolute inset-0 bg-blue-600 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out z-0" />
-            <span className="relative z-10">{hero?.ctaLabel || 'Enter Vault'}</span>
-            <ArrowRight size={18} className="relative z-10 group-hover:translate-x-2 transition-transform" />
-          </motion.button>
-          
-          <a href="/shop" className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 hover:text-white transition-colors border-b border-transparent hover:border-white pb-1">
+            {hero?.ctaLabel || "Enter Vault"}
+            <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
+          </button>
+
+          <a
+            href="/shop"
+            className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-500 hover:text-white transition-colors border-b border-transparent hover:border-white pb-1"
+          >
             Browse the Archive
           </a>
-        </motion.div>
+        </div>
+      </div>
+
+      {/* Scroll indicator */}
+      <div className="absolute bottom-8 right-8 z-10 flex flex-col items-center gap-3">
+        <span
+          className="text-[8px] tracking-[0.5em] uppercase font-black"
+          style={{ color: "var(--v6-text-muted)", writingMode: "vertical-rl" }}
+        >
+          Scroll
+        </span>
+        <div className="w-px h-12 overflow-hidden" style={{ background: "var(--v6-text-muted)" }}>
+          <div
+            className="w-full h-full"
+            style={{ background: "var(--v6-accent)", animation: "scrollLine 1.8s ease-in-out infinite" }}
+          />
+        </div>
       </div>
     </section>
   );

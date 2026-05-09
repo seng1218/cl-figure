@@ -7,7 +7,33 @@
 :root {
   --background: #050505;
   --foreground: #ffffff;
-  --accent: #2563eb; 
+  --accent: #2563eb;
+
+  /* ── V6 Design Tokens ── */
+  --v6-void: #050505;
+  --v6-deep: #0a0a0a;
+  --v6-surface: #111111;
+  --v6-surface-2: #181818;
+
+  --v6-border: rgba(255, 255, 255, 0.06);
+  --v6-border-active: rgba(255, 255, 255, 0.12);
+
+  --v6-text-primary: #f0ece6;
+  --v6-text-secondary: #6b6560;
+  --v6-text-muted: #2e2c2a;
+
+  /* Accent: blue (hard blocker — gold deferred) */
+  --v6-accent: #2563eb;
+  --v6-accent-soft: rgba(37, 99, 235, 0.12);
+  --v6-accent-glow: rgba(37, 99, 235, 0.06);
+
+  /* Easing curves */
+  --v6-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --v6-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Fonts: PJS for both (hard blocker — serif deferred) */
+  --font-display: 'Plus Jakarta Sans', sans-serif;
+  --font-body: 'Plus Jakarta Sans', 'Segoe UI', sans-serif;
 }
 
 /* Custom Slim Scrollbar for Dark Theme */
@@ -55,11 +81,117 @@ body {
 }
 
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: auto; /* Lenis handles smooth scroll */
 }
 
 /* Vault shimmer — controlled authority hover */
 .glitch-hover:hover {
   filter: brightness(1.08) contrast(1.05);
   transition: filter 0.4s ease;
+}
+
+/* Hide scrollbar for mobile horizontal showcase */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Liquid Glass card surface */
+.glass-card {
+  backdrop-filter: blur(12px) saturate(180%);
+  background: rgba(28, 25, 23, 0.6);
+  border: 1px solid rgba(202, 138, 4, 0.15);
+  transition: backdrop-filter 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.glass-card:hover {
+  backdrop-filter: blur(20px) saturate(220%);
+  border-color: rgba(202, 138, 4, 0.4);
+  box-shadow: 0 0 40px rgba(202, 138, 4, 0.08);
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee { animation: none; }
+  * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}
+
+/* ── V6 Custom Cursor ── */
+.v6-cursor {
+  position: fixed;
+  width: 7px;
+  height: 7px;
+  background: var(--v6-accent);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: width 0.15s var(--v6-ease), height 0.15s var(--v6-ease), border-radius 0.15s var(--v6-ease), opacity 0.2s ease;
+}
+
+.v6-cursor-ring {
+  position: fixed;
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgba(37, 99, 235, 0.35);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%, -50%);
+  transition: width 0.25s var(--v6-ease), height 0.25s var(--v6-ease),
+    border-color 0.25s ease, border-radius 0.2s var(--v6-ease), opacity 0.2s ease;
+}
+
+.cursor-expand .v6-cursor-ring {
+  width: 50px;
+  height: 50px;
+  border-color: rgba(37, 99, 235, 0.55);
+}
+
+.cursor-target .v6-cursor {
+  width: 3px;
+  height: 3px;
+  border-radius: 0;
+}
+.cursor-target .v6-cursor-ring {
+  width: 22px;
+  height: 22px;
+  border-radius: 0;
+  border-color: rgba(37, 99, 235, 0.8);
+}
+
+@media (pointer: fine) {
+  body, a, button { cursor: none; }
+}
+@media (pointer: coarse) {
+  .v6-cursor, .v6-cursor-ring { display: none; }
+}
+
+/* ── Noise grain overlay ── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9997;
+  opacity: 0.25;
+}
+
+/* ── Clip-path card reveal ── */
+@keyframes clipReveal {
+  from { clip-path: polygon(0 0, 0 0, 0 100%, 0 100%); opacity: 0; }
+  to   { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); opacity: 1; }
+}
+
+/* ── Scroll indicator line ── */
+@keyframes scrollLine {
+  0%   { transform: translateY(-100%); }
+  50%  { transform: translateY(0%); }
+  100% { transform: translateY(100%); }
+}
+
+/* ── V6 selection ── */
+::selection {
+  background: var(--v6-accent-soft);
+  color: var(--v6-text-primary);
 }

@@ -1,61 +1,87 @@
 "use client";
-import Link from 'next/link';
-import { useCMS } from '@/context/CMSContext';
+import Link from "next/link";
+import { useCMS } from "@/context/CMSContext";
+
+const LINKS = [
+  { label: "About Us",        href: "/about" },
+  { label: "Contact",         href: "/contact" },
+  { label: "Drops",           href: "/drops" },
+  { label: "Privacy Policy",  href: "/privacy-policy" },
+  { label: "Terms",           href: "/terms" },
+  { label: "Payment Policy",  href: "/payment-policy" },
+  { label: "Shipping",        href: "/shipping" },
+  { label: "Return Policy",   href: "/return-policy" },
+];
 
 export default function Footer() {
   const { contact } = useCMS();
   const whatsapp = contact?.whatsapp;
   const email = contact?.email;
   const address = contact?.address;
-  const hasContact = whatsapp || email || address;
 
   return (
-    <footer className="border-t border-gray-900 bg-[#020202] py-8 text-center relative z-10 w-full mt-auto">
-      <div className="max-w-7xl mx-auto px-6 flex flex-col items-center justify-center gap-4">
-
-        <div className="flex items-center flex-wrap justify-center gap-6">
-          <Link href="/about" className="text-gray-700 hover:text-gray-400 font-black text-[10px] uppercase tracking-[0.3em] transition-colors">
-            About Us
-          </Link>
-          <Link href="/contact" className="text-gray-700 hover:text-gray-400 font-black text-[10px] uppercase tracking-[0.3em] transition-colors">
-            Contact Us
-          </Link>
-          <Link href="/privacy-policy" className="text-gray-700 hover:text-gray-400 font-black text-[10px] uppercase tracking-[0.3em] transition-colors">
-            Privacy Policy
-          </Link>
-          <Link href="/terms" className="text-gray-700 hover:text-gray-400 font-black text-[10px] uppercase tracking-[0.3em] transition-colors">
-            Terms &amp; Conditions
-          </Link>
-          <Link href="/payment-policy" className="text-gray-700 hover:text-gray-400 font-black text-[10px] uppercase tracking-[0.3em] transition-colors">
-            Payment Policy
-          </Link>
-          <Link href="/shipping" className="text-gray-700 hover:text-gray-400 font-black text-[10px] uppercase tracking-[0.3em] transition-colors">
-            Shipping
-          </Link>
-          <Link href="/return-policy" className="text-gray-700 hover:text-gray-400 font-black text-[10px] uppercase tracking-[0.3em] transition-colors">
-            Return Policy
-          </Link>
+    <footer
+      className="w-full mt-auto"
+      style={{ borderTop: "1px solid var(--v6-border)", background: "var(--v6-deep)" }}
+    >
+      <div className="max-w-7xl mx-auto px-6 md:px-16 py-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+        {/* Left: wordmark + legal */}
+        <div className="space-y-2">
+          <p
+            className="text-[9px] tracking-[0.4em] uppercase font-black"
+            style={{ color: "var(--v6-text-muted)" }}
+          >
+            Vault 6 Studios · Kuala Lumpur, Malaysia
+          </p>
+          {email && (
+            <a
+              href={`mailto:${email}`}
+              className="block text-[9px] tracking-[0.25em] transition-colors duration-300"
+              style={{ color: "var(--v6-text-muted)" }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "var(--v6-accent)")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "var(--v6-text-muted)")}
+            >
+              {email}
+            </a>
+          )}
+          {whatsapp && (
+            <a
+              href={`https://wa.me/${whatsapp.replace(/\D/g, "")}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block text-[9px] tracking-[0.25em] transition-colors duration-300"
+              style={{ color: "var(--v6-text-muted)" }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "var(--v6-accent)")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "var(--v6-text-muted)")}
+            >
+              WA {whatsapp}
+            </a>
+          )}
+          {address && (
+            <span className="block text-[9px] tracking-[0.2em]" style={{ color: "var(--v6-text-muted)" }}>
+              {address}
+            </span>
+          )}
+          <p className="text-[9px] tracking-[0.25em]" style={{ color: "var(--v6-text-muted)" }}>
+            © {new Date().getFullYear()} · All figures authenticated · No bootlegs
+          </p>
         </div>
 
-        {hasContact && (
-          <div className="flex items-center flex-wrap justify-center gap-4 text-gray-700 text-[9px] font-bold uppercase tracking-[0.2em]">
-            {email && (
-              <a href={`mailto:${email}`} className="hover:text-gray-400 transition-colors">{email}</a>
-            )}
-            {whatsapp && (
-              <a href={`https://wa.me/${whatsapp.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" className="hover:text-gray-400 transition-colors">
-                WA {whatsapp}
-              </a>
-            )}
-            {address && (
-              <span>{address}</span>
-            )}
-          </div>
-        )}
-
-        <p className="text-gray-500 font-black text-[10px] uppercase tracking-[0.3em]">
-          &copy; {new Date().getFullYear()} Vault 6 Studios. ALL RIGHTS RESERVED.
-        </p>
+        {/* Right: nav links */}
+        <div className="flex flex-wrap gap-x-8 gap-y-3">
+          {LINKS.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="text-[9px] tracking-[0.3em] uppercase font-black transition-colors duration-300"
+              style={{ color: "var(--v6-text-muted)" }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "var(--v6-accent)")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "var(--v6-text-muted)")}
+            >
+              {link.label}
+            </Link>
+          ))}
+        </div>
       </div>
     </footer>
   );
