@@ -51,12 +51,12 @@ export default function CartSidebar({ isOpen, onClose }) {
                 cart.map((item) => (
                   <div key={item.id} className="flex gap-4 items-center group">
                     <div className="w-20 h-20 bg-[#111] border border-gray-800 overflow-hidden flex-shrink-0 relative">
-                      <div className="absolute inset-0 bg-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none mix-blend-screen" />
+                      <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none" />
                       <img src={item.image} className="w-full h-full object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500" alt={item.name} />
                     </div>
                     <div className="flex-grow text-white">
                       <h3 className="font-bold text-sm leading-tight italic">{item.name}</h3>
-                      <p className="text-blue-500 font-black text-xs mt-1">RM {item.price.toFixed(2)}</p>
+                      <p className="text-white/70 font-black text-xs mt-1">RM {item.price.toFixed(2)}</p>
                       <div className="flex items-center gap-3 mt-2">
                         <button onClick={() => updateQuantity(item.id, -1)} className="text-gray-500 hover:text-white font-bold px-2 transition-colors">-</button>
                         <span className="text-xs font-bold">{item.quantity}</span>
@@ -80,7 +80,7 @@ export default function CartSidebar({ isOpen, onClose }) {
               <Link 
                 href="/checkout" 
                 onClick={onClose}
-                className="block w-full bg-blue-600 text-white text-center py-5 font-black text-[10px] uppercase tracking-[0.3em] hover:bg-white hover:text-black transition-all shadow-[0_0_30px_rgba(37,99,235,0.3)] hover:shadow-[0_0_50px_rgba(255,255,255,0.5)]"
+                className="block w-full bg-white text-black text-center py-5 font-black text-[10px] uppercase tracking-[0.3em] hover:bg-white/80 transition-all"
               >
                 Proceed to Checkout
               </Link>

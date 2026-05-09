@@ -5,9 +5,9 @@ import { X, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
 const TYPE_STYLES = {
-  info: 'bg-blue-600/10 border-blue-900/40 text-blue-400',
-  warning: 'bg-yellow-600/10 border-yellow-900/40 text-yellow-400',
-  promo: 'bg-green-600/10 border-green-900/40 text-green-400',
+  info: 'bg-white/[0.03] border-white/[0.06] text-white/50',
+  warning: 'bg-white/[0.03] border-white/[0.06] text-white/50',
+  promo: 'bg-white/[0.03] border-white/[0.06] text-white/60',
 };
 
 export default function AnnouncementBanner() {

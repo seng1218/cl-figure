@@ -1,3 +1,4 @@
+import { Inter } from "next/font/google";
 import Navbar from "@/components/Navbar";
 import CommsPortal from "@/components/CommsPortal";
 import Footer from "@/components/Footer";
@@ -11,6 +12,12 @@ import { CartProvider } from "@/context/CartContext";
 import { CMSProvider } from "@/context/CMSContext";
 import AdminShortcut from "@/components/AdminShortcut";
 import "./globals.css";
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  weight: ["300", "400", "500", "700", "900"],
+});
 
 export const metadata = {
   metadataBase: new URL('https://www.vault6studios.com'),
@@ -45,7 +52,7 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" className={inter.variable}>
       <body className="overscroll-none flex flex-col min-h-screen">
         <CustomCursor />
         <SmoothScroll />

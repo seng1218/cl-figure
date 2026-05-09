@@ -1,309 +1,302 @@
 "use client";
-import { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
-import { useCart } from '@/context/CartContext';
-import { useCMS } from '@/context/CMSContext';
-import HeroSection from '@/components/HeroSection';
-import HorizontalShowcase from '@/components/HorizontalShowcase';
-import GSAPTextReveal from '@/components/GSAPTextReveal';
-import VaultEntrance from '@/components/VaultEntrance';
-import BrandStrip from '@/components/BrandStrip';
-import Manifesto from '@/components/Manifesto';
-import Toast from '@/components/Toast';
-import TrackingModule from '@/components/TrackingModule';
-import LiveActivityToast from '@/components/LiveActivityToast';
-import ProductCards from '@/components/ProductCards';
-import NotifyDropModal from '@/components/NotifyDropModal';
-import { Lock, ArrowRight, Activity, ShieldCheck, Cpu } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import Link from 'next/link';
 
-export default function Home() {
-  const router = useRouter();
-  const { addToCart } = useCart();
-  const { brands, ethos, home: cmsHome } = useCMS();
-  const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState("");
-  const [isVaultOpen, setIsVaultOpen] = useState(false);
-  const [products, setProducts] = useState([]);
-  const [productsError, setProductsError] = useState(false);
-  const [notifyProduct, setNotifyProduct] = useState(null);
+import { useState, useEffect, useRef } from "react";
+import { motion, useInView } from "framer-motion";
+import { ArrowUpRight } from "lucide-react";
+import Link from "next/link";
+import Image from "next/image";
 
-  useEffect(() => {
-    fetch('/api/products/', { cache: 'no-store' })
-      .then(r => r.json())
-      .then(data => { if (Array.isArray(data)) setProducts(data); else setProductsError(true); })
-      .catch(() => setProductsError(true));
-  }, []);
+const BRANDS = ["FuRyu", "Banpresto", "Taito", "Bear Panda", "Alter", "Animester"];
 
-  // Cross-page hash nav: scroll to #tracking after GSAP spacer is in DOM
-  useEffect(() => {
-    if (!products.length) return;
-    if (window.location.hash !== '#tracking') return;
-    const t = setTimeout(() => {
-      document.getElementById('tracking')?.scrollIntoView({ behavior: 'smooth' });
-    }, 450);
-    return () => clearTimeout(t);
-  }, [products.length]);
+const DROPS = [
+  { date: "May 2026", title: "FREEing 1/4 Bunny Girl Series — New Arrivals", tag: "Scale" },
+  { date: "Apr 2026", title: "BiCute Bunnies Drop 001 — Rem & Ram", tag: "Prize" },
+  { date: "Mar 2026", title: "Banpresto Prize Restock — Aqua & Darkness", tag: "Prize" },
+];
 
-  const spotlightRef = useRef(null);
+function FadeUp({ children, delay = 0, className = "", style = {} }) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "-60px" });
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 32 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.8, delay, ease: [0.22, 1, 0.36, 1] }}
+      className={className}
+      style={style}
+    >
+      {children}
+    </motion.div>
+  );
+}
 
-  useEffect(() => {
-    let rafId;
-    const handleMouseMove = (e) => {
-      cancelAnimationFrame(rafId);
-      rafId = requestAnimationFrame(() => {
-        if (spotlightRef.current) {
-          spotlightRef.current.style.transform = `translate(${e.clientX - 400}px, ${e.clientY - 400}px)`;
-        }
-      });
-    };
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      cancelAnimationFrame(rafId);
-    };
-  }, []);
-
-  const handleAddToVault = (item) => {
-    addToCart(item);
-    setToastMessage(`${item.name} Secured`);
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 3000);
-  };
-
-
-  const regularProducts = products.filter(p => !p.comingSoon);
-  const comingSoonProducts = products.filter(p => p.comingSoon);
-  const grailProduct = regularProducts[0];
-  const recentDrops = regularProducts.slice(1, 4);
-
-  if (productsError) {
-    return (
-      <main className="min-h-screen bg-[#050505] flex flex-col items-center justify-center gap-6 text-center px-6">
-        <p className="text-gray-500 font-black uppercase tracking-widest text-sm">Vault Temporarily Offline</p>
-        <button
-          onClick={() => { setProductsError(false); fetch('/api/products/', { cache: 'no-store' }).then(r => r.json()).then(data => { if (Array.isArray(data)) setProducts(data); }).catch(() => setProductsError(true)); }}
-          className="text-blue-600 font-black text-[10px] uppercase tracking-widest hover:text-white transition-colors"
+function FigureCard({ name, brand, price, image, tag, delay, href }) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "-60px" });
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 40 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.9, delay, ease: [0.22, 1, 0.36, 1] }}
+      className="group"
+    >
+      <Link href={href || "#"}>
+        <div
+          className="relative w-full overflow-hidden mb-4"
+          style={{ aspectRatio: "2/3", background: "#141414" }}
         >
-          Retry
-        </button>
-      </main>
-    );
-  }
+          {image ? (
+            <Image
+              src={image}
+              alt={name}
+              fill
+              className="object-cover object-top group-hover:scale-[1.03] transition-transform duration-700"
+              sizes="(max-width: 768px) 100vw, 33vw"
+            />
+          ) : null}
+          <div
+            className="absolute inset-0"
+            style={{ background: "linear-gradient(to top, rgba(13,13,13,0.7) 0%, transparent 50%)" }}
+          />
+          {tag && (
+            <div className="absolute top-3 left-3 px-2 py-1 border border-white/10 text-[9px] tracking-[0.3em] uppercase text-white/50">
+              {tag}
+            </div>
+          )}
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/20">
+            <span className="border border-white/30 px-5 py-2.5 text-[10px] tracking-[0.35em] uppercase text-white bg-black/60 backdrop-blur-sm">
+              View Details
+            </span>
+          </div>
+        </div>
+        <div className="flex items-start justify-between">
+          <div>
+            {brand && (
+              <p className="text-[10px] tracking-[0.25em] uppercase text-white/30 mb-1">{brand}</p>
+            )}
+            <h3 className="text-sm font-medium text-white/90 leading-snug">{name}</h3>
+          </div>
+          <p className="text-sm font-medium text-white/70 shrink-0 pt-5">
+            RM {typeof price === "number" ? price.toFixed(2) : price}
+          </p>
+        </div>
+      </Link>
+    </motion.div>
+  );
+}
+
+export default function HomePage() {
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    fetch("/api/products/", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((data) => { if (Array.isArray(data)) setProducts(data); })
+      .catch(() => {});
+  }, []);
+
+  const visible = products.filter((p) => !p.comingSoon).slice(0, 3);
 
   return (
-    <main className="min-h-screen bg-[#050505] pb-32 relative overflow-x-hidden">
+    <div style={{ background: "#0d0d0d" }}>
 
-      {/* Provocative Dynamic Spotlight attached to mouse */}
-      <div
-        ref={spotlightRef}
-        className="fixed top-0 left-0 w-[800px] h-[800px] pointer-events-none z-0 rounded-full mix-blend-screen opacity-30 transition-transform duration-75 ease-out"
-        style={{ background: 'radial-gradient(circle, rgba(37,99,235,0.15) 0%, rgba(0,0,0,0) 70%)' }}
-      />
+      {/* ── HERO ─────────────────────────────────────────────── */}
+      {/* -mt-20 cancels layout.js pt-20 so hero fills full 100svh */}
+      <section
+        className="-mt-20 flex flex-col justify-end px-6 md:px-12 pb-12 md:pb-16"
+        style={{ height: "100svh" }}
+      >
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.3 }}
+          className="text-[10px] tracking-[0.45em] uppercase text-white/30 mb-6"
+        >
+          Est. 2023 · Kuala Lumpur
+        </motion.p>
 
-      <div className="relative z-10 w-full h-full">
-        {/* 1. Access Protocol (Entrance Overlay) */}
-        <VaultEntrance isOpen={isVaultOpen} onComplete={() => router.push('/shop')} />
+        <div className="overflow-hidden mb-8">
+          <motion.h1
+            initial={{ y: "100%" }}
+            animate={{ y: "0%" }}
+            transition={{ duration: 1.1, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            className="font-black leading-[0.88] tracking-[-0.03em] text-white"
+            style={{ fontSize: "clamp(3.5rem, 11vw, 10rem)" }}
+          >
+            Collect
+            <br />
+            <span className="text-white/20">What</span>
+            <br />
+            Matters.
+          </motion.h1>
+        </div>
 
-        {/* 2. Hero Section */}
-        <HeroSection onExplore={() => setIsVaultOpen(true)} />
-
-        {/* 2.5 Authenticated Brands Strip */}
-        <BrandStrip />
-
-        {/* 2.6 Intel Feed Marquee */}
-        <section className="py-5 border-b border-gray-900 bg-[#020202] overflow-hidden whitespace-nowrap relative">
-          <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[#020202] to-transparent z-10 pointer-events-none" />
-          <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#020202] to-transparent z-10 pointer-events-none" />
-          <div className="flex items-center animate-marquee">
-            {[...Array(4)].map((_, i) => (
-              <div key={i} className="flex items-center gap-12 min-w-max px-12">
-                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-blue-500">SYNDICATE</span>
-                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/60">847 MEMBERS ACTIVE</span>
-                <span className="text-blue-900">·</span>
-                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-blue-500">NEXT DROP</span>
-                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/60">WEEKLY</span>
-                <span className="text-blue-900">·</span>
-                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-blue-500">ORIGIN</span>
-                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/60">EACH PIECE VERIFIED</span>
-                <span className="text-blue-900">·</span>
-                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-blue-500">VAULT STATUS</span>
-                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/60">OPERATIONAL</span>
-                <span className="text-blue-900">·</span>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* 3. The "Grail" Exhibition */}
-        {grailProduct && (
-          <section className="max-w-7xl mx-auto px-6 py-32 border-b border-gray-900">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
-              <div className="order-2 lg:order-1 space-y-8">
-                <div>
-                  <span className="text-blue-600 font-black text-[10px] uppercase tracking-[0.5em] flex items-center gap-4">
-                    <Activity size={14} className="animate-pulse" /> The Grail
-                  </span>
-                  <p className="text-gray-600 text-[9px] font-black uppercase tracking-[0.3em] mt-1">Top pick this cycle</p>
-                </div>
-                <h2 className="text-5xl md:text-7xl font-black text-white italic tracking-tighter leading-none">
-                  {grailProduct.name}
-                </h2>
-
-                <div className="flex items-center gap-6 pt-6">
-                  <Link href={`/product/${grailProduct.id}`} className="bg-white text-black px-10 py-5 font-black text-[10px] uppercase tracking-[0.4em] hover:bg-blue-600 hover:text-white transition-all flex items-center gap-3 group border border-transparent hover:shadow-[0_0_30px_rgba(37,99,235,0.5)]">
-                    View Details <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                  <span className="text-white font-black italic text-2xl">RM {grailProduct.price.toFixed(2)}</span>
-                </div>
-              </div>
-
-              <Link href={`/product/${grailProduct.id}`} className="order-1 lg:order-2 relative aspect-[4/5] md:aspect-square rounded-2xl overflow-hidden bg-[#111] border border-gray-800 group cursor-pointer block">
-                <img
-                  src={grailProduct.image}
-                  className="w-full h-full object-cover brightness-90 contrast-110 group-hover:scale-105 group-hover:brightness-100 transition-all duration-[2s] ease-out"
-                  alt={grailProduct.name}
-                />
-              </Link>
-            </div>
-          </section>
-        )}
-
-        {/* 4. Incoming Drops — Coming Soon */}
-        {comingSoonProducts.length > 0 && (
-          <section className="max-w-7xl mx-auto px-6 py-24 border-b border-gray-900">
-            <div className="flex items-center justify-between mb-12">
-              <div>
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="h-1.5 w-1.5 rounded-full bg-blue-500 animate-pulse shadow-[0_0_8px_rgba(37,99,235,0.9)]" />
-                  <span className="text-blue-600 font-black text-[10px] uppercase tracking-[0.5em]">Incoming</span>
-                </div>
-                <h2 className="text-4xl md:text-6xl font-black text-white italic tracking-tighter leading-none">
-                  CLASSIFIED DROPS.
-                </h2>
-              </div>
-              <Link
-                href="/shop"
-                className="hidden md:flex items-center gap-2 text-gray-500 hover:text-white transition-colors font-black text-[9px] uppercase tracking-[0.3em] group"
-              >
-                View All <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-9">
-              {comingSoonProducts.slice(0, 3).map((item, index) => (
-                <ProductCards
-                  key={item.id}
-                  item={item}
-                  index={index}
-                  onAdd={() => {}}
-                  onNotify={setNotifyProduct}
-                  alwaysColor={true}
-                />
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* 5. Recent Drops — Horizontal Showcase */}
-        {recentDrops.length > 0 && (
-          <HorizontalShowcase
-            products={recentDrops}
-            title="Recent Drops"
-            subtitle="Highly curated. Zero filler."
-          />
-        )}
-
-        {/* 6. Our Ethos */}
-        <section id="ethos" className="max-w-7xl mx-auto px-6 py-32 border-b border-gray-900 overflow-hidden">
-          <div className="flex flex-col items-center text-center mb-20">
-            <span className="text-blue-600 font-black text-[10px] uppercase tracking-[0.5em] mb-4">
-              Vault Standards
-            </span>
-            <GSAPTextReveal
-              key={ethos?.heading || 'OUR ETHOS.'}
-              text={ethos?.heading || 'OUR ETHOS.'}
-              className="text-5xl md:text-7xl font-black text-white italic tracking-tighter leading-none mb-6"
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.9 }}
+          className="flex flex-col md:flex-row md:items-end justify-between gap-6"
+          style={{ borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: "1.5rem" }}
+        >
+          <p className="text-[11px] tracking-[0.2em] text-white/40 max-w-sm leading-relaxed">
+            Authenticated anime figures from Japan's top brands.
+            Ships across Southeast Asia from Kuala Lumpur.
+          </p>
+          <Link
+            href="/shop"
+            className="group flex items-center gap-2 text-[10px] tracking-[0.35em] uppercase text-white/60 hover:text-white transition-colors duration-200"
+          >
+            View Collection
+            <ArrowUpRight
+              size={13}
+              className="transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
             />
-            <p className="text-gray-500 text-[10px] md:text-xs font-black uppercase tracking-[0.4em]">
-              {ethos?.subheading || 'UNCOMPROMISING STANDARDS.'}
-            </p>
+          </Link>
+        </motion.div>
+      </section>
+
+      {/* ── DIVIDER ── */}
+      <div style={{ height: "1px", background: "rgba(255,255,255,0.06)", margin: "0 24px" }} />
+
+      {/* ── THE COLLECTION ───────────────────────────────────── */}
+      <section className="px-6 md:px-12 py-20 md:py-28">
+        <FadeUp className="flex items-baseline justify-between mb-12">
+          <div className="flex items-baseline gap-6">
+            <span className="text-[10px] tracking-[0.4em] uppercase text-white/30">The Collection</span>
+            <span className="text-[10px] text-white/20">{String(visible.length).padStart(2, "0")}</span>
           </div>
+          <Link
+            href="/shop"
+            className="text-[9px] tracking-[0.35em] uppercase text-white/30 hover:text-white transition-colors duration-200"
+          >
+            All →
+          </Link>
+        </FadeUp>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
-            {(Array.isArray(ethos?.values) ? ethos.values : []).map((value, idx) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.08, duration: 0.45, ease: "easeOut" }}
-                className={`bg-[#0a0a0a] border border-gray-800 rounded-2xl hover:border-blue-600 transition-all group
-                  ${idx === 0 ? 'md:col-span-2 p-10 md:p-14' : 'p-10 md:p-12'}
-                  ${idx === 2 ? 'md:col-start-2 md:col-span-2' : ''}
-                `}
-              >
-                <div className="w-12 h-12 bg-blue-600/10 rounded-2xl flex items-center justify-center mb-8 group-hover:bg-blue-600 transition-colors duration-500">
-                  {idx === 0 ? <Activity className="text-blue-500 group-hover:text-white" size={24} /> : 
-                   idx === 1 ? <ShieldCheck className="text-blue-500 group-hover:text-white" size={24} /> : 
-                   <Cpu className="text-blue-500 group-hover:text-white" size={24} />}
-                </div>
-                <h3 className="text-xl font-black text-white italic tracking-tighter mb-4 group-hover:text-blue-500 transition-colors">{value.title}</h3>
-                <p className="text-gray-500 text-sm leading-relaxed font-medium">
-                  {value.desc}
-                </p>
-              </motion.div>
-            ))}
-          </div>
-        </section>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-12">
+          {visible.length > 0 ? (
+            visible.map((p, i) => (
+              <FigureCard
+                key={p.id}
+                name={p.name}
+                brand={p.brand}
+                price={p.price}
+                image={p.image}
+                tag={p.comingSoon ? "Coming Soon" : "In Stock"}
+                href={`/product/${p.id}`}
+                delay={i * 0.12}
+              />
+            ))
+          ) : (
+            [0, 1, 2].map((i) => (
+              <div key={i} className="w-full" style={{ aspectRatio: "2/3", background: "#141414" }} />
+            ))
+          )}
+        </div>
+      </section>
 
-        {/* 7. Artifact Tracking Module */}
-        <section id="tracking" className="bg-transparent py-32 relative overflow-hidden px-6">
-          <TrackingModule />
-        </section>
+      {/* ── DIVIDER ── */}
+      <div style={{ height: "1px", background: "rgba(255,255,255,0.06)", margin: "0 24px" }} />
 
-        {/* 7.5 Manifesto */}
-        <Manifesto />
-
-        {/* 8. The Syndicate Waitlist */}
-        <section id="syndicate" className="bg-[#111] max-w-5xl mx-auto px-6 py-24 md:py-32 text-center rounded-2xl border border-gray-800 relative group overflow-hidden mt-16">
-          <div className="absolute inset-0 bg-blue-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 z-0 pointer-events-none mix-blend-screen" />
-          <div className="relative z-10">
-            <div className="mb-6">
-              <span className="inline-block text-[10px] bg-blue-600 text-white px-3 py-1 rounded-full font-black uppercase tracking-widest mb-4">Secured</span>
-              <h2 className="text-4xl md:text-6xl font-black text-white italic tracking-tighter leading-none">
-                {cmsHome?.syndicateHeading || 'JOIN THE SYNDICATE.'}
-              </h2>
-            </div>
-            <p className="text-gray-500 text-sm md:text-base mb-12 max-w-lg mx-auto leading-relaxed">
-              {cmsHome?.syndicateDescription || 'The highest-tier drops go fast. Submit your email to get early access to new drops before they go public.'}
-            </p>
-
-            <Link
-              href="/join"
-              className="inline-flex items-center gap-3 bg-blue-600 text-white px-12 py-5 font-black text-[10px] md:text-xs uppercase tracking-[0.3em] hover:bg-white hover:text-black transition-all shadow-[0_0_30px_rgba(37,99,235,0.3)] hover:shadow-[0_0_50px_rgba(255,255,255,0.5)]"
+      {/* ── AUTHENTICATED BRANDS ─────────────────────────────── */}
+      <section className="px-6 md:px-12 py-20 md:py-28">
+        <FadeUp className="mb-12">
+          <span className="text-[10px] tracking-[0.4em] uppercase text-white/30">Authenticated Brands</span>
+        </FadeUp>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
+          {BRANDS.map((brand, i) => (
+            <FadeUp
+              key={brand}
+              delay={i * 0.07}
+              className="flex items-center justify-between py-5"
+              style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
             >
-              Request Access <ArrowRight size={14} />
-            </Link>
-          </div>
-        </section>
+              <div className="flex items-baseline gap-5">
+                <span className="text-[9px] text-white/20 w-4">{String(i + 1).padStart(2, "0")}</span>
+                <span className="text-base font-medium tracking-tight text-white/80">{brand}</span>
+              </div>
+              <span className="text-[9px] tracking-[0.3em] uppercase text-white/20">Verified</span>
+            </FadeUp>
+          ))}
+        </div>
+      </section>
 
-      </div>
-      <Toast
-        message={toastMessage}
-        isVisible={showToast}
-        onClose={() => setShowToast(false)}
-      />
-      <LiveActivityToast products={products} />
+      {/* ── DIVIDER ── */}
+      <div style={{ height: "1px", background: "rgba(255,255,255,0.06)", margin: "0 24px" }} />
 
-      <AnimatePresence>
-        {notifyProduct && (
-          <NotifyDropModal
-            product={notifyProduct}
-            onClose={() => setNotifyProduct(null)}
-          />
-        )}
-      </AnimatePresence>
-    </main>
+      {/* ── STATEMENT ────────────────────────────────────────── */}
+      <section className="px-6 md:px-12 py-24 md:py-36">
+        <FadeUp>
+          <h2
+            className="font-black leading-[0.9] tracking-[-0.03em] text-white"
+            style={{ fontSize: "clamp(2.5rem, 7vw, 7rem)" }}
+          >
+            No bootlegs.
+            <br />
+            <span className="text-white/20">No compromises.</span>
+            <br />
+            Only the real thing.
+          </h2>
+        </FadeUp>
+        <FadeUp delay={0.2} className="mt-10 flex flex-col md:flex-row md:items-center gap-6">
+          <p className="text-[11px] tracking-[0.15em] text-white/40 max-w-sm leading-relaxed">
+            Every figure in the Vault is sourced directly from Japan's top
+            manufacturers. We authenticate every piece before it ships.
+          </p>
+          <Link
+            href="/about"
+            className="group flex items-center gap-2 text-[10px] tracking-[0.35em] uppercase text-white/50 hover:text-white transition-colors duration-200"
+          >
+            Our Story
+            <ArrowUpRight
+              size={12}
+              className="transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+            />
+          </Link>
+        </FadeUp>
+      </section>
+
+      {/* ── DIVIDER ── */}
+      <div style={{ height: "1px", background: "rgba(255,255,255,0.06)", margin: "0 24px" }} />
+
+      {/* ── LATEST DROPS ─────────────────────────────────────── */}
+      <section className="px-6 md:px-12 py-20 md:py-28">
+        <FadeUp className="flex items-baseline justify-between mb-10">
+          <span className="text-[10px] tracking-[0.4em] uppercase text-white/30">Latest Drops</span>
+          <Link
+            href="/drops"
+            className="text-[9px] tracking-[0.35em] uppercase text-white/30 hover:text-white transition-colors duration-200"
+          >
+            All →
+          </Link>
+        </FadeUp>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-0">
+          {DROPS.map((drop, i) => (
+            <FadeUp
+              key={i}
+              delay={i * 0.1}
+              className="py-7 pr-8 cursor-pointer group"
+              style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+            >
+              <p className="text-[9px] tracking-[0.3em] uppercase text-white/25 mb-3">
+                {drop.date} · {drop.tag}
+              </p>
+              <h3 className="text-sm font-medium text-white/70 group-hover:text-white transition-colors duration-200 leading-snug mb-3">
+                {drop.title}
+              </h3>
+              <span className="text-[9px] tracking-[0.3em] uppercase text-white/25 group-hover:text-white/50 transition-colors duration-200">
+                View →
+              </span>
+            </FadeUp>
+          ))}
+        </div>
+      </section>
+
+      {/* ── DIVIDER ── */}
+      <div style={{ height: "1px", background: "rgba(255,255,255,0.06)", margin: "0 24px" }} />
+
+    </div>
   );
 }
