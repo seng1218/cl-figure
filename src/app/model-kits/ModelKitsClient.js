@@ -3,27 +3,42 @@ import { useState, useEffect, useRef } from 'react';
 import { useCart } from '@/context/CartContext';
 import ProductCards from '@/components/ProductCards';
 import Toast from '@/components/Toast';
-import { motion } from 'framer-motion';
-import { ShieldCheck, Cpu, Wrench, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { motion, useInView } from 'framer-motion';
+import { ArrowRight, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 
 const FEATURES = [
   {
-    icon: ShieldCheck,
+    num: '01',
     label: 'Merchant Licensed',
     desc: 'Officially licensed to print and sell. Every kit is an authorized physical reproduction — not a bootleg.',
   },
   {
-    icon: Cpu,
+    num: '02',
     label: 'Pre-Printed Parts',
     desc: 'We handle the printing. Parts arrive clean, measured, and ready for your assembly session.',
   },
   {
-    icon: Wrench,
+    num: '03',
     label: 'Yours to Build',
     desc: 'Assemble with CA glue, sand, prime, and paint. Full creative control over finish and display.',
   },
 ];
+
+function FadeUp({ children, delay = 0 }) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: '-80px' });
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 28 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay }}
+    >
+      {children}
+    </motion.div>
+  );
+}
 
 export default function ModelKitsClient() {
   const { addToCart } = useCart();
@@ -32,9 +47,8 @@ export default function ModelKitsClient() {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [email, setEmail] = useState('');
-  const [subStatus, setSubStatus] = useState('idle'); // idle | loading | success | error | duplicate
+  const [subStatus, setSubStatus] = useState('idle');
   const [website, setWebsite] = useState(''); // honeypot
-  const spotlightRef = useRef(null);
 
   useEffect(() => {
     fetch('/api/products/', { cache: 'no-store' })
@@ -44,23 +58,6 @@ export default function ModelKitsClient() {
       })
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, []);
-
-  useEffect(() => {
-    let rafId;
-    const handleMouseMove = (e) => {
-      cancelAnimationFrame(rafId);
-      rafId = requestAnimationFrame(() => {
-        if (spotlightRef.current) {
-          spotlightRef.current.style.transform = `translate(${e.clientX - 400}px, ${e.clientY - 400}px)`;
-        }
-      });
-    };
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      cancelAnimationFrame(rafId);
-    };
   }, []);
 
   const handleAddToVault = (item) => {
@@ -93,163 +90,166 @@ export default function ModelKitsClient() {
   const sortedProducts = [...products].sort((a, b) => (a.stock <= 0 ? 1 : 0) - (b.stock <= 0 ? 1 : 0));
 
   return (
-    <main className="min-h-screen bg-[#050505] pt-32 pb-24 relative overflow-x-hidden">
-      <div
-        ref={spotlightRef}
-        className="fixed top-0 left-0 w-[800px] h-[800px] pointer-events-none z-0 rounded-full mix-blend-screen opacity-30 transition-transform duration-75 ease-out"
-        style={{ background: 'radial-gradient(circle, rgba(249,115,22,0.1) 0%, rgba(0,0,0,0) 70%)' }}
-      />
+    <main className="min-h-screen bg-[#0d0d0d] text-[#f0ede8]">
 
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-6">
-        {/* Hero */}
-        <div className="mb-20 text-center">
-          <motion.span
+      {/* ── HERO ── */}
+      <section className="pt-40 pb-24 px-6 md:px-12 border-b border-white/[0.06]">
+        <div className="max-w-5xl mx-auto">
+          <motion.p
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-orange-500 font-black text-[9px] uppercase tracking-[0.6em] block mb-6"
+            transition={{ duration: 0.6 }}
+            className="text-[9px] tracking-[0.6em] uppercase text-white/25 mb-8"
           >
-            Vault 6 Studios // Fabricator Division
-          </motion.span>
+            Vault 6 Studios — Fabricator Division
+          </motion.p>
           <motion.h1
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-5xl md:text-8xl font-black text-white italic tracking-tighter leading-none"
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
+            className="text-6xl md:text-[9rem] font-black uppercase italic tracking-tighter leading-none text-white mb-8"
           >
-            BUILD THE<br />VAULT.
+            3D Print<br />Kits.
           </motion.h1>
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.25 }}
-            className="text-gray-500 text-[10px] md:text-xs font-black uppercase tracking-[0.5em] mt-6"
+            transition={{ delay: 0.35, duration: 0.7 }}
+            className="text-white/35 text-xs font-medium tracking-[0.3em] uppercase max-w-md"
           >
-            3D Print Model Kits // Licensed. Pre-Printed. Yours to Build.
+            Licensed. Pre-Printed. Yours to Build.
           </motion.p>
         </div>
+      </section>
 
-        {/* Feature cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-20">
-          {FEATURES.map(({ icon: Icon, label, desc }, i) => (
-            <motion.div
-              key={label}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              className="border border-[#1a1a1a] bg-[#0a0a0a] p-8 hover:border-orange-500/30 transition-colors duration-500"
-            >
-              <Icon size={20} className="text-orange-500 mb-5" />
-              <h3 className="font-black text-white uppercase tracking-tighter text-lg italic mb-2">{label}</h3>
-              <p className="text-gray-500 text-xs leading-relaxed font-medium">{desc}</p>
-            </motion.div>
+      {/* ── FEATURE LIST ── */}
+      <section className="py-20 px-6 md:px-12 border-b border-white/[0.06]">
+        <div className="max-w-5xl mx-auto divide-y divide-white/[0.06]">
+          {FEATURES.map(({ num, label, desc }, i) => (
+            <FadeUp key={label} delay={i * 0.08}>
+              <div className="py-10 grid grid-cols-12 gap-6 items-start">
+                <span className="col-span-1 text-[10px] font-black text-white/20 tracking-widest pt-0.5">{num}</span>
+                <h3 className="col-span-4 md:col-span-3 text-sm font-black uppercase tracking-[0.2em] text-white/80">
+                  {label}
+                </h3>
+                <p className="col-span-7 md:col-span-8 text-white/35 text-xs leading-relaxed font-medium">
+                  {desc}
+                </p>
+              </div>
+            </FadeUp>
           ))}
         </div>
+      </section>
 
-        {/* Product grid or coming soon */}
-        {loading ? (
-          <div className="py-24 text-center">
-            <p className="text-gray-600 font-black uppercase tracking-widest text-xs animate-pulse">
-              Scanning Fabrication Queue...
-            </p>
-          </div>
-        ) : sortedProducts.length > 0 ? (
-          <>
-            <div className="mb-12 flex items-center gap-4">
-              <h2 className="text-2xl md:text-4xl font-black text-white italic tracking-tighter uppercase">
-                Available Kits
-              </h2>
-              <div className="h-px flex-1 bg-[#1a1a1a]" />
-              <span className="text-orange-500 font-black text-[9px] uppercase tracking-[0.4em]">
-                {sortedProducts.length} Kit{sortedProducts.length !== 1 ? 's' : ''}
-              </span>
+      {/* ── PRODUCT GRID or COMING SOON ── */}
+      <section className="py-20 px-6 md:px-12">
+        <div className="max-w-5xl mx-auto">
+
+          {loading ? (
+            <div className="py-32 text-center">
+              <p className="text-white/20 font-black uppercase tracking-[0.4em] text-[10px] animate-pulse">
+                Scanning Fabrication Queue...
+              </p>
             </div>
-            <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-9">
-              {sortedProducts.map((item, index) => (
-                <ProductCards
-                  key={item.id}
-                  item={item}
-                  index={index}
-                  onAdd={() => handleAddToVault(item)}
-                  alwaysColor={true}
-                />
-              ))}
-            </section>
-          </>
-        ) : (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="py-24 border border-[#1a1a1a] bg-[#080808] text-center px-8"
-          >
-            <span className="text-orange-500/50 font-black text-[9px] uppercase tracking-[0.6em] block mb-6">
-              Status: Pre-Production
-            </span>
-            <h2 className="text-4xl md:text-6xl font-black text-white italic tracking-tighter mb-4">
-              KITS INCOMING.
-            </h2>
-            <p className="text-gray-500 text-xs font-medium leading-relaxed max-w-md mx-auto mb-12">
-              First batch in fabrication. Drop notification goes to the waitlist only — public won&apos;t see it until it&apos;s gone.
-            </p>
+          ) : sortedProducts.length > 0 ? (
+            <>
+              <FadeUp>
+                <div className="flex items-center gap-6 mb-16">
+                  <h2 className="text-2xl md:text-4xl font-black uppercase italic tracking-tighter text-white">
+                    Available Kits
+                  </h2>
+                  <div className="h-px flex-1 bg-white/[0.06]" />
+                  <span className="text-[9px] tracking-[0.4em] uppercase text-white/25 font-black">
+                    {sortedProducts.length} Kit{sortedProducts.length !== 1 ? 's' : ''}
+                  </span>
+                </div>
+              </FadeUp>
+              <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {sortedProducts.map((item, index) => (
+                  <ProductCards
+                    key={item.id}
+                    item={item}
+                    index={index}
+                    onAdd={() => handleAddToVault(item)}
+                    alwaysColor={true}
+                  />
+                ))}
+              </section>
+            </>
+          ) : (
+            <FadeUp>
+              <div className="border border-white/[0.06] py-24 px-8 text-center">
+                <p className="text-[9px] tracking-[0.6em] uppercase text-white/20 font-black mb-8">
+                  Status: Pre-Production
+                </p>
+                <h2 className="text-5xl md:text-7xl font-black uppercase italic tracking-tighter text-white mb-6">
+                  Kits Incoming.
+                </h2>
+                <p className="text-white/30 text-xs leading-relaxed font-medium max-w-sm mx-auto mb-14">
+                  First batch in fabrication. Drop notification goes to the waitlist only — public won&apos;t see it until it&apos;s gone.
+                </p>
 
-            {subStatus === 'success' ? (
-              <div className="flex items-center justify-center gap-3 text-orange-400">
-                <CheckCircle2 size={16} />
-                <span className="font-black text-xs uppercase tracking-[0.3em]">Locked In. You&apos;ll know first.</span>
+                {subStatus === 'success' ? (
+                  <div className="flex items-center justify-center gap-3 text-white/60">
+                    <CheckCircle2 size={14} strokeWidth={1.5} />
+                    <span className="font-black text-[10px] uppercase tracking-[0.3em]">
+                      Locked In. You&apos;ll know first.
+                    </span>
+                  </div>
+                ) : (
+                  <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3 max-w-sm mx-auto">
+                    <input
+                      type="text"
+                      name="website"
+                      value={website}
+                      onChange={e => setWebsite(e.target.value)}
+                      className="hidden"
+                      tabIndex={-1}
+                      aria-hidden="true"
+                      autoComplete="off"
+                    />
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={e => setEmail(e.target.value)}
+                      placeholder="your@email.com"
+                      required
+                      className="flex-1 bg-white/[0.03] border border-white/[0.08] text-white/80 text-xs font-mono px-4 py-3 outline-none focus:border-white/20 placeholder:text-white/15 transition-colors"
+                    />
+                    <button
+                      type="submit"
+                      disabled={subStatus === 'loading'}
+                      className="bg-white text-black px-6 py-3 font-black text-[9px] uppercase tracking-[0.3em] hover:bg-white/80 transition-colors disabled:opacity-40 flex items-center gap-2 justify-center whitespace-nowrap"
+                    >
+                      {subStatus === 'loading' ? 'Queuing...' : <><span>Notify Me</span><ArrowRight size={10} /></>}
+                    </button>
+                  </form>
+                )}
+
+                {subStatus === 'duplicate' && (
+                  <p className="text-white/30 text-[9px] font-black uppercase tracking-[0.3em] mt-4">
+                    Already in the queue.
+                  </p>
+                )}
+                {subStatus === 'error' && (
+                  <p className="text-white/30 text-[9px] font-black uppercase tracking-[0.3em] mt-4">
+                    Failed. Try again.
+                  </p>
+                )}
+
+                <div className="mt-14 pt-8 border-t border-white/[0.06]">
+                  <Link
+                    href="/shop"
+                    className="text-white/20 hover:text-white/60 text-[9px] font-black uppercase tracking-[0.4em] transition-colors inline-flex items-center gap-2"
+                  >
+                    Browse Ready Stock Instead <ArrowRight size={9} />
+                  </Link>
+                </div>
               </div>
-            ) : (
-              <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3 max-w-sm mx-auto">
-                <input
-                  type="text"
-                  name="website"
-                  value={website}
-                  onChange={e => setWebsite(e.target.value)}
-                  className="hidden"
-                  tabIndex={-1}
-                  aria-hidden="true"
-                  autoComplete="off"
-                />
-                <input
-                  type="email"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  placeholder="your@email.com"
-                  required
-                  className="flex-1 bg-[#0f0f0f] border border-[#1f1f1f] text-white text-xs font-mono px-4 py-3 outline-none focus:border-orange-500/50 placeholder:text-gray-700 transition-colors"
-                />
-                <button
-                  type="submit"
-                  disabled={subStatus === 'loading'}
-                  className="bg-orange-500 text-black px-6 py-3 font-black text-[9px] uppercase tracking-[0.3em] hover:bg-orange-400 transition-colors disabled:opacity-50 flex items-center gap-2 justify-center whitespace-nowrap"
-                >
-                  {subStatus === 'loading' ? 'Queuing...' : <><span>Notify Me</span> <ArrowRight size={10} /></>}
-                </button>
-              </form>
-            )}
-
-            {subStatus === 'duplicate' && (
-              <p className="text-orange-500/60 text-[9px] font-black uppercase tracking-[0.3em] mt-3">
-                Already in the queue.
-              </p>
-            )}
-            {subStatus === 'error' && (
-              <p className="text-red-500/60 text-[9px] font-black uppercase tracking-[0.3em] mt-3">
-                Failed. Try again.
-              </p>
-            )}
-
-            <div className="mt-12 pt-8 border-t border-[#111]">
-              <Link
-                href="/shop"
-                className="text-gray-600 hover:text-white text-[9px] font-black uppercase tracking-[0.4em] transition-colors inline-flex items-center gap-2"
-              >
-                Browse Ready Stock Instead <ArrowRight size={9} />
-              </Link>
-            </div>
-          </motion.div>
-        )}
-      </div>
+            </FadeUp>
+          )}
+        </div>
+      </section>
 
       <Toast message={toastMessage} isVisible={showToast} onClose={() => setShowToast(false)} />
     </main>

@@ -75,10 +75,13 @@ export default function Navbar() {
               {label}
             </Link>
           ))}
-          <span className="flex items-center gap-1.5 text-[10px] tracking-[0.28em] uppercase text-white/20 cursor-default select-none">
+          <Link
+            href="/model-kits"
+            className="flex items-center gap-1.5 text-[10px] tracking-[0.28em] uppercase text-white/40 hover:text-white transition-colors duration-200"
+          >
             3D Kits
             <span className="text-[7px] tracking-[0.15em] uppercase bg-white/10 text-white/30 px-1.5 py-0.5">Soon</span>
-          </span>
+          </Link>
         </div>
 
         {/* Right: search + cart + mobile toggle */}
@@ -163,10 +166,14 @@ export default function Navbar() {
                   {label}
                 </Link>
               ))}
-              <span className="text-3xl font-black uppercase italic tracking-tighter text-white/20 cursor-default select-none flex items-center gap-3">
+              <Link
+                href="/model-kits"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="text-3xl font-black uppercase italic tracking-tighter text-white/40 hover:text-white transition-colors duration-200 flex items-center gap-3"
+              >
                 3D Kits
                 <span className="text-sm font-black tracking-widest uppercase bg-white/10 text-white/30 px-2 py-1">Soon</span>
-              </span>
+              </Link>
               <div className="w-8 h-px bg-white/10 my-2" />
               <Link
                 href="/checkout"
