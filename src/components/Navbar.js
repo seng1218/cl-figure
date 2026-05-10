@@ -1,40 +1,41 @@
 "use client";
-import { useState, useEffect } from 'react';
-import { usePathname } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingBag, ArrowRight, Menu, X, Search } from 'lucide-react';
-import { useCart } from '@/context/CartContext';
-import { useCMS } from '@/context/CMSContext';
-import Link from 'next/link';
-import CartSidebar from './CartSidebar';
+import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import { ShoppingBag, ArrowRight, Menu, X, Search } from "lucide-react";
+import { useCart } from "@/context/CartContext";
+import { useCMS } from "@/context/CMSContext";
+import Link from "next/link";
+import CartSidebar from "./CartSidebar";
 
 export default function Navbar() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen]     = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [isScrolled, setIsScrolled]           = useState(false);
   const { cart } = useCart();
   const { site } = useCMS();
   const pathname = usePathname();
 
   const handleTrackingClick = (e, closeMobile = false) => {
     if (closeMobile) setIsMobileMenuOpen(false);
-    if (pathname === '/') {
+    if (pathname === "/") {
       e.preventDefault();
-      document.getElementById('tracking')?.scrollIntoView({ behavior: 'smooth' });
+      const el = document.getElementById("tracking");
+      if (el) window.scrollTo({ top: el.offsetTop, behavior: "smooth" });
     }
   };
 
   const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    const fn = () => setIsScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", fn);
+    return () => window.removeEventListener("scroll", fn);
   }, []);
 
   useEffect(() => {
-    document.body.style.overflow = isMobileMenuOpen ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
+    document.body.style.overflow = isMobileMenuOpen ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
   }, [isMobileMenuOpen]);
 
   return (
@@ -45,26 +46,34 @@ export default function Navbar() {
         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         className="fixed top-0 left-0 right-0 z-[100] flex items-center justify-between px-6 md:px-12 py-5 transition-all duration-700"
         style={{
-          borderBottom: isScrolled ? '1px solid rgba(255,255,255,0.06)' : '1px solid transparent',
-          background: isScrolled ? 'rgba(13,13,13,0.85)' : 'transparent',
-          backdropFilter: isScrolled ? 'blur(20px)' : 'none',
+          borderBottom: isScrolled ? "1px solid rgba(37,99,235,0.12)" : "1px solid transparent",
+          background:   isScrolled ? "rgba(5,5,5,0.92)"               : "transparent",
+          backdropFilter: isScrolled ? "blur(24px)" : "none",
+          boxShadow: isScrolled ? "0 20px 60px rgba(0,0,0,0.6)" : "none",
         }}
       >
-        {/* Logo — ThoughtLab two-line */}
+        {/* ── Logo ── */}
         <Link href="/" className="flex flex-col leading-none">
-          <span className="text-[9px] tracking-[0.4em] uppercase text-white/30">Vault 6</span>
-          <span className="text-[13px] tracking-[0.2em] uppercase font-semibold text-white">
-            {site?.name || 'Studios'}
+          <span
+            className="font-black italic text-white"
+            style={{ fontSize: 18, letterSpacing: "-0.03em", lineHeight: 1 }}
+          >
+            Vault 6 {site?.name || "Studios"}<span style={{ color: "#2563eb" }}>.</span>
+          </span>
+          <span
+            className="font-black uppercase"
+            style={{ fontSize: 8, letterSpacing: "0.3em", color: "#4b5563", marginTop: 4 }}
+          >
+            by Crafted Legacies
           </span>
         </Link>
 
-        {/* Desktop nav links */}
+        {/* ── Desktop nav ── */}
         <div className="hidden md:flex items-center gap-8">
           {[
-            { label: 'Collection', href: '/shop' },
-            { label: 'Tracking', href: '/#tracking', special: true },
-            { label: 'Join', href: '/join' },
-            { label: 'Member', href: '/member/login' },
+            { label: "Collection", href: "/shop" },
+            { label: "Tracking",   href: "/#tracking", special: true },
+            { label: "Member",     href: "/member/login" },
           ].map(({ label, href, special }) => (
             <Link
               key={label}
@@ -75,16 +84,30 @@ export default function Navbar() {
               {label}
             </Link>
           ))}
+
+          {/* Join — highlighted in blue */}
+          <Link
+            href="/join"
+            className="text-[10px] tracking-[0.28em] uppercase font-black transition-colors duration-200"
+            style={{ color: "#2563eb" }}
+            onMouseEnter={e => { e.currentTarget.style.color = "#60a5fa"; }}
+            onMouseLeave={e => { e.currentTarget.style.color = "#2563eb"; }}
+          >
+            Join →
+          </Link>
+
           <Link
             href="/model-kits"
             className="flex items-center gap-1.5 text-[10px] tracking-[0.28em] uppercase text-white/40 hover:text-white transition-colors duration-200"
           >
             3D Kits
-            <span className="text-[7px] tracking-[0.15em] uppercase bg-white/10 text-white/30 px-1.5 py-0.5">Soon</span>
+            <span className="text-[7px] tracking-[0.15em] uppercase bg-white/10 text-white/30 px-1.5 py-0.5">
+              Soon
+            </span>
           </Link>
         </div>
 
-        {/* Right: search + cart + mobile toggle */}
+        {/* ── Right: search + cart + mobile toggle ── */}
         <div className="flex items-center gap-5">
           {/* Search — desktop only */}
           <form action="/shop" method="GET" className="hidden md:flex items-center gap-2">
@@ -110,9 +133,10 @@ export default function Navbar() {
               {itemCount > 0 && (
                 <motion.span
                   initial={{ opacity: 0, width: 0 }}
-                  animate={{ opacity: 1, width: 'auto' }}
+                  animate={{ opacity: 1, width: "auto" }}
                   exit={{ opacity: 0, width: 0 }}
                   className="text-[10px] tracking-[0.2em] overflow-hidden whitespace-nowrap"
+                  style={{ color: "#2563eb" }}
                 >
                   {itemCount}
                 </motion.span>
@@ -131,7 +155,7 @@ export default function Navbar() {
         </div>
       </motion.nav>
 
-      {/* Mobile fullscreen menu */}
+      {/* ── Mobile fullscreen menu (unchanged structure) ── */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
@@ -140,7 +164,7 @@ export default function Navbar() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25 }}
             className="fixed inset-0 z-[110] flex flex-col items-center justify-center"
-            style={{ background: 'rgba(13,13,13,0.97)', backdropFilter: 'blur(20px)' }}
+            style={{ background: "rgba(5,5,5,0.97)", backdropFilter: "blur(24px)" }}
           >
             <button
               aria-label="Close menu"
@@ -152,10 +176,9 @@ export default function Navbar() {
 
             <div className="flex flex-col items-center gap-9 text-center">
               {[
-                { label: 'Collection', href: '/shop' },
-                { label: 'Tracking', href: '/#tracking', special: true },
-                { label: 'Join Syndicate', href: '/join' },
-                { label: 'Member Portal', href: '/member/login' },
+                { label: "Collection",    href: "/shop" },
+                { label: "Tracking",      href: "/#tracking", special: true },
+                { label: "Member Portal", href: "/member/login" },
               ].map(({ label, href, special }) => (
                 <Link
                   key={label}
@@ -167,14 +190,24 @@ export default function Navbar() {
                 </Link>
               ))}
               <Link
+                href="/join"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="text-3xl font-black uppercase italic tracking-tighter transition-colors duration-200"
+                style={{ color: "#2563eb" }}
+              >
+                Join Syndicate →
+              </Link>
+              <Link
                 href="/model-kits"
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="text-3xl font-black uppercase italic tracking-tighter text-white/40 hover:text-white transition-colors duration-200 flex items-center gap-3"
               >
                 3D Kits
-                <span className="text-sm font-black tracking-widest uppercase bg-white/10 text-white/30 px-2 py-1">Soon</span>
+                <span className="text-sm font-black tracking-widest uppercase bg-white/10 text-white/30 px-2 py-1">
+                  Soon
+                </span>
               </Link>
-              <div className="w-8 h-px bg-white/10 my-2" />
+              <div className="w-8 h-px my-2" style={{ background: "rgba(37,99,235,0.3)" }} />
               <Link
                 href="/checkout"
                 onClick={() => setIsMobileMenuOpen(false)}
